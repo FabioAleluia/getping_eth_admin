@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GetPing Admin{% endblock %}</title>
+    <!-- Tailwind CSS CDN para agilidade visual e responsividade moderna -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- CSS Base Comum -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <!-- Bloco para CSS específico da página -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-slate-950 text-slate-100 flex min-h-screen">
+
+    {% if g.user %}
+    <!-- Sidebar de Navegação -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
+        <div>
+            <!-- Header da Sidebar -->
+            <div class="h-16 flex items-center px-6 border-b border-slate-800">
+                <i class="fa-solid fa-network-wired text-cyan-400 text-2xl mr-3"></i>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight">GetPing</h1>
+                    <span class="text-xs text-cyan-400 font-mono tracking-wider">ADMIN PANEL</span>
+                </div>
+            </div>
+
+            <!-- Links de Menu -->
+            <nav class="p-4 space-y-1">
+                <a href="{{ url_for('dashboard.index') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'dashboard.index' %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                    <i class="fa-solid fa-gauge w-5 text-center mr-3"></i> Dashboard
+                </a>
+                <a href="{{ url_for('clientes.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'clientes.' in request.endpoint %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                    <i class="fa-solid fa-building w-5 text-center mr-3"></i> Clientes
+                </a>
+                <a href="{{ url_for('licencas.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'licencas.' in request.endpoint %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                    <i class="fa-solid fa-key w-5 text-center mr-3"></i> Licenças
+                </a>
+                {% if g.user and g.user.papel in ('superadmin', 'gestor') %}
+                <a href="{{ url_for('usuarios.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'usuarios.' in request.endpoint %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                    <i class="fa-solid fa-users-gear w-5 text-center mr-3"></i> Usuários
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+
+        <!-- Rodapé do Usuário -->
+        <div class="p-4 border-t border-slate-800 bg-slate-900/60">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3 overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-cyan-600/30 flex items-center justify-center text-cyan-300 font-bold text-xs shrink-0">
+                        {{ g.user.nome[0].upper() }}
+                    </div>
+                    <div class="truncate">
+                        <p class="text-sm font-medium text-slate-200 truncate">{{ g.user.nome }}</p>
+                        <p class="text-xs text-slate-500 truncate">{{ g.user.papel }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-1 shrink-0">
+                    <a href="{{ url_for('auth.perfil') }}" title="Perfil" class="p-2 text-slate-400 hover:text-cyan-400 transition-colors">
+                        <i class="fa-solid fa-gear"></i>
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" title="Sair" class="p-2 text-slate-400 hover:text-rose-400 transition-colors">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+    {% endif %}
+
+    <!-- Área de Conteúdo Principal -->
+    <div class="flex-1 flex flex-col min-w-0">
+        <!-- Barra de Topo -->
+        <header class="h-16 bg-slate-900/50 border-b border-slate-800 px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <h2 class="text-base font-semibold text-slate-200">{% block header_title %}Painel de Controle{% endblock %}</h2>
+            </div>
+            <div class="flex items-center space-x-3 text-xs text-slate-400">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 mr-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Sistema Online
+                </span>
+            </div>
+        </header>
+
+        <!-- Mensagens Flash -->
+        <div class="px-8 pt-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% set cat_class = "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" %}
+                        {% if category == 'danger' %}{% set cat_class = "border-rose-500/30 bg-rose-500/10 text-rose-300" %}{% endif %}
+                        {% if category == 'warning' %}{% set cat_class = "border-amber-500/30 bg-amber-500/10 text-amber-300" %}{% endif %}
+                        {% if category == 'success' %}{% set cat_class = "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" %}{% endif %}
+                        <div class="p-4 mb-4 rounded-lg border {{ cat_class }} flex items-center justify-between">
+                            <span class="text-sm font-medium">{{ message }}</span>
+                            <button onclick="this.parentElement.remove()" class="text-xs opacity-70 hover:opacity-100">&times;</button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Conteúdo da Página -->
+        <main class="p-8 flex-1">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- JS Base Comum -->
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    <!-- Bloco para JS específico da página -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

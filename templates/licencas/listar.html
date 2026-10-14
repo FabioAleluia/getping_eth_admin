@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Licenças - GetPing Admin{% endblock %}
+{% block header_title %}Controle de Licenciamento{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/licencas.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Barra Superior de Filtros e Criação -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <form method="GET" action="{{ url_for('licencas.listar') }}" class="flex flex-wrap items-center gap-2 flex-1">
+            <div class="relative flex-1 min-w-[200px]">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" name="busca" value="{{ busca }}" placeholder="Buscar por chave ou cliente..."
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <select name="status" class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-cyan-500">
+                <option value="">Todos os status</option>
+                <option value="ativa" {% if status_filtro == 'ativa' %}selected{% endif %}>Ativas</option>
+                <option value="suspensa" {% if status_filtro == 'suspensa' %}selected{% endif %}>Suspensas</option>
+                <option value="expirada" {% if status_filtro == 'expirada' %}selected{% endif %}>Expiradas</option>
+                <option value="cancelada" {% if status_filtro == 'cancelada' %}selected{% endif %}>Canceladas</option>
+            </select>
+
+            <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition">Filtrar</button>
+            {% if busca or status_filtro %}
+            <a href="{{ url_for('licencas.listar') }}" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition">Limpar</a>
+            {% endif %}
+        </form>
+
+        {% if g.user and g.user.papel != 'assistente' %}
+        <a href="{{ url_for('licencas.nova') }}" class="inline-flex items-center justify-center px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-cyan-600/20 transition shrink-0">
+            <i class="fa-solid fa-plus mr-2"></i> Emitir Licença
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Tabela de Licenças -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+                    <tr>
+                        <th class="py-3 px-5">Chave da Licença</th>
+                        <th class="py-3 px-5">Cliente</th>
+                        <th class="py-3 px-5">Plano / Limites</th>
+                        <th class="py-3 px-5">Status</th>
+                        <th class="py-3 px-5">Validade</th>
+                        <th class="py-3 px-5">Último Check-in</th>
+                        <th class="py-3 px-5 text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    {% for l in licencas %}
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="py-3.5 px-5 font-mono text-cyan-400 font-medium">
+                            <span class="inline-flex items-center">
+                                {{ l.chave_licenca }}
+                                <button onclick="copiarTexto('{{ l.chave_licenca }}')" title="Copiar Chave" class="ml-2 text-slate-500 hover:text-cyan-300 text-xs transition">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-5 font-medium text-white">
+                            {{ l.nome_empresa }}
+                        </td>
+                        <td class="py-3.5 px-5">
+                            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 font-mono">{{ l.tipo_plano }}</span>
+                            <div class="text-[11px] text-slate-500 mt-1">
+                                <span>Max {{ l.limite_hosts }} hosts</span> • <span>{{ l.limite_agentes }} agentes</span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-5">
+                            {% if l.status == 'ativa' %}
+                                <span class="px-2.5 py-1 rounded-full text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Ativa</span>
+                            {% elif l.status == 'suspensa' %}
+                                <span class="px-2.5 py-1 rounded-full text-[11px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Suspensa</span>
+                            {% elif l.status == 'expirada' %}
+                                <span class="px-2.5 py-1 rounded-full text-[11px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">Expirada</span>
+                            {% else %}
+                                <span class="px-2.5 py-1 rounded-full text-[11px] bg-slate-500/10 text-slate-400 border border-slate-500/20 font-medium">Cancelada</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-5">
+                            <span class="text-slate-300">{{ l.data_expiracao[:10] }}</span>
+                            <span class="block text-[10px] text-slate-500">Emitida em {{ l.data_emissao[:10] }}</span>
+                        </td>
+                        <td class="py-3.5 px-5 text-slate-400">
+                            {% if l.ultimo_checkin_em %}
+                                {{ l.ultimo_checkin_em[:19] }}
+                            {% else %}
+                                <span class="text-slate-600 italic">Nunca conectou</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-5 text-right space-x-2">
+                            <a href="{{ url_for('licencas.detalhes', id=l.id) }}" title="Logs & Detalhes" class="p-1.5 text-slate-400 hover:text-cyan-400 transition">
+                                <i class="fa-solid fa-list-check"></i>
+                            </a>
+                            <a href="{{ url_for('licencas.editar', id=l.id) }}" title="Editar / Renovar" class="p-1.5 text-slate-400 hover:text-cyan-400 transition">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            {% if g.user and g.user.papel == 'superadmin' %}
+                            <form method="POST" action="{{ url_for('licencas.excluir', id=l.id) }}" class="inline-block" onsubmit="return confirm('Deseja realmente EXCLUIR a licença {{ l.chave_licenca }}? Esta ação é definitiva e impedirá o GetPing de conectar.');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" title="Excluir Licença" class="p-1.5 text-slate-400 hover:text-rose-400 transition">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-500">
+                            Nenhuma licença encontrada.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/licencas.js') }}"></script>
+{% endblock %}

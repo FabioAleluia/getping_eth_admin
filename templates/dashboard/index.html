@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - GetPing Admin{% endblock %}
+{% block header_title %}Visão Geral{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Grid de Estatísticas / Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Card Clientes -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total de Clientes</p>
+                <h3 class="text-3xl font-bold text-white mt-1">{{ total_clientes }}</h3>
+                <a href="{{ url_for('clientes.listar') }}" class="text-xs text-cyan-400 hover:underline mt-2 inline-block">Ver empresas &rarr;</a>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-building"></i>
+            </div>
+        </div>
+
+        <!-- Card Licenças -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Licenças</p>
+                <h3 class="text-3xl font-bold text-white mt-1">{{ total_licencas }}</h3>
+                <a href="{{ url_for('licencas.listar') }}" class="text-xs text-cyan-400 hover:underline mt-2 inline-block">Ver todas &rarr;</a>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-key"></i>
+            </div>
+        </div>
+
+        <!-- Card Licenças Ativas -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Licenças Ativas</p>
+                <h3 class="text-3xl font-bold text-emerald-400 mt-1">{{ licencas_ativas }}</h3>
+                <span class="text-xs text-slate-500 mt-2 inline-block">Em dia e operando</span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+        </div>
+
+        <!-- Card Expiradas/Suspensas -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm flex items-center justify-between">
+            <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Expiradas / Bloqueadas</p>
+                <h3 class="text-3xl font-bold text-rose-400 mt-1">{{ licencas_expiradas }}</h3>
+                <span class="text-xs text-slate-500 mt-2 inline-block">Requerem renovação</span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Tabelas Rápidas -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Últimas Licenças Emitidas -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-white flex items-center">
+                        <i class="fa-solid fa-certificate text-cyan-400 mr-2"></i> Últimas Licenças
+                    </h3>
+                    {% if g.user and g.user.papel != 'assistente' %}
+                    <a href="{{ url_for('licencas.nova') }}" class="text-xs bg-cyan-600 hover:bg-cyan-500 text-white px-2.5 py-1.5 rounded-md font-medium transition">
+                        + Nova Licença
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="pb-2">Cliente</th>
+                                <th class="pb-2">Plano</th>
+                                <th class="pb-2">Status</th>
+                                <th class="pb-2">Expiração</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                            {% for lic in ultimas_licencas %}
+                            <tr class="hover:bg-slate-800/30">
+                                <td class="py-2.5 font-medium text-white">{{ lic.nome_empresa }}</td>
+                                <td class="py-2.5"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">{{ lic.tipo_plano }}</span></td>
+                                <td class="py-2.5">
+                                    {% if lic.status == 'ativa' %}
+                                        <span class="text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Ativa</span>
+                                    {% else %}
+                                        <span class="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">{{ lic.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-2.5 text-slate-400">{{ lic.data_expiracao[:10] }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="py-4 text-center text-slate-500">Nenhuma licença cadastrada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimos Check-ins e Eventos da API -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+            <h3 class="font-semibold text-white mb-4 flex items-center">
+                <i class="fa-solid fa-bolt text-amber-400 mr-2"></i> Atividades Recentes do GetPing
+            </h3>
+
+            <div class="space-y-3 overflow-y-auto max-h-[300px] pr-2">
+                {% for log in ultimos_logs %}
+                <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800 flex items-start justify-between text-xs">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            {% if log.evento == 'checkin_sucesso' %}
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                <span class="font-semibold text-emerald-400">Check-in OK</span>
+                            {% elif log.evento == 'licenca_expirada' %}
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                <span class="font-semibold text-amber-400">Expirada</span>
+                            {% else %}
+                                <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                                <span class="font-semibold text-rose-400">{{ log.evento }}</span>
+                            {% endif %}
+                            <span class="text-slate-400 font-mono">({{ log.ip_origem }})</span>
+                        </div>
+                        <p class="text-slate-300 mt-1 font-mono text-[11px] truncate max-w-xs">{{ log.chave_usada or '-' }}</p>
+                        <p class="text-slate-500 text-[10px]">{{ log.detalhes }}</p>
+                    </div>
+                    <span class="text-slate-500 text-[10px] shrink-0 ml-2">{{ log.criado_em[11:19] }}</span>
+                </div>
+                {% else %}
+                <p class="text-xs text-slate-500 py-4 text-center">Nenhum evento registrado ainda.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

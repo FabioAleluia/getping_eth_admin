@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários do Painel - GetPing Admin{% endblock %}
+{% block header_title %}Gestão de Usuários e Perfis{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/usuarios.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Barra Superior de Ações e Filtros -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl">
+        <form method="GET" action="{{ url_for('usuarios.listar') }}" class="flex items-center space-x-2 flex-1 max-w-md">
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" name="busca" value="{{ busca }}" placeholder="Buscar por nome, usuário ou e-mail..."
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500">
+            </div>
+            {% if busca %}
+            <a href="{{ url_for('usuarios.listar') }}" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition">Limpar</a>
+            {% endif %}
+            <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium transition">Filtrar</button>
+        </form>
+
+        <a href="{{ url_for('usuarios.novo') }}" class="inline-flex items-center justify-center px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-cyan-600/20 transition">
+            <i class="fa-solid fa-user-plus mr-2"></i> Novo Usuário
+        </a>
+    </div>
+
+    <!-- Tabela de Usuários -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+                    <tr>
+                        <th class="py-3 px-5">Nome / Usuário</th>
+                        <th class="py-3 px-5">E-mail</th>
+                        <th class="py-3 px-5">Perfil</th>
+                        <th class="py-3 px-5">Status</th>
+                        <th class="py-3 px-5">Segurança</th>
+                        <th class="py-3 px-5">Último Login</th>
+                        <th class="py-3 px-5 text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    {% for u in usuarios %}
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="py-3.5 px-5 font-medium text-white flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 text-cyan-400 flex items-center justify-center font-bold text-xs shrink-0 border border-slate-700">
+                                {{ u.nome[0].upper() }}
+                            </div>
+                            <div>
+                                <span class="block">{{ u.nome }}</span>
+                                <span class="text-[11px] text-slate-500 font-mono">@{{ u.username }}</span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-5 text-slate-300">
+                            {{ u.email }}
+                        </td>
+                        <td class="py-3.5 px-5">
+                            {% if u.papel == 'superadmin' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                                    <i class="fa-solid fa-crown text-[9px] mr-1"></i> Superadmin
+                                </span>
+                            {% elif u.papel == 'gestor' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                                    <i class="fa-solid fa-user-shield text-[9px] mr-1"></i> Gestor
+                                </span>
+                            {% elif u.papel == 'assistente' %}
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    <i class="fa-solid fa-user-gear text-[9px] mr-1"></i> Assistente
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">{{ u.papel }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-5">
+                            {% if u.ativo %}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Ativo</span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded-full text-[11px] bg-rose-500/10 text-rose-400 border border-rose-500/20">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-5">
+                            {% if u.trocar_senha %}
+                                <span class="inline-flex items-center text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20" title="Deverá definir nova senha no login">
+                                    <i class="fa-solid fa-triangle-exclamation mr-1 text-[9px]"></i> Troca Pendente
+                                </span>
+                            {% else %}
+                                <span class="text-[10px] text-slate-500">Regular</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-5 text-slate-400 font-mono text-[11px]">
+                            {% if u.ultimo_login %}
+                                {{ u.ultimo_login[:16] }}
+                            {% else %}
+                                <span class="text-slate-600 italic">Nunca acessou</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-5 text-right space-x-2">
+                            <a href="{{ url_for('usuarios.editar', id=u.id) }}" title="Editar" class="p-1.5 text-slate-400 hover:text-cyan-400 transition">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            {% if u.username != 'administrator' and u.id != g.user.id and g.user.papel == 'superadmin' %}
+                            <form method="POST" action="{{ url_for('usuarios.excluir', id=u.id) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o usuário @{{ u.username }}?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" title="Excluir" class="p-1.5 text-slate-400 hover:text-rose-400 transition">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-500">
+                            Nenhum usuário cadastrado{% if busca %} para a pesquisa{% endif %}.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/usuarios.js') }}"></script>
+{% endblock %}

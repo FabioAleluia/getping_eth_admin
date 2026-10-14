@@ -1,0 +1,4 @@
+/* Clientes específico */
+table tbody tr {
+    transition: background-color 0.15s ease;
+}

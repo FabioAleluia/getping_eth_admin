@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil - GetPing Admin{% endblock %}
+{% block header_title %}Configurações de Perfil{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+    <div class="flex items-center space-x-4 mb-6 pb-6 border-b border-slate-800">
+        <div class="w-14 h-14 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-xl">
+            {{ g.user.nome[0].upper() }}
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold text-white">{{ g.user.nome }}</h3>
+            <p class="text-xs text-slate-400 font-mono">@{{ g.user.username }} • <span class="capitalize">{{ g.user.papel }}</span></p>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.perfil') }}" class="space-y-5">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1.5">Nome Completo</label>
+                <input type="text" name="nome" value="{{ g.user.nome }}" required
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1.5">E-mail</label>
+                <input type="email" name="email" value="{{ g.user.email }}" required
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800">
+            <h4 class="text-sm font-semibold text-slate-200 mb-1">Alterar Senha</h4>
+            <p class="text-xs text-slate-400 mb-4">Deixe os campos em branco se não quiser trocar a senha agora.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Senha Atual</label>
+                    <input type="password" name="senha_atual" placeholder="••••••••"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Nova Senha (mínimo 8 caracteres e especiais)</label>
+                        <input type="password" name="nova_senha" placeholder="••••••••"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Confirmar Nova Senha</label>
+                        <input type="password" name="confirma_senha" placeholder="••••••••"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-4 flex justify-end space-x-3">
+            <a href="{{ url_for('dashboard.index') }}" class="px-4 py-2 rounded-lg text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cancelar</a>
+            <button type="submit" class="px-5 py-2 rounded-lg text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition shadow-md shadow-cyan-600/20">Salvar Alterações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

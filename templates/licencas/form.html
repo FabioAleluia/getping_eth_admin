@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}{% if acao == 'nova' %}Nova Licença{% else %}Editar Licença{% endif %} - GetPing Admin{% endblock %}
+{% block header_title %}{% if acao == 'nova' %}Emitir Nova Licença GetPing{% else %}Gerenciar Licença{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/licencas.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+    <form method="POST" class="space-y-6">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        {% if acao == 'editar' %}
+        <div class="p-4 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between">
+            <div>
+                <span class="text-xs text-slate-500 uppercase tracking-wider block">Chave da Licença</span>
+                <span class="font-mono text-cyan-400 font-bold text-base">{{ licenca.chave_licenca }}</span>
+            </div>
+            <div>
+                <span class="text-xs text-slate-500 uppercase tracking-wider block">Cliente Vinculado</span>
+                <span class="text-white font-medium text-sm">{{ licenca.nome_empresa }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if acao == 'nova' %}
+        <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Cliente *</label>
+            <select name="cliente_id" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                <option value="">Selecione uma empresa cliente...</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}">{{ c.nome_empresa }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Plano</label>
+                <select name="tipo_plano" id="tipoPlanoSelect" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    <option value="Trial" {% if licenca.tipo_plano == 'Trial' %}selected{% endif %}>Trial (15 dias)</option>
+                    <option value="Basico" {% if licenca.tipo_plano == 'Basico' or acao == 'nova' %}selected{% endif %}>Básico</option>
+                    <option value="Profissional" {% if licenca.tipo_plano == 'Profissional' %}selected{% endif %}>Profissional</option>
+                    <option value="Enterprise" {% if licenca.tipo_plano == 'Enterprise' %}selected{% endif %}>Enterprise</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Limite de Hosts</label>
+                <input type="number" id="limiteHostsInput" name="limite_hosts" min="1" max="10000" value="{{ licenca.limite_hosts or 10 }}" required
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Limite de Agentes</label>
+                <input type="number" id="limiteAgentesInput" name="limite_agentes" min="0" max="10000" value="{{ licenca.limite_agentes or 5 }}" required
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {% if acao == 'nova' %}
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Período de Validade (Dias)</label>
+                <select name="dias_validade" id="diasValidadeSelect" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    <option value="15">15 Dias (Avaliação)</option>
+                    <option value="30" selected>30 Dias (Mensal)</option>
+                    <option value="90">90 Dias (Trimestral)</option>
+                    <option value="180">180 Dias (Semestral)</option>
+                    <option value="365">365 Dias (Anual)</option>
+                    <option value="730">730 Dias (2 Anos)</option>
+                </select>
+            </div>
+            {% else %}
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Data de Expiração</label>
+                <input type="date" name="data_expiracao" value="{{ licenca.data_expiracao[:10] }}" required
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Status da Licença</label>
+                <select name="status" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    <option value="ativa" {% if licenca.status == 'ativa' %}selected{% endif %}>Ativa</option>
+                    <option value="suspensa" {% if licenca.status == 'suspensa' %}selected{% endif %}>Suspensa</option>
+                    <option value="expirada" {% if licenca.status == 'expirada' %}selected{% endif %}>Expirada</option>
+                    <option value="cancelada" {% if licenca.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                </select>
+            </div>
+            {% endif %}
+        </div>
+
+        <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Observações / Termos Específicos</label>
+            <textarea name="observacoes" rows="3" placeholder="Anotações sobre a negociação ou licenciamento..."
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">{{ licenca.observacoes or '' }}</textarea>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 flex justify-end space-x-3">
+            <a href="{{ url_for('licencas.listar') }}" class="px-4 py-2 rounded-lg text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cancelar</a>
+            <button type="submit" class="px-5 py-2 rounded-lg text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition shadow-md shadow-cyan-600/20">
+                {% if acao == 'nova' %}Gerar Licença{% else %}Salvar Alterações{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/licencas.js') }}"></script>
+{% endblock %}

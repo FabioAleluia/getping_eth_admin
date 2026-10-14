@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{% if acao == 'novo' %}Novo Usuário{% else %}Editar Usuário{% endif %} - GetPing Admin{% endblock %}
+{% block header_title %}{% if acao == 'novo' %}Cadastrar Novo Usuário{% else %}Editar Usuário do Painel{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/usuarios.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+    <form method="POST" class="space-y-5" id="formUsuario">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        {% if acao == 'editar' and usuario.username == 'administrator' %}
+        <div class="p-3.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 flex items-center">
+            <i class="fa-solid fa-circle-info mr-2 text-base"></i>
+            <span>Este é o usuário Master do sistema. O perfil Superadmin e o status Ativo não podem ser revogados.</span>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nome Completo *</label>
+                <input type="text" name="nome" value="{{ usuario.nome or '' }}" required placeholder="Ex: Lucas Silva"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nome de Usuário (Login) *</label>
+                <input type="text" name="username" value="{{ usuario.username or '' }}" required placeholder="ex: lucas.silva"
+                    {% if acao == 'editar' %}readonly class="w-full bg-slate-900/80 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-500 cursor-not-allowed"{% else %}class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500"{% endif %}>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">E-mail *</label>
+                <input type="email" name="email" value="{{ usuario.email or '' }}" required placeholder="lucas@empresa.com"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Perfil de Acesso *</label>
+                <select name="papel" {% if acao == 'editar' and usuario.username == 'administrator' %}disabled class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-500 cursor-not-allowed"{% else %}class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"{% endif %}>
+                    {% if g.user.papel == 'superadmin' %}
+                    <option value="gestor" {% if usuario.papel == 'gestor' %}selected{% endif %}>Gestor (Operações completas)</option>
+                    {% endif %}
+                    <option value="assistente" {% if usuario.papel == 'assistente' or (acao == 'novo' and not usuario.papel) %}selected{% endif %}>Assistente (Consulta e Suporte)</option>
+                    {% if acao == 'editar' and usuario.papel == 'superadmin' %}
+                    <option value="superadmin" selected>Superadmin</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+
+        {% if acao == 'novo' %}
+        <div class="pt-2 border-t border-slate-800">
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Senha Inicial *</label>
+            <input type="password" name="senha_inicial" required placeholder="Mínimo 8 caracteres e símbolos especiais"
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+            <span class="text-[11px] text-slate-500 mt-1 block">A senha deve ter pelo menos 8 caracteres e ao menos 1 caractere especial (! @ # $ % & *).</span>
+
+            <div class="flex items-center space-x-2 pt-3">
+                <input type="checkbox" id="exigir_troca" name="exigir_troca" value="1" checked
+                    class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-cyan-600 focus:ring-0">
+                <label for="exigir_troca" class="text-xs text-slate-300 font-medium">Exigir alteração de senha no primeiro login deste usuário</label>
+            </div>
+        </div>
+        {% else %}
+        <div class="pt-4 border-t border-slate-800 space-y-4">
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Redefinição de Senha (Opcional)</h4>
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1.5">Nova Senha</label>
+                <input type="password" name="nova_senha" placeholder="Deixe em branco para manter a senha atual"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 pt-1">
+                {% if usuario.username != 'administrator' %}
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="ativo" name="ativo" value="1" {% if usuario.ativo %}checked{% endif %}
+                        class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-cyan-600 focus:ring-0">
+                    <label for="ativo" class="text-xs text-slate-300 font-medium">Usuário Ativo</label>
+                </div>
+                {% endif %}
+
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="trocar_senha" name="trocar_senha" value="1" {% if usuario.trocar_senha %}checked{% endif %}
+                        class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-cyan-600 focus:ring-0">
+                    <label for="trocar_senha" class="text-xs text-slate-300 font-medium">Forçar troca de senha no próximo login</label>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="pt-4 border-t border-slate-800 flex justify-end space-x-3">
+            <a href="{{ url_for('usuarios.listar') }}" class="px-4 py-2 rounded-lg text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cancelar</a>
+            <button type="submit" class="px-5 py-2 rounded-lg text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition shadow-md shadow-cyan-600/20">
+                {% if acao == 'novo' %}Salvar Usuário{% else %}Atualizar Usuário{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/usuarios.js') }}"></script>
+{% endblock %}
