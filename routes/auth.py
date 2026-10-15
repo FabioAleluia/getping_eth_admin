@@ -73,7 +73,6 @@ def login():
                     (agora, user["id"])
                 )
 
-                flash(f"Bem-vindo(a), {user['nome']}!", "success")
                 next_url = request.args.get("next")
                 if next_url and next_url.startswith("/") and not next_url.startswith("//"):
                     return redirect(next_url)
@@ -87,7 +86,6 @@ def login():
 @auth_bp.route("/logout")
 def logout():
     session.clear()
-    flash("Sessão encerrada com sucesso.", "info")
     return redirect(url_for("auth.login"))
 
 
@@ -178,7 +176,6 @@ def trocar_senha_obrigatoria():
                 (nova_hash, g.user["id"])
             )
 
-        flash("Senha alterada com sucesso! Você já pode utilizar o sistema.", "success")
         return redirect(url_for("dashboard.index"))
 
     return render_template("auth/trocar_senha_obrigatoria.html")

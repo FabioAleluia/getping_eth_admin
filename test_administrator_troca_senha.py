@@ -119,7 +119,6 @@ class TestAdministratorTrocaSenha(unittest.TestCase):
         }, follow_redirects=True)
 
         self.assertEqual(resp_ok.status_code, 200)
-        self.assertIn("Senha alterada com sucesso".encode("utf-8"), resp_ok.data)
         self.assertIn("Visão Geral".encode("utf-8"), resp_ok.data)
 
         # Verifica no banco que trocar_senha virou 0
