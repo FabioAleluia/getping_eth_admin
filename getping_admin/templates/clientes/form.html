@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{% if acao == 'novo' %}Novo Cliente{% else %}Editar Cliente{% endif %} - GetPing Admin{% endblock %}
+{% block header_title %}{% if acao == 'novo' %}Cadastrar Novo Cliente{% else %}Editar Cliente{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/clientes.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+    {% set is_assistente = (acao == 'editar' and g.user and g.user.papel == 'assistente') %}
+
+    {% if is_assistente %}
+    <div class="p-3.5 mb-5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs flex items-center space-x-2.5">
+        <i class="fa-solid fa-circle-info text-base shrink-0"></i>
+        <span>Perfil <strong>Assistente</strong>: Você possui permissão para atualizar exclusivamente o <strong>E-mail de Contato</strong> e o <strong>Telefone</strong>. Os demais dados cadastrais e o status do cliente são protegidos.</span>
+    </div>
+    {% endif %}
+
+    <form method="POST" class="space-y-5">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nome da Empresa *</label>
+                {% if is_assistente %}
+                <input type="text" name="nome_empresa" value="{{ cliente.nome_empresa or '' }}" readonly
+                    class="w-full bg-slate-900/60 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-400 cursor-not-allowed focus:outline-none">
+                {% else %}
+                <input type="text" name="nome_empresa" value="{{ cliente.nome_empresa or '' }}" required placeholder="Ex: Tech Solutions Ltda"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">CNPJ / CPF</label>
+                {% if is_assistente %}
+                <input type="text" name="cnpj_cpf" value="{{ cliente.cnpj_cpf or '' }}" readonly
+                    class="w-full bg-slate-900/60 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-400 cursor-not-allowed focus:outline-none">
+                {% else %}
+                <input type="text" name="cnpj_cpf" value="{{ cliente.cnpj_cpf or '' }}" placeholder="00.000.000/0001-00"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nome do Responsável *</label>
+                {% if is_assistente %}
+                <input type="text" name="responsavel_nome" value="{{ cliente.responsavel_nome or '' }}" readonly
+                    class="w-full bg-slate-900/60 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-400 cursor-not-allowed focus:outline-none">
+                {% else %}
+                <input type="text" name="responsavel_nome" value="{{ cliente.responsavel_nome or '' }}" required placeholder="Ex: João da Silva"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    E-mail de Contato
+                    {% if is_assistente %}<span class="text-[10px] text-cyan-400 font-normal lowercase tracking-normal ml-1">(editável)</span>{% endif %}
+                </label>
+                <input type="email" name="responsavel_email" value="{{ cliente.responsavel_email or '' }}" placeholder="contato@empresa.com"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                    Telefone
+                    {% if is_assistente %}<span class="text-[10px] text-cyan-400 font-normal lowercase tracking-normal ml-1">(editável)</span>{% endif %}
+                </label>
+                <input type="text" name="telefone" value="{{ cliente.telefone or '' }}" placeholder="(11) 99999-9999"
+                    class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Observações / Notas Internas</label>
+            {% if is_assistente %}
+            <textarea name="observacoes" rows="3" readonly
+                class="w-full bg-slate-900/60 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-400 cursor-not-allowed focus:outline-none">{{ cliente.observacoes or '' }}</textarea>
+            {% else %}
+            <textarea name="observacoes" rows="3" placeholder="Informações contratuais ou técnicas adicionais..."
+                class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">{{ cliente.observacoes or '' }}</textarea>
+            {% endif %}
+        </div>
+
+        {% if acao == 'editar' %}
+        <div class="flex items-center space-x-2 pt-2">
+            {% if is_assistente %}
+            <input type="checkbox" id="ativo" {% if cliente.ativo %}checked{% endif %} disabled
+                class="w-4 h-4 rounded bg-slate-900 border-slate-800 text-slate-600 cursor-not-allowed focus:ring-0">
+            <label for="ativo" class="text-sm text-slate-400 cursor-not-allowed">
+                Cliente Ativo no Sistema
+                <span class="text-xs text-slate-500 ml-1 font-normal">(Alteração de status restrita a Gestor e Superadmin)</span>
+            </label>
+            {% else %}
+            <input type="checkbox" id="ativo" name="ativo" value="1" {% if cliente.ativo %}checked{% endif %}
+                class="w-4 h-4 rounded bg-slate-950 border-slate-800 text-cyan-600 focus:ring-0">
+            <label for="ativo" class="text-sm text-slate-300">Cliente Ativo no Sistema</label>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="pt-4 border-t border-slate-800 flex justify-end space-x-3">
+            <a href="{{ url_for('clientes.listar') }}" class="px-4 py-2 rounded-lg text-sm bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Cancelar</a>
+            <button type="submit" class="px-5 py-2 rounded-lg text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition shadow-md shadow-cyan-600/20">
+                {% if acao == 'novo' %}Salvar Cliente{% else %}Atualizar Cliente{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

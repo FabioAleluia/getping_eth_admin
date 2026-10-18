@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes da Licença - GetPing Admin{% endblock %}
+{% block header_title %}Detalhes e Auditoria da Licença{% endblock %}
+
+
+{% block content %}
+{% if g.user.papel == 'superadmin' and licenca.instancia_fingerprint %}
+<form method="POST" action="{{ url_for('licencas.liberar_instancia', id=licenca.id) }}" data-confirm="Liberar licença para outra instalação?" class="mb-4">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<button class="px-4 py-2 bg-slate-800 rounded-lg">Liberar instalação vinculada</button>
+</form>
+{% endif %}
+<div class="space-y-6 max-w-5xl">
+    <!-- Card de Cabeçalho / Informações Principais -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-800 gap-4">
+            <div>
+                <span class="text-xs text-slate-500 uppercase tracking-wider block">Chave de Ativação</span>
+                <div class="flex items-center space-x-3 mt-1">
+                    <span class="font-mono text-cyan-400 font-bold text-xl">{{ licenca.chave_licenca }}</span>
+                    <button data-copy="{{ licenca.chave_licenca }}" title="Copiar" class="text-slate-400 hover:text-white transition">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                {% if licenca.status == 'ativa' %}
+                    <span class="px-3 py-1 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Ativa</span>
+                {% elif licenca.status == 'suspensa' %}
+                    <span class="px-3 py-1 rounded-full text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Suspensa</span>
+                {% elif licenca.status == 'expirada' %}
+                    <span class="px-3 py-1 rounded-full text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">Expirada</span>
+                {% else %}
+                    <span class="px-3 py-1 rounded-full text-xs bg-slate-500/10 text-slate-400 border border-slate-500/20 font-medium">Cancelada</span>
+                {% endif %}
+
+                {% if g.user.papel != 'assistente' or config.ALLOW_ASSISTANT_LICENSE_EDITS %}<a href="{{ url_for('licencas.editar', id=licenca.id) }}" class="px-4 py-1.5 rounded-lg text-xs bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition">
+                    Editar Licença
+                </a>{% endif %}
+
+                {% if g.user and g.user.papel == 'superadmin' %}
+                <form method="POST" action="{{ url_for('licencas.excluir', id=licenca.id) }}" class="inline-block" data-confirm="Deseja realmente EXCLUIR a licença {{ licenca.chave_licenca }}? Esta ação é irreversível.">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="px-3 py-1.5 rounded-lg text-xs bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 transition">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Excluir
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 text-xs">
+            <div>
+                <span class="text-slate-500 block mb-1">Cliente</span>
+                <span class="text-white font-semibold text-sm">{{ licenca.nome_empresa }}</span>
+                <span class="text-slate-400 block">{{ licenca.responsavel_nome }}</span>
+            </div>
+            <div>
+                <span class="text-slate-500 block mb-1">Plano e Limites</span>
+                <span class="text-slate-200 font-semibold">{{ licenca.tipo_plano }}</span>
+                <span class="text-slate-400 block">Até {{ licenca.limite_hosts }} hosts / {{ licenca.limite_agentes }} agentes</span>
+            </div>
+            <div>
+                <span class="text-slate-500 block mb-1">Expiração</span>
+                <span class="text-slate-200 font-semibold">{{ licenca.data_expiracao }}</span>
+                <span class="text-slate-500 block">Emitida: {{ licenca.data_emissao[:10] }}</span>
+            </div>
+            <div>
+                <span class="text-slate-500 block mb-1">Fingerprint do Servidor</span>
+                <span class="text-slate-300 font-mono text-[11px] truncate block" title="{{ licenca.instancia_fingerprint or 'Nenhum' }}">
+                    {{ licenca.instancia_fingerprint or 'Ainda não registrado' }}
+                </span>
+                <span class="text-slate-500 block">Último ping: {{ licenca.ultimo_checkin_em or 'Nunca' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Logs e Validações desta Licença -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="p-4 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+            <h3 class="font-semibold text-sm text-white flex items-center">
+                <i class="fa-solid fa-list-check text-cyan-400 mr-2"></i> Histórico de Check-ins e Eventos da API
+            </h3>
+            <span class="text-xs text-slate-500">Últimos {{ logs|length }} eventos</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-950/60 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[11px]">
+                    <tr>
+                        <th class="py-3 px-5">Data/Hora</th>
+                        <th class="py-3 px-5">Evento</th>
+                        <th class="py-3 px-5">IP Origem</th>
+                        <th class="py-3 px-5">Detalhes / Fingerprint</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                    {% for lg in logs %}
+                    <tr class="hover:bg-slate-800/30">
+                        <td class="py-3 px-5 font-mono text-slate-400">{{ lg.criado_em }}</td>
+                        <td class="py-3 px-5">
+                            {% if lg.evento == 'checkin_sucesso' %}
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Sucesso</span>
+                            {% elif lg.evento == 'licenca_expirada' %}
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Expirada</span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">{{ lg.evento }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-5 font-mono text-slate-300">{{ lg.ip_origem or '-' }}</td>
+                        <td class="py-3 px-5 text-slate-400 font-mono text-[11px]">{{ lg.detalhes or '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="py-8 text-center text-slate-500">
+                            Nenhum check-in registrado para esta licença ainda.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/licencas.js') }}"></script>
+{% endblock %}

@@ -8,9 +8,10 @@ User=getping
 Group=getping
 WorkingDirectory=/opt/getping-admin
 EnvironmentFile=/etc/getping-admin.env
-ExecStart=/opt/getping-admin/venv/bin/flask --app app:create_app prune-logs
+ExecStart=/opt/getping-admin/venv/bin/flask --app getping_admin:create_app prune-logs
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
-ReadWritePaths=/opt/getping-admin/database
+# Use o diretório de GETPING_DATABASE; mantenha /database para banco legado.
+ReadWritePaths=/opt/getping-admin/instance

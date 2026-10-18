@@ -10,16 +10,18 @@ source venv/bin/activate
 pip install -r requirements.txt
 export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 export GETPING_ENV=development
-flask --app app:create_app init-db
-flask --app app:create_app create-admin
-python app.py
+flask --app getping_admin:create_app init-db
+flask --app getping_admin:create_app create-admin
+python -m getping_admin
 ```
 
 Acesse `http://127.0.0.1:5001`. `create-admin` solicita e-mail e senha sem exibi-la; o primeiro login exige troca. Não existe senha administrativa universal. Guarde a chave secreta em local protegido e reutilize-a nos reinícios; gerar uma nova encerra as sessões existentes.
 
-A aplicação exige `SECRET_KEY` com pelo menos 32 caracteres e rejeita a chave antiga conhecida. O arquivo `.env.example` descreve as variáveis; **`python app.py` não carrega `.env` automaticamente**. Exporte as variáveis no processo ou configure o serviço. Não versionar segredos.
+A aplicação exige `SECRET_KEY` com pelo menos 32 caracteres e rejeita a chave antiga conhecida. O arquivo `.env.example` descreve as variáveis; **`python -m getping_admin` não carrega `.env` automaticamente**. Exporte as variáveis no processo ou configure o serviço. Não versionar segredos.
 
-O banco padrão é `database/db_getping.db`; `GETPING_DATABASE` permite caminho absoluto diferente. A importação de `app` e a factory não aplicam migrações nem criam contas. Use `init-db` explicitamente antes de iniciar uma instalação nova ou atualizada.
+Novas instalações usam `instance/db_getping.db`. Se o banco legado `database/db_getping.db` existir ao lado do pacote, ele continua sendo utilizado, sem mover dados. `GETPING_DATABASE` tem precedência e deve apontar explicitamente para o banco operacional na implantação. A importação de `getping_admin` e a factory não aplicam migrações nem criam contas. Use `init-db` explicitamente antes de iniciar uma instalação nova ou atualizada.
+
+O código está em `getping_admin/`, os testes em `tests/` e os relatórios anteriores em `docs/historico/`. Consulte [o guia de desenvolvimento](docs/desenvolvimento.md) para a estrutura, instalação do pacote e verificações. `python app.py` e `app:create_app` continuam disponíveis como entradas de compatibilidade.
 
 ## Atualização de uma instalação existente
 
@@ -28,21 +30,21 @@ O banco padrão é `database/db_getping.db`; `GETPING_DATABASE` permite caminho 
 3. Faça backup consistente e copie-o para armazenamento protegido:
 
    ```bash
-   flask --app app:create_app backup-db /caminho/seguro/getping-antes-atualizacao.db
+   flask --app getping_admin:create_app backup-db /caminho/seguro/getping-antes-atualizacao.db
    ```
 
 4. Teste a restauração e as migrações em uma cópia, apontando `GETPING_DATABASE` para ela.
 5. No banco operacional, execute:
 
    ```bash
-   flask --app app:create_app init-db
-   flask --app app:create_app check-data
+   flask --app getping_admin:create_app init-db
+   flask --app getping_admin:create_app check-data
    ```
 
 6. Se a conta ainda usa a senha antiga `administrator`, recupere-a localmente:
 
    ```bash
-   flask --app app:create_app reset-password administrator
+   flask --app getping_admin:create_app reset-password administrator
    ```
 
 7. Inicie o serviço e verifique `/health`, login, clientes, emissão e validação de uma licença de teste.
@@ -59,10 +61,10 @@ A senha antiga universal não é mais aceita, mesmo quando seu hash ainda está 
 pip install -r requirements-production.txt
 export GETPING_ENV=production
 # Configure SECRET_KEY persistente, GETPING_DATABASE e demais variáveis no serviço.
-gunicorn -c deploy/gunicorn.conf.py 'app:create_app()'
+gunicorn -c deploy/gunicorn.conf.py 'getping_admin:create_app()'
 ```
 
-O backend escuta apenas em `127.0.0.1:5001`; publique por proxy HTTPS. Há exemplos em `deploy/nginx.conf.example` e `deploy/getping-admin.service.example`. Substitua usuário, caminhos, domínio e certificados antes de instalar os arquivos. Não utilize `flask run`, debug ou `python app.py` como servidor de produção.
+O backend escuta apenas em `127.0.0.1:5001`; publique por proxy HTTPS. Há exemplos em `deploy/nginx.conf.example` e `deploy/getping-admin.service.example`. Substitua usuário, caminhos, domínio e certificados antes de instalar os arquivos. Não utilize `flask run`, debug ou `python -m getping_admin` como servidor de produção.
 
 Em produção, o cookie exige HTTPS. Configure `GETPING_PROXY_HOPS=1` somente atrás de um proxy confiável que sobrescreva os cabeçalhos encaminhados, sem acesso externo direto ao backend. O exemplo Nginx faz isso. Com zero saltos, `X-Forwarded-For` é ignorado. Mais de um proxy exige configuração específica para sua topologia.
 
@@ -117,7 +119,7 @@ Payloads têm limite de 32 KiB. Validações de chaves desconhecidas não criam 
 Agende diariamente, com o mesmo ambiente do serviço:
 
 ```bash
-flask --app app:create_app prune-logs
+flask --app getping_admin:create_app prune-logs
 ```
 
 Remove logs de validação anteriores a 90 dias e contadores expirados. Não apaga a auditoria administrativa. Defina a retenção dessa auditoria segundo a política da operação e o espaço disponível. A exclusão de linhas não reduz automaticamente o arquivo SQLite; manutenção/compactação deve ser planejada separadamente. Proteja o diretório do banco com permissões restritas; SQLite precisa escrever nele para criar WAL/SHM.
@@ -132,15 +134,15 @@ Cada teste tem banco e contexto temporários próprios, configurados antes de qu
 
 ## CSS e dependências
 
-O CSS compilado está versionado em `static/css/tailwind.css`; Node e compilador não são necessários no servidor. Para alterar as classes, gere-o novamente com o CLI standalone oficial Tailwind **3.4.17**:
+O CSS compilado está versionado em `getping_admin/static/css/tailwind.css`; Node e compilador não são necessários no servidor. Para alterar as classes, gere-o novamente com o CLI standalone oficial Tailwind **3.4.17**:
 
 ```bash
 sh scripts/build-css.sh /caminho/tailwindcss-3.4.17
 ```
 
-Configuração: `tailwind.config.js`; entrada: `assets/tailwind.css`. Scripts inline e handlers HTML foram substituídos por arquivos JS e atributos de dados para compatibilidade com CSP.
+Configuração: `tailwind.config.js`; entrada: `assets/tailwind.css`; saída: `getping_admin/static/css/tailwind.css`. Scripts inline e handlers HTML foram substituídos por arquivos JS e atributos de dados para compatibilidade com CSP.
 
-As versões Python estão fixadas nos arquivos `requirements*.txt`. Atualizações devem passar por revisão, auditoria de dependências e testes; fixar versões não substitui esse acompanhamento. Gunicorn está separado das dependências de desenvolvimento.
+As dependências diretas e ferramentas estão em `pyproject.toml`; os arquivos `requirements*.txt` fixam também as dependências transitivas para implantação. Atualize ambos em conjunto e valide a instalação. Gunicorn é opcional em produção. Atualizações devem passar por revisão, auditoria de dependências e testes; fixar versões não substitui esse acompanhamento.
 
 ## Segunda etapa de segurança
 
@@ -155,13 +157,13 @@ O menu **Auditoria**, disponível apenas para superadmin, permite consultar even
 Antes de publicar ou ativar o vínculo obrigatório, execute com o mesmo ambiente da aplicação:
 
 ```bash
-flask --app app:create_app security-check
+flask --app getping_admin:create_app security-check
 # Opcional: retorna código de erro quando há recomendações pendentes.
-flask --app app:create_app security-check --strict
+flask --app getping_admin:create_app security-check --strict
 ```
 
 O diagnóstico verifica integridade/referências e estrutura esperada do banco, informa licenças ativas sem fingerprint e sinaliza configuração de desenvolvimento, cookie sem Secure, conta ativa com senha antiga proibida e modo de compatibilidade. Não mostra chaves, senhas ou hashes, não modifica registros e não ativa o bloqueio por fingerprint. Não certifica TLS, firewall ou o comportamento do cliente; esses pontos exigem teste na implantação.
 
 Há exemplos de serviço e timer diário em `deploy/getping-prune-logs.service.example` e `deploy/getping-prune-logs.timer.example`. Depois de ajustar caminhos/usuário/ambiente e instalar os arquivos com nomes sem `.example`, valide-os no servidor e habilite o timer com `systemctl enable --now getping-prune-logs.timer`. Os exemplos não foram instalados automaticamente. A execução preserva auditoria administrativa e remove somente logs de validação antigos/contadores expirados.
 
-Para o teste entre máquinas, `python app.py` permanece escutando em **0.0.0.0:5001**, com debug desligado, conforme configuração de rede validada. No outro GetPing, use o IP da máquina do Admin, não `localhost`. Essa execução serve aos testes da rede; a configuração de produção continua sendo Gunicorn atrás do proxy HTTPS descrito acima.
+Para o teste entre máquinas, `python -m getping_admin` permanece escutando em **0.0.0.0:5001**, com debug desligado, conforme configuração de rede validada. No outro GetPing, use o IP da máquina do Admin, não `localhost`. Essa execução serve aos testes da rede; a configuração de produção continua sendo Gunicorn atrás do proxy HTTPS descrito acima.

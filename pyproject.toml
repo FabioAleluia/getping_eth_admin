@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "getping-admin"
+version = "0.1.0"
+description = "Painel Flask para administração de clientes, usuários e licenças GetPing"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "Flask==3.1.3",
+    "Werkzeug==3.1.9",
+    "click==8.5.0",
+]
+
+[project.optional-dependencies]
+production = ["gunicorn==26.2.0"]
+dev = ["ruff==0.17.1"]
+
+[tool.setuptools.packages.find]
+include = ["getping_admin*"]
+
+[tool.setuptools.package-data]
+getping_admin = [
+    "templates/*.html",
+    "templates/*/*.html",
+    "static/css/*.css",
+    "static/js/*.js",
+    "database/schema.sql",
+    "database/migrations/*.sql",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "double"

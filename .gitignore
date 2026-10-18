@@ -13,11 +13,21 @@ env/
 *.db-wal
 *.db-journal
 *.sql
-!database/schema.sql
-!database/migrations/*.sql
 __pycache__/
 *.py[cod]
 .env
 .env.*
 !.env.example
 node_modules/
+
+# Dados de execução, ferramentas e empacotamento
+instance/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+!getping_admin/database/schema.sql
+!getping_admin/database/migrations/*.sql
