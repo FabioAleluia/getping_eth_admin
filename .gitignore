@@ -13,3 +13,11 @@ env/
 *.db-wal
 *.db-journal
 *.sql
+!database/schema.sql
+!database/migrations/*.sql
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+node_modules/

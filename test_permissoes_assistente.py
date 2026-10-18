@@ -1,10 +1,12 @@
 import unittest
+from tests.support import IsolatedDatabaseTestCase
 from werkzeug.security import generate_password_hash
 from app import create_app
 from database.db import get_db, init_db
 
-class TestPermissoesAssistente(unittest.TestCase):
+class TestPermissoesAssistente(IsolatedDatabaseTestCase):
     def setUp(self):
+        super().setUp()
         init_db()
         with get_db() as conn:
             conn.execute("DELETE FROM licenca_logs")
@@ -55,7 +57,7 @@ class TestPermissoesAssistente(unittest.TestCase):
             )
             self.licenca_id = cursor_lic.lastrowid
 
-        self.app = create_app()
+        self.app = self.application
         self.app.config["TESTING"] = True
         self.client = self.app.test_client()
 
@@ -142,6 +144,7 @@ class TestPermissoesAssistente(unittest.TestCase):
             self.assertIsNotNone(lic)
 
     def test_assistente_ui_permissoes_e_botoes(self):
+        self.app.config["ALLOW_ASSISTANT_LICENSE_EDITS"] = True
         self._login("user.assistente", "Assistente@2026#")
 
         # Em /clientes/ não deve haver link para novo nem form de exclusão, mas DEVE haver link para editar
@@ -163,7 +166,8 @@ class TestPermissoesAssistente(unittest.TestCase):
         self.assertNotIn(f'action="/licencas/{self.licenca_id}/excluir"'.encode("utf-8"), resp_det.data)
 
         # No Dashboard não deve haver link para licencas/nova
-        resp_dash = self.client.get("/dashboard/")
+        resp_dash = self.client.get("/")
+        self.assertEqual(resp_dash.status_code, 200)
         self.assertNotIn(b'href="/licencas/nova"', resp_dash.data)
 
     def test_assistente_edicao_cliente_apenas_contato(self):
@@ -199,7 +203,8 @@ class TestPermissoesAssistente(unittest.TestCase):
             self.assertEqual(c["responsavel_nome"], "João Silva")
             self.assertEqual(c["ativo"], 1)
 
-    def test_assistente_pode_editar_informacoes_licenca(self):
+    def test_assistente_pode_editar_informacoes_licenca_quando_autorizado(self):
+        self.app.config["ALLOW_ASSISTANT_LICENSE_EDITS"] = True
         self._login("user.assistente", "Assistente@2026#")
 
         # GET na página de edição de licença

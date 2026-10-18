@@ -16,3 +16,14 @@ function copiarTexto(texto) {
         console.error('Erro ao copiar:', err);
     });
 }
+
+document.addEventListener('click', (event) => {
+    const copy = event.target.closest('[data-copy]');
+    if (copy) copiarTexto(copy.dataset.copy);
+    const dismiss = event.target.closest('[data-dismiss-flash]');
+    if (dismiss) dismiss.parentElement.remove();
+});
+document.addEventListener('submit', (event) => {
+    const message = event.target.dataset.confirm;
+    if (message && !confirm(message)) event.preventDefault();
+});

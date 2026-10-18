@@ -1,10 +1,12 @@
 import unittest
+from tests.support import IsolatedDatabaseTestCase
 from app import create_app
 from database.db import get_db
 
-class TestExclusaoLicenca(unittest.TestCase):
+class TestExclusaoLicenca(IsolatedDatabaseTestCase):
     def setUp(self):
-        self.app = create_app()
+        super().setUp()
+        self.app = self.application
         self.app.config["TESTING"] = True
         self.client = self.app.test_client()
         from werkzeug.security import generate_password_hash

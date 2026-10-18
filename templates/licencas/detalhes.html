@@ -8,6 +8,12 @@
 {% endblock %}
 
 {% block content %}
+{% if g.user.papel == 'superadmin' and licenca.instancia_fingerprint %}
+<form method="POST" action="{{ url_for('licencas.liberar_instancia', id=licenca.id) }}" data-confirm="Liberar licença para outra instalação?" class="mb-4">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<button class="px-4 py-2 bg-slate-800 rounded-lg">Liberar instalação vinculada</button>
+</form>
+{% endif %}
 <div class="space-y-6 max-w-5xl">
     <!-- Card de Cabeçalho / Informações Principais -->
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
@@ -16,7 +22,7 @@
                 <span class="text-xs text-slate-500 uppercase tracking-wider block">Chave de Ativação</span>
                 <div class="flex items-center space-x-3 mt-1">
                     <span class="font-mono text-cyan-400 font-bold text-xl">{{ licenca.chave_licenca }}</span>
-                    <button onclick="copiarTexto('{{ licenca.chave_licenca }}')" title="Copiar" class="text-slate-400 hover:text-white transition">
+                    <button data-copy="{{ licenca.chave_licenca }}" title="Copiar" class="text-slate-400 hover:text-white transition">
                         <i class="fa-regular fa-copy"></i>
                     </button>
                 </div>
@@ -33,12 +39,12 @@
                     <span class="px-3 py-1 rounded-full text-xs bg-slate-500/10 text-slate-400 border border-slate-500/20 font-medium">Cancelada</span>
                 {% endif %}
 
-                <a href="{{ url_for('licencas.editar', id=licenca.id) }}" class="px-4 py-1.5 rounded-lg text-xs bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition">
+                {% if g.user.papel != 'assistente' or config.ALLOW_ASSISTANT_LICENSE_EDITS %}<a href="{{ url_for('licencas.editar', id=licenca.id) }}" class="px-4 py-1.5 rounded-lg text-xs bg-cyan-600 hover:bg-cyan-500 text-white font-medium transition">
                     Editar Licença
-                </a>
+                </a>{% endif %}
 
                 {% if g.user and g.user.papel == 'superadmin' %}
-                <form method="POST" action="{{ url_for('licencas.excluir', id=licenca.id) }}" class="inline-block" onsubmit="return confirm('Deseja realmente EXCLUIR a licença {{ licenca.chave_licenca }}? Esta ação é irreversível.');">
+                <form method="POST" action="{{ url_for('licencas.excluir', id=licenca.id) }}" class="inline-block" data-confirm="Deseja realmente EXCLUIR a licença {{ licenca.chave_licenca }}? Esta ação é irreversível.">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="px-3 py-1.5 rounded-lg text-xs bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 transition">
                         <i class="fa-solid fa-trash-can mr-1"></i> Excluir

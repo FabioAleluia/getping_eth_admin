@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
-from database.db import get_db
+from database.db import get_db, audit
+from core.validation import text
+from core.pagination import page_parameters, page_rows
 from routes.auth import login_required
 
 clientes_bp = Blueprint("clientes", __name__, url_prefix="/clientes")
@@ -9,32 +11,33 @@ clientes_bp = Blueprint("clientes", __name__, url_prefix="/clientes")
 @clientes_bp.route("/")
 @login_required
 def listar():
-    busca = request.args.get("busca", "").strip()
+    limit, offset = page_parameters()
+    busca = text(request.args, "busca", maximum=200)
     with get_db() as conn:
         if busca:
             clientes = conn.execute(
                 """
                 SELECT c.*, 
                        (SELECT COUNT(*) FROM licencas l WHERE l.cliente_id = c.id) as total_licencas,
-                       (SELECT COUNT(*) FROM licencas l WHERE l.cliente_id = c.id AND l.status = 'ativa') as licencas_ativas
+                       (SELECT COUNT(*) FROM licencas l WHERE l.cliente_id = c.id AND l.status = 'ativa' AND l.data_expiracao >= datetime('now') AND c.ativo=1) as licencas_ativas
                 FROM clientes c
                 WHERE c.nome_empresa LIKE ? OR c.responsavel_nome LIKE ? OR c.responsavel_email LIKE ?
-                ORDER BY c.nome_empresa ASC
+                ORDER BY c.nome_empresa ASC, c.id ASC LIMIT ? OFFSET ?
                 """,
-                (f"%{busca}%", f"%{busca}%", f"%{busca}%")
+                (f"%{busca}%", f"%{busca}%", f"%{busca}%", limit, offset)
             ).fetchall()
         else:
             clientes = conn.execute(
                 """
                 SELECT c.*, 
                        (SELECT COUNT(*) FROM licencas l WHERE l.cliente_id = c.id) as total_licencas,
-                       (SELECT COUNT(*) FROM licencas l WHERE l.cliente_id = c.id AND l.status = 'ativa') as licencas_ativas
+                       (SELECT COUNT(*) FROM licencas l WHERE l.cliente_id = c.id AND l.status = 'ativa' AND l.data_expiracao >= datetime('now') AND c.ativo=1) as licencas_ativas
                 FROM clientes c
-                ORDER BY c.nome_empresa ASC
-                """
+                ORDER BY c.nome_empresa ASC, c.id ASC LIMIT ? OFFSET ?
+                """, (limit, offset)
             ).fetchall()
 
-    return render_template("clientes/listar.html", clientes=clientes, busca=busca)
+    return render_template("clientes/listar.html", clientes=page_rows(clientes), busca=busca)
 
 
 @clientes_bp.route("/novo", methods=["GET", "POST"])
@@ -65,6 +68,7 @@ def novo():
                 """,
                 (nome_empresa, responsavel_nome, responsavel_email, telefone, cnpj_cpf, observacoes, agora)
             )
+            audit(conn, "create", "cliente", conn.execute("SELECT last_insert_rowid()").fetchone()[0], after={"nome_empresa":nome_empresa})
         flash("Cliente cadastrado com sucesso!", "success")
         return redirect(url_for("clientes.listar"))
 
@@ -94,6 +98,7 @@ def editar(id):
                     """,
                     (responsavel_email, telefone, id)
                 )
+                audit(conn, "update_contact", "cliente", id, before={"responsavel_email":cliente["responsavel_email"],"telefone":cliente["telefone"]}, after={"responsavel_email":responsavel_email,"telefone":telefone})
                 flash("Informações de contato do cliente atualizadas com sucesso!", "success")
                 return redirect(url_for("clientes.listar"))
 
@@ -117,6 +122,9 @@ def editar(id):
                 """,
                 (nome_empresa, responsavel_nome, responsavel_email, telefone, cnpj_cpf, observacoes, ativo, id)
             )
+            fields=("nome_empresa","responsavel_nome","responsavel_email","telefone","cnpj_cpf","observacoes","ativo")
+            updated=conn.execute("SELECT * FROM clientes WHERE id=?", (id,)).fetchone()
+            audit(conn, "update", "cliente", id, before={k:cliente[k] for k in fields}, after={k:updated[k] for k in fields})
             flash("Cliente atualizado com sucesso!", "success")
             return redirect(url_for("clientes.listar"))
 
@@ -140,6 +148,7 @@ def excluir(id):
             flash(f"Não é possível excluir o cliente pois ele possui {licencas_count} licença(s) vinculada(s). Desative-o ou remova as licenças primeiro.", "warning")
             return redirect(url_for("clientes.listar"))
 
+        audit(conn, "delete", "cliente", id)
         conn.execute("DELETE FROM clientes WHERE id = ?", (id,))
         flash("Cliente excluído com sucesso!", "success")
     return redirect(url_for("clientes.listar"))

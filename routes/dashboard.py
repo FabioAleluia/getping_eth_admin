@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 from database.db import get_db
+from core.licensing import effective_status
 from routes.auth import login_required
 
 dashboard_bp = Blueprint("dashboard", __name__)
@@ -12,18 +13,18 @@ def index():
         total_clientes = conn.execute("SELECT COUNT(*) as total FROM clientes").fetchone()["total"]
         total_licencas = conn.execute("SELECT COUNT(*) as total FROM licencas").fetchone()["total"]
         licencas_ativas = conn.execute(
-            "SELECT COUNT(*) as total FROM licencas WHERE status = 'ativa' AND date(data_expiracao) >= date('now')"
+            f"SELECT COUNT(*) as total FROM licencas l JOIN clientes c ON c.id=l.cliente_id WHERE ({effective_status()})='ativa'"
         ).fetchone()["total"]
         licencas_expiradas = conn.execute(
-            "SELECT COUNT(*) as total FROM licencas WHERE status = 'expirada' OR date(data_expiracao) < date('now')"
+            f"SELECT COUNT(*) as total FROM licencas l JOIN clientes c ON c.id=l.cliente_id WHERE ({effective_status()})='expirada'"
         ).fetchone()["total"]
 
         ultimas_licencas = conn.execute(
-            """
-            SELECT l.*, c.nome_empresa 
-            FROM licencas l 
-            JOIN clientes c ON l.cliente_id = c.id 
-            ORDER BY l.id DESC 
+            f"""
+            SELECT l.*, {effective_status()} AS status_efetivo, c.nome_empresa
+            FROM licencas l
+            JOIN clientes c ON l.cliente_id = c.id
+            ORDER BY l.id DESC
             LIMIT 5
             """
         ).fetchall()
@@ -45,6 +46,6 @@ def index():
         total_licencas=total_licencas,
         licencas_ativas=licencas_ativas,
         licencas_expiradas=licencas_expiradas,
-        ultimas_licencas=ultimas_licencas,
+        ultimas_licencas=[dict(r,status=r["status_efetivo"]) for r in ultimas_licencas],
         ultimos_logs=ultimos_logs,
     )

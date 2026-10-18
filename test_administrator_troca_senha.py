@@ -1,15 +1,17 @@
 import unittest
+from tests.support import IsolatedDatabaseTestCase
 from app import create_app
 from database.db import get_db, init_db
 
-class TestAdministratorTrocaSenha(unittest.TestCase):
+class TestAdministratorTrocaSenha(IsolatedDatabaseTestCase):
     def setUp(self):
+        super().setUp()
         # Reinicializa DB garantindo o estado inicial
         init_db()
         from werkzeug.security import generate_password_hash
         with get_db() as conn:
-            conn.execute("UPDATE admin_usuarios SET senha_hash = ?, trocar_senha = 1 WHERE username = 'administrator'", (generate_password_hash("administrator"),))
-        self.app = create_app()
+            conn.execute("UPDATE admin_usuarios SET senha_hash = ?, trocar_senha = 1 WHERE username = 'administrator'", (generate_password_hash("Inicial@Test2026"),))
+        self.app = self.application
         self.app.config["TESTING"] = True
         self.client = self.app.test_client()
 
@@ -27,13 +29,13 @@ class TestAdministratorTrocaSenha(unittest.TestCase):
             self.assertEqual(u["trocar_senha"], 1)
 
     def test_02_login_primeira_vez_forca_troca_de_senha(self):
-        # 1. Faz login com administrator / administrator
+        # 1. Faz login com a senha inicial de teste
         self.client.get("/login")
         token = self._get_csrf_token()
 
         resp_login = self.client.post("/login", data={
             "username": "administrator",
-            "senha": "administrator",
+            "senha": "Inicial@Test2026",
             "csrf_token": token
         }, follow_redirects=True)
 
@@ -58,7 +60,7 @@ class TestAdministratorTrocaSenha(unittest.TestCase):
         token = self._get_csrf_token()
         self.client.post("/login", data={
             "username": "administrator",
-            "senha": "administrator",
+            "senha": "Inicial@Test2026",
             "csrf_token": token
         }, follow_redirects=True)
 
@@ -105,7 +107,7 @@ class TestAdministratorTrocaSenha(unittest.TestCase):
         token = self._get_csrf_token()
         self.client.post("/login", data={
             "username": "administrator",
-            "senha": "administrator",
+            "senha": "Inicial@Test2026",
             "csrf_token": token
         }, follow_redirects=True)
 
@@ -127,14 +129,14 @@ class TestAdministratorTrocaSenha(unittest.TestCase):
             self.assertEqual(u["trocar_senha"], 0)
 
         # Faz logout
-        self.client.get("/logout")
+        self.client.post("/logout", data={"csrf_token": self._get_csrf_token()})
 
-        # Testa login com a senha antiga 'administrator' (deve falhar)
+        # Testa login com a senha inicial antiga (deve falhar)
         self.client.get("/login")
         token = self._get_csrf_token()
         resp_falha = self.client.post("/login", data={
             "username": "administrator",
-            "senha": "administrator",
+            "senha": "Inicial@Test2026",
             "csrf_token": token
         }, follow_redirects=True)
         self.assertIn("Credenciais inválidas".encode("utf-8"), resp_falha.data)

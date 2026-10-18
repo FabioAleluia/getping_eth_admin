@@ -62,7 +62,7 @@
                         <td class="py-3.5 px-5 font-mono text-cyan-400 font-medium">
                             <span class="inline-flex items-center">
                                 {{ l.chave_licenca }}
-                                <button onclick="copiarTexto('{{ l.chave_licenca }}')" title="Copiar Chave" class="ml-2 text-slate-500 hover:text-cyan-300 text-xs transition">
+                                <button data-copy="{{ l.chave_licenca }}" title="Copiar Chave" class="ml-2 text-slate-500 hover:text-cyan-300 text-xs transition">
                                     <i class="fa-regular fa-copy"></i>
                                 </button>
                             </span>
@@ -102,11 +102,11 @@
                             <a href="{{ url_for('licencas.detalhes', id=l.id) }}" title="Logs & Detalhes" class="p-1.5 text-slate-400 hover:text-cyan-400 transition">
                                 <i class="fa-solid fa-list-check"></i>
                             </a>
-                            <a href="{{ url_for('licencas.editar', id=l.id) }}" title="Editar / Renovar" class="p-1.5 text-slate-400 hover:text-cyan-400 transition">
+                            {% if g.user.papel != 'assistente' or config.ALLOW_ASSISTANT_LICENSE_EDITS %}<a href="{{ url_for('licencas.editar', id=l.id) }}" title="Editar / Renovar" class="p-1.5 text-slate-400 hover:text-cyan-400 transition">
                                 <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
+                            </a>{% endif %}
                             {% if g.user and g.user.papel == 'superadmin' %}
-                            <form method="POST" action="{{ url_for('licencas.excluir', id=l.id) }}" class="inline-block" onsubmit="return confirm('Deseja realmente EXCLUIR a licença {{ l.chave_licenca }}? Esta ação é definitiva e impedirá o GetPing de conectar.');">
+                            <form method="POST" action="{{ url_for('licencas.excluir', id=l.id) }}" class="inline-block" data-confirm="Deseja realmente EXCLUIR a licença {{ l.chave_licenca }}? Esta ação é definitiva e impedirá o GetPing de conectar.">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" title="Excluir Licença" class="p-1.5 text-slate-400 hover:text-rose-400 transition">
                                     <i class="fa-solid fa-trash-can"></i>

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}GetPing Admin{% endblock %}</title>
-    <!-- Tailwind CSS CDN para agilidade visual e responsividade moderna -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CSS compilado localmente -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- CSS Base Comum -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
@@ -32,14 +32,14 @@
                 <a href="{{ url_for('dashboard.index') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if request.endpoint == 'dashboard.index' %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
                     <i class="fa-solid fa-gauge w-5 text-center mr-3"></i> Dashboard
                 </a>
-                <a href="{{ url_for('clientes.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'clientes.' in request.endpoint %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                <a href="{{ url_for('clientes.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'clientes.' in (request.endpoint or '') %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
                     <i class="fa-solid fa-building w-5 text-center mr-3"></i> Clientes
                 </a>
-                <a href="{{ url_for('licencas.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'licencas.' in request.endpoint %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                <a href="{{ url_for('licencas.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'licencas.' in (request.endpoint or '') %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
                     <i class="fa-solid fa-key w-5 text-center mr-3"></i> Licenças
                 </a>
                 {% if g.user and g.user.papel in ('superadmin', 'gestor') %}
-                <a href="{{ url_for('usuarios.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'usuarios.' in request.endpoint %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                <a href="{{ url_for('usuarios.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors {% if 'usuarios.' in (request.endpoint or '') %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
                     <i class="fa-solid fa-users-gear w-5 text-center mr-3"></i> Usuários
                 </a>
                 {% endif %}
@@ -62,9 +62,9 @@
                     <a href="{{ url_for('auth.perfil') }}" title="Perfil" class="p-2 text-slate-400 hover:text-cyan-400 transition-colors">
                         <i class="fa-solid fa-gear"></i>
                     </a>
-                    <a href="{{ url_for('auth.logout') }}" title="Sair" class="p-2 text-slate-400 hover:text-rose-400 transition-colors">
+                    <form method="POST" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" title="Sair" class="p-2 text-slate-400 hover:text-rose-400 transition-colors">
                         <i class="fa-solid fa-right-from-bracket"></i>
-                    </a>
+                    </button></form>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
                         {% if category == 'success' %}{% set cat_class = "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" %}{% endif %}
                         <div class="p-4 mb-4 rounded-lg border {{ cat_class }} flex items-center justify-between">
                             <span class="text-sm font-medium">{{ message }}</span>
-                            <button onclick="this.parentElement.remove()" class="text-xs opacity-70 hover:opacity-100">&times;</button>
+                            <button data-dismiss-flash class="text-xs opacity-70 hover:opacity-100">&times;</button>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -106,6 +106,13 @@
         <!-- Conteúdo da Página -->
         <main class="p-8 flex-1">
             {% block content %}{% endblock %}
+            {% if page_number is defined %}
+            <nav aria-label="Paginação" class="flex gap-4 mt-6">
+                {% if previous_page %}<a href="{{ previous_page }}">Anterior</a>{% endif %}
+                <span>Página {{ page_number }}</span>
+                {% if next_page %}<a href="{{ next_page }}">Próxima</a>{% endif %}
+            </nav>
+            {% endif %}
         </main>
     </div>
 

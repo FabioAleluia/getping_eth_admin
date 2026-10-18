@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
 from flask import Blueprint, render_template, request, redirect, url_for, flash, g
 from werkzeug.security import generate_password_hash
-from database.db import get_db
+from database.db import get_db, audit
 from routes.auth import login_required
 from core.security import validar_complexidade_senha
+from core.validation import text
+from core.pagination import page_parameters, page_rows
 
 usuarios_bp = Blueprint("usuarios", __name__, url_prefix="/usuarios")
 
@@ -16,7 +18,8 @@ def listar():
         flash("Acesso não autorizado para o seu perfil.", "danger")
         return redirect(url_for("dashboard.index"))
 
-    busca = request.args.get("busca", "").strip()
+    limit, offset = page_parameters()
+    busca = text(request.args, "busca", maximum=200)
     with get_db() as conn:
         if busca:
             usuarios = conn.execute(
@@ -24,20 +27,20 @@ def listar():
                 SELECT id, nome, username, email, papel, ativo, trocar_senha, criado_em, ultimo_login
                 FROM admin_usuarios
                 WHERE nome LIKE ? OR username LIKE ? OR email LIKE ?
-                ORDER BY id ASC
+                ORDER BY id ASC LIMIT ? OFFSET ?
                 """,
-                (f"%{busca}%", f"%{busca}%", f"%{busca}%")
+                (f"%{busca}%", f"%{busca}%", f"%{busca}%", limit, offset)
             ).fetchall()
         else:
             usuarios = conn.execute(
                 """
                 SELECT id, nome, username, email, papel, ativo, trocar_senha, criado_em, ultimo_login
                 FROM admin_usuarios
-                ORDER BY id ASC
-                """
+                ORDER BY id ASC LIMIT ? OFFSET ?
+                """, (limit, offset)
             ).fetchall()
 
-    return render_template("usuarios/listar.html", usuarios=usuarios, busca=busca)
+    return render_template("usuarios/listar.html", usuarios=page_rows(usuarios), busca=busca)
 
 
 @usuarios_bp.route("/novo", methods=["GET", "POST"])
@@ -98,6 +101,7 @@ def novo():
                 (nome, username, email, senha_hash, papel, exigir_troca, agora)
             )
 
+            audit(conn, "create", "usuario", conn.execute("SELECT id FROM admin_usuarios WHERE username=?", (username,)).fetchone()[0], after={"nome":nome,"email":email,"papel":papel})
         flash(f"Usuário '{username}' cadastrado com sucesso!", "success")
         return redirect(url_for("usuarios.listar"))
 
@@ -130,6 +134,16 @@ def editar(id):
             trocar_senha = 1 if request.form.get("trocar_senha") == "1" else 0
             nova_senha = request.form.get("nova_senha", "")
 
+            if papel not in ('superadmin', 'gestor', 'assistente'):
+                from flask import abort
+                abort(400, description='Perfil inválido.')
+            if g.user['papel'] == 'gestor' and papel != usuario['papel']:
+                from flask import abort
+                abort(403, description='Gestor não pode alterar perfis de acesso.')
+            if usuario['id'] == g.user['id'] and papel != usuario['papel']:
+                from flask import abort
+                abort(403, description='Não é permitido alterar o próprio perfil de acesso.')
+
             # O usuário master 'administrator' não pode ter seu perfil ou status alterados
             if usuario["username"] == "administrator":
                 papel = "superadmin"
@@ -158,7 +172,7 @@ def editar(id):
                 conn.execute(
                     """
                     UPDATE admin_usuarios
-                    SET nome = ?, email = ?, papel = ?, ativo = ?, trocar_senha = ?, senha_hash = ?
+                    SET nome = ?, email = ?, papel = ?, ativo = ?, trocar_senha = ?, auth_version = auth_version + 1, senha_hash = ?
                     WHERE id = ?
                     """,
                     (nome, email, papel, ativo, trocar_senha, nova_hash, id)
@@ -167,12 +181,13 @@ def editar(id):
                 conn.execute(
                     """
                     UPDATE admin_usuarios
-                    SET nome = ?, email = ?, papel = ?, ativo = ?, trocar_senha = ?
+                    SET nome = ?, email = ?, papel = ?, ativo = ?, trocar_senha = ?, auth_version = auth_version + 1
                     WHERE id = ?
                     """,
                     (nome, email, papel, ativo, trocar_senha, id)
                 )
 
+            audit(conn, "update", "usuario", id, before={k:usuario[k] for k in ("nome","email","papel","ativo","trocar_senha")}, after={"nome":nome,"email":email,"papel":papel,"ativo":ativo,"trocar_senha":trocar_senha,"password_reset":bool(nova_senha)})
             flash("Usuário atualizado com sucesso!", "success")
             return redirect(url_for("usuarios.listar"))
 
@@ -202,6 +217,7 @@ def excluir(id):
             flash("Você não pode excluir o seu próprio usuário logado.", "danger")
             return redirect(url_for("usuarios.listar"))
 
+        audit(conn, "delete", "usuario", id, before={"username":usuario["username"]})
         conn.execute("DELETE FROM admin_usuarios WHERE id = ?", (id,))
         flash(f"Usuário '{usuario['username']}' excluído com sucesso!", "success")
 

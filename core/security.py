@@ -9,7 +9,8 @@ def gerar_csrf_token():
 
 def validar_csrf_token():
     token = request.form.get("csrf_token") or request.headers.get("X-CSRFToken")
-    if not token or token != session.get("_csrf_token"):
+    expected = session.get("_csrf_token", "")
+    if not token or not isinstance(expected, str) or not secrets.compare_digest(token.encode(), expected.encode()):
         abort(400, description="Token CSRF inválido ou expirado.")
 
 def validar_complexidade_senha(senha: str) -> tuple[bool, str | None]:
@@ -22,6 +23,8 @@ def validar_complexidade_senha(senha: str) -> tuple[bool, str | None]:
     if not senha or not senha.strip():
         return False, "A nova senha não pode estar em branco."
 
+    if len(senha) > 256:
+        return False, "A senha deve ter no máximo 256 caracteres."
     senha_limpa = senha.strip()
     if senha_limpa.lower() == "administrator":
         return False, "A nova senha não pode ser igual à senha padrão 'administrator'."

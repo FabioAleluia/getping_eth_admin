@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Primeiro Acesso - Troca de Senha Obrigatória - GetPing Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
@@ -83,9 +83,9 @@
             </div>
 
             <div class="pt-2 flex items-center justify-between gap-3">
-                <a href="{{ url_for('auth.logout') }}" class="px-4 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition">
+                <button type="submit" formaction="{{ url_for('auth.logout') }}" formmethod="post" formnovalidate class="px-4 py-2.5 rounded-lg text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition">
                     <i class="fa-solid fa-right-from-bracket mr-1"></i> Cancelar / Sair
-                </a>
+                </button>
                 <button type="submit" id="btnSalvarSenha"
                     class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-medium py-2.5 rounded-lg text-xs uppercase tracking-wider transition duration-150 shadow-lg shadow-cyan-600/20 active:scale-[0.99] flex items-center justify-center">
                     <span>Definir Senha e Entrar</span>
@@ -95,46 +95,6 @@
         </form>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const senhaInput = document.getElementById("nova_senha");
-            const reqLen = document.getElementById("req-len");
-            const reqSpec = document.getElementById("req-spec");
-            const reqDiff = document.getElementById("req-diff");
-
-            function checkRequisitos() {
-                const val = senhaInput.value;
-                
-                // 8 chars
-                if (val.length >= 8) {
-                    reqLen.className = "flex items-center space-x-2 text-emerald-400";
-                    reqLen.querySelector("i").className = "fa-solid fa-circle-check text-[11px]";
-                } else {
-                    reqLen.className = "flex items-center space-x-2 text-slate-400";
-                    reqLen.querySelector("i").className = "fa-regular fa-circle text-slate-600 text-[11px]";
-                }
-
-                // Especial
-                if (/[^a-zA-Z0-9\s]/.test(val)) {
-                    reqSpec.className = "flex items-center space-x-2 text-emerald-400";
-                    reqSpec.querySelector("i").className = "fa-solid fa-circle-check text-[11px]";
-                } else {
-                    reqSpec.className = "flex items-center space-x-2 text-slate-400";
-                    reqSpec.querySelector("i").className = "fa-regular fa-circle text-slate-600 text-[11px]";
-                }
-
-                // Diff
-                if (val && val.toLowerCase() !== "administrator") {
-                    reqDiff.className = "flex items-center space-x-2 text-emerald-400";
-                    reqDiff.querySelector("i").className = "fa-solid fa-circle-check text-[11px]";
-                } else {
-                    reqDiff.className = "flex items-center space-x-2 text-slate-400";
-                    reqDiff.querySelector("i").className = "fa-regular fa-circle text-slate-600 text-[11px]";
-                }
-            }
-
-            senhaInput.addEventListener("input", checkRequisitos);
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/primeiro_acesso.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,20 @@
+[Unit]
+Description=GetPing Admin
+After=network.target
+
+[Service]
+# Substitua usuário e caminhos antes de instalar.
+User=getping
+Group=getping
+WorkingDirectory=/opt/getping-admin
+EnvironmentFile=/etc/getping-admin.env
+ExecStart=/opt/getping-admin/venv/bin/gunicorn -c deploy/gunicorn.conf.py 'app:create_app()'
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/getping-admin/database
+
+[Install]
+WantedBy=multi-user.target

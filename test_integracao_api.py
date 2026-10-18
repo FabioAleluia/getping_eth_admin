@@ -1,10 +1,12 @@
 import unittest
+from tests.support import IsolatedDatabaseTestCase
 from app import create_app
 from database.db import get_db
 
-class TestApiValidacaoCompleta(unittest.TestCase):
+class TestApiValidacaoCompleta(IsolatedDatabaseTestCase):
     def setUp(self):
-        self.app = create_app()
+        super().setUp()
+        self.app = self.application
         self.client = self.app.test_client()
         with get_db() as conn:
             conn.execute("DELETE FROM licencas WHERE chave_licenca IN ('GPING-SUSP-1111-2222-3333', 'GPING-VENC-9999-8888-7777')")

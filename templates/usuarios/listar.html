@@ -105,7 +105,7 @@
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                             {% if u.username != 'administrator' and u.id != g.user.id and g.user.papel == 'superadmin' %}
-                            <form method="POST" action="{{ url_for('usuarios.excluir', id=u.id) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir o usuário @{{ u.username }}?');">
+                            <form method="POST" action="{{ url_for('usuarios.excluir', id=u.id) }}" class="inline-block" data-confirm="Deseja realmente excluir o usuário @{{ u.username }}?">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" title="Excluir" class="p-1.5 text-slate-400 hover:text-rose-400 transition">
                                     <i class="fa-solid fa-trash-can"></i>

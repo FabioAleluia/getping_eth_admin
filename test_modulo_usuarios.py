@@ -1,9 +1,11 @@
 import unittest
+from tests.support import IsolatedDatabaseTestCase
 from app import create_app
 from database.db import get_db, init_db
 
-class TestModuloUsuarios(unittest.TestCase):
+class TestModuloUsuarios(IsolatedDatabaseTestCase):
     def setUp(self):
+        super().setUp()
         init_db()
         from werkzeug.security import generate_password_hash
         with get_db() as conn:
@@ -12,7 +14,7 @@ class TestModuloUsuarios(unittest.TestCase):
                 "UPDATE admin_usuarios SET senha_hash = ?, trocar_senha = 0 WHERE username = 'administrator'",
                 (generate_password_hash("SenhaForte@123"),)
             )
-        self.app = create_app()
+        self.app = self.application
         self.app.config["TESTING"] = True
         self.client = self.app.test_client()
 

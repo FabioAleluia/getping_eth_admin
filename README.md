@@ -1,65 +1,143 @@
-# GetPing Admin - Sistema de Gestão de Usuários e Licenças
+# GetPing Admin
 
-Sistema administrativo em **Python, Flask e SQLite** para gerenciar clientes, usuários e emitir/controlar licenças do **GetPing**.
+Painel Flask/SQLite para clientes, usuários e licenças do GetPing. Python 3.12.
 
----
+## Instalação local
 
-## 🛠️ Tecnologias e Arquitetura
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+export GETPING_ENV=development
+flask --app app:create_app init-db
+flask --app app:create_app create-admin
+python app.py
+```
 
-- **Backend**: Python 3.12, Flask, Werkzeug (hashing seguro scrypt)
-- **Banco de Dados**: SQLite3 com WAL mode (`database/admin.db`)
-- **Organização Modular**:
-  - Blueprints em `routes/` (`auth.py`, `dashboard.py`, `clientes.py`, `licencas.py`, `api.py`)
-  - CSS modular por página em `static/css/`
-  - JavaScript modular por página em `static/js/`
-  - Templates Jinja2 responsivos com Tailwind CSS e FontAwesome
+Acesse `http://127.0.0.1:5001`. `create-admin` solicita e-mail e senha sem exibi-la; o primeiro login exige troca. Não existe senha administrativa universal. Guarde a chave secreta em local protegido e reutilize-a nos reinícios; gerar uma nova encerra as sessões existentes.
 
----
+A aplicação exige `SECRET_KEY` com pelo menos 32 caracteres e rejeita a chave antiga conhecida. O arquivo `.env.example` descreve as variáveis; **`python app.py` não carrega `.env` automaticamente**. Exporte as variáveis no processo ou configure o serviço. Não versionar segredos.
 
-## 🚀 Como Executar
+O banco padrão é `database/db_getping.db`; `GETPING_DATABASE` permite caminho absoluto diferente. A importação de `app` e a factory não aplicam migrações nem criam contas. Use `init-db` explicitamente antes de iniciar uma instalação nova ou atualizada.
 
-1. **Ativar o ambiente virtual**:
+## Atualização de uma instalação existente
+
+1. Interrompa o serviço para a atualização; preserve a versão anterior do código e sua configuração.
+2. Configure o ambiente com a nova chave segura e o caminho correto do banco. Não gere uma chave a cada início do serviço.
+3. Faça backup consistente e copie-o para armazenamento protegido:
+
    ```bash
-   source venv/bin/activate
+   flask --app app:create_app backup-db /caminho/seguro/getping-antes-atualizacao.db
    ```
 
-2. **Iniciar o servidor**:
+4. Teste a restauração e as migrações em uma cópia, apontando `GETPING_DATABASE` para ela.
+5. No banco operacional, execute:
+
    ```bash
-   python app.py
+   flask --app app:create_app init-db
+   flask --app app:create_app check-data
    ```
-   O painel estará acessível em `http://localhost:5001`.
 
-3. **Credenciais Iniciais do Superadmin (Primeiro Acesso)**:
-   - **Usuário**: `administrator`
-   - **Senha**: `administrator`
-   *(No primeiro login, o sistema exigirá obrigatoriamente a troca de senha para uma senha segura de 8 ou mais caracteres e contendo caracteres especiais).*
+6. Se a conta ainda usa a senha antiga `administrator`, recupere-a localmente:
 
----
+   ```bash
+   flask --app app:create_app reset-password administrator
+   ```
 
-## 🔑 Endpoint da API para o GetPing
+7. Inicie o serviço e verifique `/health`, login, clientes, emissão e validação de uma licença de teste.
 
-Para o sistema **GetPing** validar a licença:
+As migrações preservam contas, hashes e licenças. Não corrigem silenciosamente limites ou datas inválidos existentes: `check-data` informa os IDs para revisão. Uma licença inconsistente é negada pela API com 503, sem expor detalhes internos. Alterações futuras passam pelas novas validações e constraints.
 
-- **Método**: `POST /api/v1/licenca/validar`
-- **Exemplo de Payload JSON**:
-  ```json
-  {
-    "chave_licenca": "GPING-XXXX-XXXX-XXXX-XXXX",
-    "fingerprint": "UUID-DO-SERVIDOR-CLIENTE",
-    "versao": "0.0.4"
-  }
-  ```
-- **Exemplo de Resposta de Sucesso**:
-  ```json
-  {
-    "valido": true,
-    "chave_licenca": "GPING-XXXX-XXXX-XXXX-XXXX",
-    "cliente": "Empresa XPTO",
-    "tipo_plano": "Profissional",
-    "limite_hosts": 50,
-    "limite_agentes": 20,
-    "expira_em": "2027-10-11 23:59:59",
-    "dias_restantes": 365,
-    "mensagem": "Licença ativa e autorizada."
-  }
-  ```
+A senha antiga universal não é mais aceita, mesmo quando seu hash ainda está no banco. A atualização invalida sessões antigas sem versão de autenticação. Reset de senha e alterações administrativas da conta revogam suas sessões; mudança de senha pelo perfil mantém apenas a sessão atual.
+
+**Retorno à versão anterior:** pare o serviço, restaure código, dependências e banco do backup compatível. Não sobrescreva somente o `.db` de um SQLite ativo: o WAL pode conter transações. Faça a restauração com o serviço parado, valide o backup e retire os arquivos WAL/SHM da versão substituída conforme procedimento operacional. Operações realizadas após o backup não estarão na restauração.
+
+## Produção
+
+```bash
+pip install -r requirements-production.txt
+export GETPING_ENV=production
+# Configure SECRET_KEY persistente, GETPING_DATABASE e demais variáveis no serviço.
+gunicorn -c deploy/gunicorn.conf.py 'app:create_app()'
+```
+
+O backend escuta apenas em `127.0.0.1:5001`; publique por proxy HTTPS. Há exemplos em `deploy/nginx.conf.example` e `deploy/getping-admin.service.example`. Substitua usuário, caminhos, domínio e certificados antes de instalar os arquivos. Não utilize `flask run`, debug ou `python app.py` como servidor de produção.
+
+Em produção, o cookie exige HTTPS. Configure `GETPING_PROXY_HOPS=1` somente atrás de um proxy confiável que sobrescreva os cabeçalhos encaminhados, sem acesso externo direto ao backend. O exemplo Nginx faz isso. Com zero saltos, `X-Forwarded-For` é ignorado. Mais de um proxy exige configuração específica para sua topologia.
+
+A aplicação envia CSP, proteção contra enquadramento, `nosniff`, `no-store`, política de referência e HSTS para respostas HTTPS de produção. Scripts são locais; Font Awesome continua sendo uma folha de estilo e fontes externas de versão fixa. Falha nesse CDN afeta ícones, não autenticação ou validação.
+
+`/health` verifica acesso à estrutura esperada do banco e responde 503 em falha. Configure o monitor externo para consultar essa rota, acompanhar erros 5xx/429, tempo de validação, espaço em disco e falhas do serviço. Logs de requisição e erros do Gunicorn vão para stdout/stderr; o exemplo systemd os envia ao journal. Não registre corpos da API: contêm chaves de licença.
+
+## Licenciamento e compatibilidade
+
+```http
+POST /api/v1/licenca/validar
+Content-Type: application/json
+
+{"chave_licenca":"GPING-...","fingerprint":"ID-DA-INSTALACAO","versao":"0.0.4"}
+```
+
+A resposta mantém os campos anteriores e acrescenta `expira_em_iso`, com UTC explícito. Datas existentes continuam em UTC; editar validade usa o fim do dia UTC, informado no formulário. Não houve mudança silenciosa para horário de São Paulo.
+
+- `GETPING_REQUIRE_FINGERPRINT=0` é o modo de compatibilidade padrão. Aceita clientes sem fingerprint e não bloqueia compartilhamento de chave entre instalações.
+- `GETPING_REQUIRE_FINGERPRINT=1` exige fingerprint e o compara com a instalação vinculada. A primeira ativação é serializada: duas máquinas diferentes não conseguem assumir a mesma licença simultaneamente.
+- Antes de ativar o modo obrigatório, verifique o cliente GetPing e os fingerprints já gravados. Eles podem refletir o primeiro uso histórico, sem representar a instalação atualmente legítima.
+- O superadmin pode usar **Liberar instalação vinculada** nos detalhes da licença. A ação é auditada; a próxima validação ocupa o vínculo. Coordene a troca para evitar que uma instalação antiga reivindique novamente a chave.
+- Um fingerprint enviado pelo cliente pode ser copiado. Ele não prova posse de hardware. Credencial por instalação, assinatura de autorização offline e enforcement de hosts/agentes exigem implementação e testes também no cliente GetPing.
+
+JSON inválido e campos fora dos limites retornam 400; licença inexistente, 404; bloqueada/expirada, 403; excesso de requisições, 429 com `Retry-After`; indisponibilidade/inconsistência, 503. Erros da API usam JSON com `valido=false` e `motivo`.
+
+O formato de chave antigo é preservado por padrão. `GETPING_EXTENDED_KEYS=1` permite gerar chaves com 128 bits aleatórios, mais longas, após verificar o formato aceito pelo cliente. Chaves antigas continuam válidas sem regeneração. O status efetivo considera situação do cliente, status da licença e instante de expiração em API, listagens, detalhes e indicadores.
+
+## Permissões
+
+| Ação | Superadmin | Gestor | Assistente |
+|---|---|---|---|
+| Consultar clientes e licenças | Sim | Sim | Sim |
+| Criar cliente e emitir licença | Sim | Sim | Não |
+| Alterar condições de licença | Sim | Sim | Não por padrão |
+| Atualizar contatos do cliente | Sim | Sim | Sim |
+| Alterar outros dados/excluir cliente sem licença | Sim | Sim | Não |
+| Excluir licença, usuário ou liberar instalação | Sim | Não | Não |
+| Criar usuário | Gestor/assistente | Assistente | Não |
+| Editar usuário | Contas permitidas | Assistentes e própria conta, sem mudar papéis | Próprio perfil |
+
+O usuário `administrator` continua protegido contra exclusão, desativação e rebaixamento. Alterar o próprio papel é bloqueado. Caso a operação exija manter a autorização comercial antiga para assistentes, `ALLOW_ASSISTANT_LICENSE_EDITS=True` pode ser fornecido explicitamente à factory pela configuração da implantação; não é o padrão.
+
+## Auditoria, limites e retenção
+
+`admin_audit` registra operador, ação, alvo, alterações, IP e horário na transação da mudança. Senhas, hashes e chaves completas não são incluídos. A recuperação local por CLI aparece com operador nulo e ação específica. A tabela contém dados pessoais: restrinja permissões do banco e dos backups.
+
+Por padrão, login permite 10 tentativas por IP/minuto e 30 por identificador/minuto. API permite 120 requisições por IP/minuto e 600 por chave/minuto. As janelas são fixas e compartilhadas entre workers por SQLite. Clientes atrás do mesmo NAT compartilham a cota de IP: ajuste `API_RATE_LIMIT`, `LOGIN_RATE_LIMIT` e `RATE_WINDOW_SECONDS` na configuração da factory conforme a carga legítima. Os limites são defesa de aplicação; proteção contra tráfego volumétrico pertence também ao proxy/infraestrutura.
+
+Payloads têm limite de 32 KiB. Validações de chaves desconhecidas não criam eventos no banco. Check-ins bem-sucedidos são agregados em até um evento por licença/hora; falhas podem ser acompanhadas pelos códigos HTTP do servidor. O último check-in continua sendo atualizado. Não há log por chamada bloqueada, evitando crescimento causado por abuso.
+
+Agende diariamente, com o mesmo ambiente do serviço:
+
+```bash
+flask --app app:create_app prune-logs
+```
+
+Remove logs de validação anteriores a 90 dias e contadores expirados. Não apaga a auditoria administrativa. Defina a retenção dessa auditoria segundo a política da operação e o espaço disponível. A exclusão de linhas não reduz automaticamente o arquivo SQLite; manutenção/compactação deve ser planejada separadamente. Proteja o diretório do banco com permissões restritas; SQLite precisa escrever nele para criar WAL/SHM.
+
+## Testes
+
+```bash
+python -B -m unittest discover -v
+```
+
+Cada teste tem banco e contexto temporários próprios, configurados antes de qualquer inicialização. A factory rejeita `TESTING=True` com banco fora do diretório temporário do sistema. Nenhum teste usa o banco operacional. A suíte cobre os fluxos anteriores e regressões de permissões, sessão, senha, API, validação de campos, rate limiting, auditoria, migrações e concorrência na ativação.
+
+## CSS e dependências
+
+O CSS compilado está versionado em `static/css/tailwind.css`; Node e compilador não são necessários no servidor. Para alterar as classes, gere-o novamente com o CLI standalone oficial Tailwind **3.4.17**:
+
+```bash
+sh scripts/build-css.sh /caminho/tailwindcss-3.4.17
+```
+
+Configuração: `tailwind.config.js`; entrada: `assets/tailwind.css`. Scripts inline e handlers HTML foram substituídos por arquivos JS e atributos de dados para compatibilidade com CSP.
+
+As versões Python estão fixadas nos arquivos `requirements*.txt`. Atualizações devem passar por revisão, auditoria de dependências e testes; fixar versões não substitui esse acompanhamento. Gunicorn está separado das dependências de desenvolvimento.

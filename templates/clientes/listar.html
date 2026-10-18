@@ -84,7 +84,7 @@
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                             {% if g.user and g.user.papel != 'assistente' %}
-                            <form method="POST" action="{{ url_for('clientes.excluir', id=c.id) }}" class="inline-block" onsubmit="return confirm('Deseja realmente excluir este cliente?');">
+                            <form method="POST" action="{{ url_for('clientes.excluir', id=c.id) }}" class="inline-block" data-confirm="Deseja realmente excluir este cliente?">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" title="Excluir" class="p-1.5 text-slate-400 hover:text-rose-400 transition">
                                     <i class="fa-solid fa-trash-can"></i>
