@@ -38,8 +38,9 @@ def create_app(config=None):
     from routes.clientes import clientes_bp
     from routes.licencas import licencas_bp
     from routes.usuarios import usuarios_bp
+    from routes.audit import audit_bp
     from routes.api import api_bp
-    for bp in (auth_bp, dashboard_bp, clientes_bp, licencas_bp, usuarios_bp, api_bp):
+    for bp in (auth_bp, dashboard_bp, clientes_bp, licencas_bp, usuarios_bp, api_bp, audit_bp):
         app.register_blueprint(bp)
     from core.pagination import pagination_context
     @app.context_processor
@@ -89,6 +90,11 @@ def create_app(config=None):
     def health():
         with get_db() as conn:
             conn.execute('SELECT auth_version FROM admin_usuarios LIMIT 1')
+            conn.execute('SELECT count FROM request_limits LIMIT 1')
+            conn.execute('SELECT id FROM admin_audit LIMIT 1')
+            if not conn.execute('SELECT 1 FROM schema_migrations WHERE version=1').fetchone():
+                from flask import abort
+                abort(503, description='Migrações pendentes.')
         return jsonify(status='ok')
     if app.config['INIT_DB']:
         with app.app_context():

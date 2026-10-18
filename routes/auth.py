@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from functools import wraps
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, g
+from time import time
+import math
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, g, current_app
 from werkzeug.security import check_password_hash, generate_password_hash
 from database.db import get_db, audit
 from core.security import validar_complexidade_senha
@@ -24,6 +26,19 @@ def carregar_usuario_logado():
         g.user = None
         return
     user_id = session.get("user_id")
+    if user_id is not None:
+        now = time()
+        issued = session.get('issued_at')
+        seen = session.get('last_seen')
+        valid_times = all(isinstance(v, (int, float)) and not isinstance(v, bool)
+                          and math.isfinite(v) for v in (issued, seen))
+        if (not valid_times or not issued <= seen <= now
+                or now - issued >= current_app.config['SESSION_ABSOLUTE_SECONDS']
+                or now - seen >= current_app.config['SESSION_IDLE_SECONDS']):
+            session.clear()
+            user_id = None
+        elif request.endpoint != 'static':
+            session['last_seen'] = now
     if user_id is None:
         g.user = None
     else:
@@ -67,6 +82,7 @@ def login():
                 session.clear()
                 session["user_id"] = user["id"]
                 session["auth_version"] = user["auth_version"]
+                session["issued_at"] = session["last_seen"] = time()
                 session.permanent = True
                 from core.security import gerar_csrf_token
                 gerar_csrf_token()
@@ -77,6 +93,7 @@ def login():
                     (agora, user["id"])
                 )
 
+                audit(conn, "login", "usuario", user["id"], actor_id=user["id"])
                 next_url = request.args.get("next")
                 if next_url and next_url.startswith("/") and not next_url.startswith("//") and "\\" not in next_url and not any(ord(c) < 32 for c in next_url):
                     return redirect(next_url)
@@ -89,6 +106,9 @@ def login():
 
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
+    if g.user:
+        with get_db() as conn:
+            audit(conn, "logout", "usuario", g.user["id"])
     session.clear()
     return redirect(url_for("auth.login"))
 
@@ -190,3 +210,14 @@ def trocar_senha_obrigatoria():
         return redirect(url_for("dashboard.index"))
 
     return render_template("auth/trocar_senha_obrigatoria.html")
+
+
+@auth_bp.post('/sessoes/encerrar')
+@login_required
+def encerrar_sessoes():
+    with get_db() as conn:
+        conn.execute('UPDATE admin_usuarios SET auth_version=auth_version+1 WHERE id=?', (g.user['id'],))
+        audit(conn, 'revoke_sessions', 'usuario', g.user['id'])
+    session.clear()
+    flash('Todas as sessões foram encerradas. Faça login novamente.', 'success')
+    return redirect(url_for('auth.login'))

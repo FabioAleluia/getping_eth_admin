@@ -121,6 +121,13 @@ def editar(id):
             flash("Usuário não encontrado.", "danger")
             return redirect(url_for("usuarios.listar"))
 
+        # A própria conta só pode ser alterada pelo perfil, que exige a senha atual.
+        if usuario['id'] == g.user['id']:
+            if request.method == 'POST':
+                from flask import abort
+                abort(403, description='Use Meu Perfil para alterar sua própria conta.')
+            return redirect(url_for('auth.perfil'))
+
         # Gestores não podem editar o superadmin nem outros gestores
         if g.user["papel"] == "gestor" and usuario["papel"] in ("superadmin", "gestor") and usuario["id"] != g.user["id"]:
             flash("Gestores não podem editar outros gestores ou administradores.", "danger")

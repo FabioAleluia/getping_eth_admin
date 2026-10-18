@@ -1,0 +1,16 @@
+[Unit]
+Description=Retenção de logs de validação GetPing
+After=getping-admin.service
+
+[Service]
+Type=oneshot
+User=getping
+Group=getping
+WorkingDirectory=/opt/getping-admin
+EnvironmentFile=/etc/getping-admin.env
+ExecStart=/opt/getping-admin/venv/bin/flask --app app:create_app prune-logs
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/getping-admin/database

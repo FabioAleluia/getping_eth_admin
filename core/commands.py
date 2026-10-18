@@ -103,3 +103,45 @@ def register_commands(app):
         if invalid:
             raise click.ClickException(f'Licenças inválidas (IDs): {invalid}')
         click.echo('Dados de licença válidos.')
+
+    @app.cli.command('security-check')
+    @click.option('--strict', is_flag=True, help='Retorna erro quando há recomendações pendentes.')
+    def security_check(strict):
+        """Verifica banco/configuração sem alterar registros nem revelar segredos."""
+        from core.licensing import effective_status
+        from werkzeug.security import check_password_hash
+        warnings = []
+        if app.config['ENVIRONMENT'] != 'production':
+            warnings.append('Ambiente de desenvolvimento: use WSGI/HTTPS antes de publicar.')
+        if not app.config['SESSION_COOKIE_SECURE']:
+            warnings.append('Cookie sem Secure: adequado apenas a testes por HTTP.')
+        if not app.config['REQUIRE_FINGERPRINT']:
+            warnings.append('Fingerprint obrigatório desativado: compatibilidade com clientes antigos.')
+        try:
+            with get_db() as conn:
+                if conn.execute('PRAGMA quick_check').fetchone()[0] != 'ok':
+                    raise click.ClickException('Falha de integridade SQLite.')
+                if conn.execute('PRAGMA foreign_key_check').fetchone():
+                    raise click.ClickException('Referências inconsistentes no banco.')
+                if not conn.execute('SELECT 1 FROM schema_migrations WHERE version=1').fetchone():
+                    raise click.ClickException('Migrações pendentes. Execute init-db após backup.')
+                conn.execute('SELECT id FROM admin_audit LIMIT 1')
+                conn.execute('SELECT count FROM request_limits LIMIT 1')
+                accounts = conn.execute('SELECT senha_hash FROM admin_usuarios WHERE ativo=1').fetchall()
+                if not accounts:
+                    warnings.append('Nenhuma conta administrativa ativa.')
+                if any(check_password_hash(row[0], 'administrator') for row in accounts):
+                    warnings.append('Há conta ativa com senha antiga proibida. Use reset-password.')
+                missing = conn.execute(f"""SELECT COUNT(*) FROM licencas l
+                    JOIN clientes c ON c.id=l.cliente_id
+                    WHERE ({effective_status()})='ativa'
+                    AND (instancia_fingerprint IS NULL OR trim(instancia_fingerprint)='')""").fetchone()[0]
+                click.echo(f'Licenças ativas sem vínculo: {missing}.')
+        except sqlite3.DatabaseError:
+            raise click.ClickException('Estrutura do banco indisponível. Verifique backup e migrações.')
+        click.echo('Estrutura e integridade do banco verificadas.')
+        click.echo('HTTPS, firewall, certificados e configuração do cliente exigem verificação no ambiente.')
+        for warning in warnings:
+            click.echo(f'PENDENTE: {warning}')
+        if strict and warnings:
+            raise click.ClickException('Há recomendações de segurança pendentes.')

@@ -86,10 +86,12 @@ def init_db():
                 conn.execute("INSERT INTO schema_migrations VALUES (?, datetime('now'))", (version,))
 
 
-def audit(conn, action, entity, entity_id, before=None, after=None):
+def audit(conn, action, entity, entity_id, before=None, after=None, *, actor_id=None):
     import json
     # Callers supply safe field sets, never full user rows or credentials.
-    actor = g.user['id'] if has_request_context() and getattr(g, 'user', None) else None
+    actor = actor_id
+    if actor is None and has_request_context() and getattr(g, 'user', None):
+        actor = g.user['id']
     ip = request.remote_addr if has_request_context() else None
     conn.execute('''INSERT INTO admin_audit
         (actor_id,action,entity,entity_id,before_json,after_json,ip_origem,criado_em)

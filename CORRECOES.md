@@ -9,7 +9,7 @@ Este documento acompanha a análise original em `ANALISE_TECNICA.md`, que perman
 | C1: segredo conhecido | Configuração obrigatória, rejeição do segredo antigo, ausência de fallback e regressão de cookie forjado. |
 | C2: promoção de gestor | Validação de papel destino no servidor; bloqueio de alteração do próprio papel e promoção por gestor. |
 | A1: credencial inicial universal | Provisionamento explícito, sem criação automática; login com senha antiga proibido; comando local de recuperação. |
-| A2: debug e servidor de desenvolvimento | Debug removido, bind local, dependências e exemplos para WSGI/HTTPS. Publicação depende de configurar o ambiente. |
+| A2: debug e servidor de desenvolvimento | Debug removido, dependências e exemplos para WSGI/HTTPS. Execução direta mantém bind 0.0.0.0 para o teste entre máquinas solicitado. Publicação depende de configurar o ambiente. |
 | A3: sessões órfãs | Usuário precisa existir, estar ativo e apresentar versão de autenticação válida. |
 | A4: fingerprint | Modo obrigatório implementado e testado, ativação atômica e liberação por superadmin. Permanece desligado por compatibilidade até validação do cliente. |
 | A5: testes destrutivos | Banco temporário por teste; nenhuma inicialização na importação; proteção de configuração TESTING. |
@@ -50,3 +50,19 @@ O cliente GetPing não está neste repositório. Vínculo obrigatório deve ser 
 - CSS compilado com Tailwind 3.4.17 e páginas principais renderizadas pelo test client.
 - `git diff --check` sem problemas. Banco original permaneceu com a data de modificação anterior ao trabalho.
 - Não houve publicação, alteração do banco operacional, inspeção visual em navegador real ou teste do cliente GetPing; HTTPS e monitoramento externos dependem da implantação.
+
+
+## Continuidade — segunda etapa
+
+- Sessões do painel têm limite de 30 minutos de inatividade e 24 horas de duração total. Chamadas da API não renovam o painel; sessões antigas exigem login novamente.
+- A própria conta é editada pelo perfil, com exigência da senha atual para troca; o cadastro administrativo não permite contornar essa confirmação.
+- O perfil permite revogar todas as sessões, incluindo cookies copiados; a revogação é auditada.
+- Consulta de auditoria no painel exclusiva a superadmin, com filtros, paginação e escape dos valores exibidos. Login/logout passam a registrar operador, sem senha ou hash.
+- Health check também verifica as estruturas de segurança e o registro da migração esperada.
+- `security-check` verifica integridade, estrutura, recomendações de configuração, senha legada e quantidade de licenças ativas sem vínculo, sem modificar registros ou revelar credenciais. O modo `--strict` retorna erro nas recomendações pendentes.
+- Exemplos de serviço/timer de retenção diária preparados, sem instalação no sistema.
+- A comunicação validada entre máquinas foi preservada: execução direta em 0.0.0.0, sem ativar fingerprint obrigatório ou mudar o contrato da API.
+
+Não há nova migração nesta etapa. A estrutura da primeira etapa precisa estar aplicada. HTTPS, firewall, instalação do serviço/timer e validação do cliente antes de exigir fingerprint continuam dependentes do ambiente de implantação. Nenhum deles foi apresentado como já implantado.
+
+Validação desta etapa: **77 testes passaram**, sendo os 62 anteriores e 15 novos testes de sessão, revogação, confirmação de senha, auditoria, diagnóstico e health check. Execução com bancos temporários e ResourceWarning tratado como erro. CSS recompilado e `git diff --check` sem problemas. Não foi aplicado ajuste no banco operacional nem instalada configuração de sistema nesta etapa.

@@ -141,3 +141,27 @@ sh scripts/build-css.sh /caminho/tailwindcss-3.4.17
 Configuração: `tailwind.config.js`; entrada: `assets/tailwind.css`. Scripts inline e handlers HTML foram substituídos por arquivos JS e atributos de dados para compatibilidade com CSP.
 
 As versões Python estão fixadas nos arquivos `requirements*.txt`. Atualizações devem passar por revisão, auditoria de dependências e testes; fixar versões não substitui esse acompanhamento. Gunicorn está separado das dependências de desenvolvimento.
+
+## Segunda etapa de segurança
+
+O painel agora encerra a sessão após **30 minutos sem atividade** ou **24 horas desde o login**, mesmo com atividade contínua. Arquivos estáticos e chamadas da API de licenças não renovam a atividade do painel. Sessões anteriores a esta etapa, sem os novos marcadores de tempo, exigem novo login. Esses limites não alteram a validade das licenças nem o funcionamento do GetPing na outra máquina.
+
+Em **Meu Perfil**, o botão **Sair de todos os dispositivos** revoga todas as sessões da conta, incluindo a atual e cookies antigos. O logout comum continua encerrando a sessão no navegador atual; não é um mecanismo para revogar cópias de cookies. Em suspeita de roubo de sessão, use a revogação global ou altere a senha.
+
+A edição administrativa da própria conta redireciona para o perfil. POST direto nessa edição é negado; assim, trocar a própria senha exige a senha atual no fluxo do perfil. A redefinição de senha de outras contas segue as permissões administrativas existentes.
+
+O menu **Auditoria**, disponível apenas para superadmin, permite consultar eventos, filtrar ação/entidade/ID do operador e navegar em páginas de 50 registros. Entradas e saídas do painel também são registradas, com o operador identificado. A consulta é somente leitura e não disponibiliza exclusão de eventos.
+
+Antes de publicar ou ativar o vínculo obrigatório, execute com o mesmo ambiente da aplicação:
+
+```bash
+flask --app app:create_app security-check
+# Opcional: retorna código de erro quando há recomendações pendentes.
+flask --app app:create_app security-check --strict
+```
+
+O diagnóstico verifica integridade/referências e estrutura esperada do banco, informa licenças ativas sem fingerprint e sinaliza configuração de desenvolvimento, cookie sem Secure, conta ativa com senha antiga proibida e modo de compatibilidade. Não mostra chaves, senhas ou hashes, não modifica registros e não ativa o bloqueio por fingerprint. Não certifica TLS, firewall ou o comportamento do cliente; esses pontos exigem teste na implantação.
+
+Há exemplos de serviço e timer diário em `deploy/getping-prune-logs.service.example` e `deploy/getping-prune-logs.timer.example`. Depois de ajustar caminhos/usuário/ambiente e instalar os arquivos com nomes sem `.example`, valide-os no servidor e habilite o timer com `systemctl enable --now getping-prune-logs.timer`. Os exemplos não foram instalados automaticamente. A execução preserva auditoria administrativa e remove somente logs de validação antigos/contadores expirados.
+
+Para o teste entre máquinas, `python app.py` permanece escutando em **0.0.0.0:5001**, com debug desligado, conforme configuração de rede validada. No outro GetPing, use o IP da máquina do Admin, não `localhost`. Essa execução serve aos testes da rede; a configuração de produção continua sendo Gunicorn atrás do proxy HTTPS descrito acima.

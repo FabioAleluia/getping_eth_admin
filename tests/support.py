@@ -1,4 +1,5 @@
 import secrets
+from time import time
 import tempfile
 import unittest
 from pathlib import Path
@@ -33,5 +34,6 @@ class IsolatedDatabaseTestCase(unittest.TestCase):
         with client.session_transaction() as sess:
             sess['user_id'] = uid
             sess['auth_version'] = version
+            sess['issued_at'] = sess['last_seen'] = time()
             sess['_csrf_token'] = 'test-csrf'
         return client

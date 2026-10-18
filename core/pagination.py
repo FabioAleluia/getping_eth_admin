@@ -17,7 +17,7 @@ def page_rows(rows):
 def pagination_context():
     if not hasattr(g, 'page'):
         return {}
-    args = {key:request.args[key] for key in ('busca','status') if key in request.args}
+    args = {key:request.args[key] for key in ('busca','status','acao','entidade','ator') if key in request.args}
     def link(page):
         return url_for(request.endpoint, **dict(args, pagina=page))
     return {'page_number': g.page, 'previous_page': link(g.page-1) if g.page > 1 else None,

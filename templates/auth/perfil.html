@@ -61,4 +61,8 @@
         </div>
     </form>
 </div>
+<form method="POST" action="{{ url_for('auth.encerrar_sessoes') }}" data-confirm="Encerrar todas as sessões, incluindo esta?" class="mt-6">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<button class="px-4 py-2 rounded-lg bg-slate-800 text-slate-300">Sair de todos os dispositivos</button>
+</form>
 {% endblock %}

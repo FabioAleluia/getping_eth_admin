@@ -1,0 +1,11 @@
+[Unit]
+Description=Executa retenção diária dos logs GetPing
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=15m
+Unit=getping-prune-logs.service
+
+[Install]
+WantedBy=timers.target

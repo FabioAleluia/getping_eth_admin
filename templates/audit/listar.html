@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Auditoria — GetPing Admin{% endblock %}
+{% block header_title %}Auditoria administrativa{% endblock %}
+{% block content %}
+<p class="text-sm text-slate-400 mb-4">Ações administrativas e acessos ao painel. Horários em UTC. Registros de operações locais têm operador sem conta associada.</p>
+<form method="GET" class="flex gap-4 mb-4">
+<label>Ação <input name="acao" value="{{ acao }}" maxlength="64" class="bg-slate-900 rounded-lg px-3 py-2"></label>
+<label>Entidade <input name="entidade" value="{{ entidade }}" maxlength="64" class="bg-slate-900 rounded-lg px-3 py-2"></label>
+<label>ID do operador <input name="ator" type="number" min="1" value="{{ ator }}" class="bg-slate-900 rounded-lg px-3 py-2"></label>
+<button class="bg-cyan-600 rounded-lg px-3 py-2">Filtrar</button>
+</form>
+{% for event in events %}
+<details class="bg-slate-900 rounded-lg p-4 mb-4">
+<summary>{{ event.criado_em }} UTC · {{ event.action }} · {{ event.entity }} #{{ event.entity_id }} ·
+{% if event.actor_id is none %}Operação local{% else %}{{ event.actor_name or 'Conta removida' }} (#{{ event.actor_id }}){% endif %}
+</summary>
+<p class="text-sm text-slate-400">IP: {{ event.ip_origem or 'local' }}</p>
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+<div><p>Antes</p><pre class="text-xs overflow-auto">{{ event.before_json }}</pre></div>
+<div><p>Depois</p><pre class="text-xs overflow-auto">{{ event.after_json }}</pre></div>
+</div>
+</details>
+{% else %}<p>Nenhum evento encontrado.</p>{% endfor %}
+{% endblock %}

@@ -43,6 +43,9 @@
                     <i class="fa-solid fa-users-gear w-5 text-center mr-3"></i> Usuários
                 </a>
                 {% endif %}
+                {% if g.user.papel == 'superadmin' %}
+                <a href="{{ url_for('audit.listar') }}" class="flex items-center px-4 py-3 rounded-lg text-sm text-slate-400 hover:text-slate-200">Auditoria</a>
+                {% endif %}
             </nav>
         </div>
 
