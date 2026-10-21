@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from flask import Blueprint, abort, current_app, jsonify, request
 
 from getping_admin.database.db import get_db
+from getping_admin.licensing import valid_license_limits
 from getping_admin.limits import enforce_limit
 from getping_admin.validation import text
 
@@ -19,8 +20,6 @@ def validar_licenca():
     versao = text(dados, "versao", maximum=64)
     enforce_limit("api-key", chave, current_app.config["API_RATE_LIMIT"] * 5)
     strict = current_app.config["REQUIRE_FINGERPRINT"]
-    if strict and not fingerprint:
-        abort(400, description="Fingerprint obrigatório para esta instalação.")
     agora = datetime.now(timezone.utc).replace(microsecond=0)
     agora_str = agora.strftime("%Y-%m-%d %H:%M:%S")
     with get_db() as conn:
@@ -63,12 +62,22 @@ def validar_licenca():
         if agora > data_exp:
             # Effective status is calculated everywhere, not mutated only by check-in.
             return denied("expirada", "Licença expirada.")
-        if not 1 <= licenca["limite_hosts"] <= 10000 or not 0 <= licenca["limite_agentes"] <= 10000:
+        if not valid_license_limits(licenca["limite_hosts"], licenca["limite_agentes"]):
             abort(503, description="Licença com cadastro inconsistente. Contate o suporte.")
-        stored = licenca["instancia_fingerprint"]
-        if strict and stored and stored != fingerprint:
-            return denied("instancia_invalida", "Licença vinculada a outra instalação.")
-        if not stored and fingerprint:
+        binding = conn.execute(
+            "SELECT fingerprint FROM license_bindings WHERE licenca_id=?", (licenca["id"],)
+        ).fetchone()
+        if strict or binding is not None:
+            if not fingerprint:
+                abort(400, description="Fingerprint obrigatório para esta licença.")
+            if binding is None or not binding["fingerprint"]:
+                return denied(
+                    "aguardando_vinculo", "A instalação precisa ser autorizada pelo administrador."
+                )
+            if binding["fingerprint"] != fingerprint:
+                return denied("instancia_invalida", "Licença vinculada a outra instalação.")
+        # Compatibility telemetry is not authorization. Never claim an installation here.
+        if not strict and binding is None and fingerprint and not licenca["instancia_fingerprint"]:
             conn.execute(
                 "UPDATE licencas SET instancia_fingerprint=? WHERE id=?",
                 (fingerprint, licenca["id"]),

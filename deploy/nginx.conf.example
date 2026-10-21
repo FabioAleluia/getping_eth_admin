@@ -2,13 +2,16 @@
 server {
     listen 80;
     server_name admin.exemplo.com;
-    return 301 https://$host$request_uri;
+    # POST da API não deve sofrer conversão silenciosa para GET em redirect.
+    location /api/ { return 426; }
+    location / { return 308 https://admin.exemplo.com$request_uri; }
 }
 server {
     listen 443 ssl;
     server_name admin.exemplo.com;
     ssl_certificate /etc/letsencrypt/live/admin.exemplo.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/admin.exemplo.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
     client_max_body_size 32k;
     location / {
         proxy_pass http://127.0.0.1:5001;

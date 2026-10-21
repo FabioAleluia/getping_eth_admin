@@ -4,14 +4,20 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-from flask import Flask, abort, jsonify, render_template, request
+from flask import Flask, abort, jsonify, redirect, render_template, request
 from werkzeug.exceptions import Conflict, HTTPException, ServiceUnavailable
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from getping_admin.commands import register_commands
 from getping_admin.config import load_config
 from getping_admin.database.db import get_db
+from getping_admin.database.diagnostics import schema_issues
 from getping_admin.database.migrate import init_db
+
+
+class HTTPSRequired(HTTPException):
+    code = 426
+    description = "HTTPS obrigatório. Atualize a URL do servidor para HTTPS."
 
 
 def create_app(config=None):
@@ -45,6 +51,24 @@ def validate_config(app):
         raise RuntimeError(
             "Configure SECRET_KEY com um segredo aleatório de pelo menos 32 caracteres."
         )
+    if app.config["REQUIRE_HTTPS"]:
+        from urllib.parse import urlsplit
+
+        parsed = urlsplit(app.config["PUBLIC_BASE_URL"])
+        if (
+            parsed.scheme != "https"
+            or not parsed.hostname
+            or parsed.username
+            or parsed.password
+            or parsed.query
+            or parsed.fragment
+            or parsed.path not in ("", "/")
+        ):
+            raise RuntimeError(
+                "GETPING_PUBLIC_BASE_URL deve ser uma origem HTTPS válida, sem caminho ou credenciais."
+            )
+        if not app.config["SESSION_COOKIE_SECURE"]:
+            raise RuntimeError("HTTPS obrigatório exige SESSION_COOKIE_SECURE=True.")
     if app.testing:
         # Tests must explicitly opt into a database under a temporary directory.
         db_path = Path(app.config["DATABASE"]).resolve()
@@ -55,6 +79,14 @@ def validate_config(app):
 def register_hooks(app):
     from getping_admin.limits import request_limits
     from getping_admin.security import gerar_csrf_token, validar_csrf_token
+
+    @app.before_request
+    def require_https():
+        if app.config["REQUIRE_HTTPS"] and not request.is_secure and request.endpoint != "health":
+            if request.method not in ("GET", "HEAD") or request.path.startswith("/api/"):
+                raise HTTPSRequired()
+            origin = app.config["PUBLIC_BASE_URL"].rstrip("/")
+            return redirect(origin + request.full_path.rstrip("?"), code=308)
 
     # Run before auth so API behavior never depends on a panel login cookie.
     app.before_request(request_limits)
@@ -136,9 +168,6 @@ def register_health_check(app):
     @app.get("/health")
     def health():
         with get_db() as conn:
-            conn.execute("SELECT auth_version FROM admin_usuarios LIMIT 1")
-            conn.execute("SELECT count FROM request_limits LIMIT 1")
-            conn.execute("SELECT id FROM admin_audit LIMIT 1")
-            if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=1").fetchone():
-                abort(503, description="Migrações pendentes.")
+            if schema_issues(conn):
+                abort(503, description="Estrutura do banco indisponível ou migrações pendentes.")
         return jsonify(status="ok")

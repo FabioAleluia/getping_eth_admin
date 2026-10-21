@@ -32,8 +32,17 @@ def request_limits():
     ip = request.remote_addr or "unknown"
     if request.endpoint == "auth.login":
         enforce_limit("login-ip", ip, current_app.config["LOGIN_RATE_LIMIT"])
-        # Separate account budget also restricts attempts from multiple origins.
-        username = request.form.get("username", "").strip().lower()[:254]
-        enforce_limit("login-account", username, current_app.config["LOGIN_RATE_LIMIT"] * 3)
+        # Do not lock a shared account budget: a third party could deny valid logins.
+        # IP limits remain early, while valid-form account/IP limits run inside login.
     elif request.blueprint == "api":
         enforce_limit("api-ip", ip, current_app.config["API_RATE_LIMIT"])
+
+
+def login_attempt_limit(username):
+    """Per-account/source budget after CSRF and form validation, never global lockout."""
+    limit = current_app.config["LOGIN_RATE_LIMIT"]
+    enforce_limit(
+        "login-account-source",
+        username.casefold() + "\0" + (request.remote_addr or "unknown"),
+        limit,
+    )

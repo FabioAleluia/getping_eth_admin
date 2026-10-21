@@ -87,11 +87,20 @@ class TestGetPingAdmin(IsolatedDatabaseTestCase):
 
         with get_db() as conn:
             lic = conn.execute(
-                "SELECT chave_licenca FROM licencas WHERE cliente_id = ? ORDER BY id DESC",
+                "SELECT id, chave_licenca FROM licencas WHERE cliente_id = ? ORDER BY id DESC",
                 (cliente_id,),
             ).fetchone()
             chave = lic["chave_licenca"]
 
+        authorization = self.client.post(
+            f"/licencas/{lic['id']}/vincular-instancia",
+            data={
+                "fingerprint": "MAQ-TESTE-UUID-999",
+                "senha_atual": "SenhaForte@123",
+                "csrf_token": self._get_csrf_token(),
+            },
+        )
+        self.assertEqual(authorization.status_code, 302)
         resp_api = self.client.post(
             "/api/v1/licenca/validar",
             json={"chave_licenca": chave, "fingerprint": "MAQ-TESTE-UUID-999", "versao": "0.0.4"},

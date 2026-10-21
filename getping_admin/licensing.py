@@ -1,8 +1,27 @@
 """Regras compartilhadas de licenciamento."""
 
 import secrets
+from datetime import datetime
 
 from flask import current_app
+
+
+def valid_license_limits(hosts, agents):
+    return (
+        type(hosts) is int and type(agents) is int and 1 <= hosts <= 10000 and 0 <= agents <= 10000
+    )
+
+
+def invalid_license_ids(conn):
+    invalid = []
+    for row in conn.execute("SELECT id,limite_hosts,limite_agentes,data_expiracao FROM licencas"):
+        try:
+            datetime.strptime(row["data_expiracao"], "%Y-%m-%d %H:%M:%S")
+            if not valid_license_limits(row["limite_hosts"], row["limite_agentes"]):
+                raise ValueError()
+        except (ValueError, TypeError):
+            invalid.append(row["id"])
+    return invalid
 
 
 # All timestamps in the existing database contract are UTC.

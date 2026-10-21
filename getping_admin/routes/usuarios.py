@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash
 from getping_admin.audit import audit
 from getping_admin.auth import login_required
 from getping_admin.database.db import get_db
+from getping_admin.identity import identity_conflict, normalize_identifier
 from getping_admin.pagination import page_parameters, page_rows
 from getping_admin.security import validar_complexidade_senha
 from getping_admin.validation import text, validate_form
@@ -57,8 +58,8 @@ def novo():
 
     if request.method == "POST":
         nome = request.form.get("nome", "").strip()
-        username = request.form.get("username", "").strip().lower()
-        email = request.form.get("email", "").strip().lower()
+        username = normalize_identifier(request.form.get("username", ""))
+        email = normalize_identifier(request.form.get("email", ""))
         papel = request.form.get("papel", "assistente")
         senha_inicial = request.form.get("senha_inicial", "")
         exigir_troca = 1 if request.form.get("exigir_troca") == "1" else 0
@@ -90,9 +91,7 @@ def novo():
 
         with get_db() as conn:
             # Checa duplicidade de username ou email
-            existente = conn.execute(
-                "SELECT id FROM admin_usuarios WHERE username = ? OR email = ?", (username, email)
-            ).fetchone()
+            existente = identity_conflict(conn, username, email)
             if existente:
                 flash("Nome de usuário ou e-mail já cadastrado.", "danger")
                 return render_template(
@@ -157,7 +156,7 @@ def editar(id):
 
         if request.method == "POST":
             nome = request.form.get("nome", "").strip()
-            email = request.form.get("email", "").strip().lower()
+            email = normalize_identifier(request.form.get("email", ""))
             papel = request.form.get("papel", usuario["papel"])
             ativo = 1 if request.form.get("ativo") == "1" else 0
             trocar_senha = 1 if request.form.get("trocar_senha") == "1" else 0
@@ -186,9 +185,7 @@ def editar(id):
                 return render_template("usuarios/form.html", acao="editar", usuario=usuario)
 
             # Checa se email já está em uso por outro
-            existente_email = conn.execute(
-                "SELECT id FROM admin_usuarios WHERE email = ? AND id != ?", (email, id)
-            ).fetchone()
+            existente_email = identity_conflict(conn, email, exclude_id=id)
             if existente_email:
                 flash("Este e-mail já está sendo utilizado por outro usuário.", "danger")
                 return render_template("usuarios/form.html", acao="editar", usuario=usuario)

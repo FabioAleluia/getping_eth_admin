@@ -54,7 +54,7 @@ class LegacyMigrationTests(IsolatedDatabaseTestCase):
         # A SQL failure after a statement must not leave a partial migration marked applied.
         migrations = Path(self.tempdir.name) / "database/migrations"
         migrations.mkdir(parents=True)
-        (migrations / "002_test.sql").write_text(
+        (migrations / "999_test.sql").write_text(
             "CREATE TABLE partial_migration(id INTEGER);\nINVALID SQL;\n"
         )
         with patch("getping_admin.database.migrate.MIGRATIONS_PATH", migrations):
@@ -67,5 +67,5 @@ class LegacyMigrationTests(IsolatedDatabaseTestCase):
                 ).fetchone()
             )
             self.assertIsNone(
-                conn.execute("SELECT version FROM schema_migrations WHERE version=2").fetchone()
+                conn.execute("SELECT version FROM schema_migrations WHERE version=999").fetchone()
             )

@@ -1,3 +1,4 @@
+import re
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -7,7 +8,10 @@ from werkzeug.security import generate_password_hash
 
 from getping_admin.audit import audit
 from getping_admin.database.db import database_path, get_db
+from getping_admin.database.diagnostics import schema_issues
 from getping_admin.database.migrate import init_db
+from getping_admin.identity import identity_conflict, invalid_identity_ids, normalize_identifier
+from getping_admin.licensing import invalid_license_ids
 from getping_admin.security import validar_complexidade_senha
 
 
@@ -15,7 +19,10 @@ def register_commands(app):
     @app.cli.command("init-db")
     def initialize():
         """Aplica schema e migrações; preserve backup antes de atualizar."""
-        init_db()
+        try:
+            init_db()
+        except RuntimeError as error:
+            raise click.ClickException(str(error)) from error
         click.echo("Schema e migrações aplicados. Nenhuma senha foi criada ou alterada.")
 
     @app.cli.command("create-admin")
@@ -26,7 +33,8 @@ def register_commands(app):
         valid, message = validar_complexidade_senha(password)
         if not valid:
             raise click.ClickException(message)
-        if "@" not in email or len(email) > 254:
+        email = normalize_identifier(email)
+        if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email) or len(email) > 254:
             raise click.ClickException("E-mail inválido.")
         with get_db() as conn:
             conn.execute("BEGIN IMMEDIATE")
@@ -34,12 +42,14 @@ def register_commands(app):
                 raise click.ClickException(
                     "Já existe superadmin. Use o painel para administrar contas."
                 )
+            if identity_conflict(conn, "administrator", email):
+                raise click.ClickException("Nome de usuário ou e-mail já cadastrado.")
             cursor = conn.execute(
                 """INSERT INTO admin_usuarios
                 (nome,username,email,senha_hash,papel,ativo,trocar_senha,criado_em)
                 VALUES ('Administrador Master','administrator',?,?,'superadmin',1,1,?)""",
                 (
-                    email.strip().lower(),
+                    email,
                     generate_password_hash(password),
                     datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
                 ),
@@ -56,11 +66,13 @@ def register_commands(app):
         if not valid:
             raise click.ClickException(message)
         with get_db() as conn:
-            user = conn.execute(
-                "SELECT id FROM admin_usuarios WHERE username=?", (username,)
-            ).fetchone()
-            if not user:
+            matches = conn.execute(
+                "SELECT id FROM admin_usuarios WHERE lower(trim(username))=? LIMIT 2",
+                (normalize_identifier(username),),
+            ).fetchall()
+            if len(matches) != 1:
                 raise click.ClickException("Usuário não encontrado.")
+            user = matches[0]
             conn.execute(
                 "UPDATE admin_usuarios SET senha_hash=?, auth_version=auth_version+1, ativo=1, trocar_senha=1 WHERE id=?",
                 (generate_password_hash(password), user["id"]),
@@ -107,20 +119,15 @@ def register_commands(app):
     def check_data():
         """Relata IDs de licenças legadas inválidas sem alterá-las."""
         with get_db() as conn:
-            rows = conn.execute(
-                "SELECT id, limite_hosts,limite_agentes,data_expiracao FROM licencas"
-            ).fetchall()
-        invalid = []
-        for row in rows:
-            try:
-                datetime.strptime(row["data_expiracao"], "%Y-%m-%d %H:%M:%S")
-                if not 1 <= row["limite_hosts"] <= 10000 or not 0 <= row["limite_agentes"] <= 10000:
-                    raise ValueError()
-            except (ValueError, TypeError):
-                invalid.append(row["id"])
+            invalid = invalid_license_ids(conn)
+            invalid_users = invalid_identity_ids(conn)
         if invalid:
             raise click.ClickException(f"Licenças inválidas (IDs): {invalid}")
-        click.echo("Dados de licença válidos.")
+        if invalid_users:
+            raise click.ClickException(
+                f"Identificadores conflitantes ou vazios (IDs): {invalid_users}"
+            )
+        click.echo("Dados de licença e identificadores válidos.")
 
     @app.cli.command("security-check")
     @click.option("--strict", is_flag=True, help="Retorna erro quando há recomendações pendentes.")
@@ -135,6 +142,8 @@ def register_commands(app):
             warnings.append("Ambiente de desenvolvimento: use WSGI/HTTPS antes de publicar.")
         if not app.config["SESSION_COOKIE_SECURE"]:
             warnings.append("Cookie sem Secure: adequado apenas a testes por HTTP.")
+        if not app.config["REQUIRE_HTTPS"]:
+            warnings.append("HTTPS obrigatório ainda não ativado na aplicação.")
         if not app.config["REQUIRE_FINGERPRINT"]:
             warnings.append(
                 "Fingerprint obrigatório desativado: compatibilidade com clientes antigos."
@@ -145,10 +154,17 @@ def register_commands(app):
                     raise click.ClickException("Falha de integridade SQLite.")
                 if conn.execute("PRAGMA foreign_key_check").fetchone():
                     raise click.ClickException("Referências inconsistentes no banco.")
-                if not conn.execute("SELECT 1 FROM schema_migrations WHERE version=1").fetchone():
-                    raise click.ClickException("Migrações pendentes. Execute init-db após backup.")
-                conn.execute("SELECT id FROM admin_audit LIMIT 1")
-                conn.execute("SELECT count FROM request_limits LIMIT 1")
+                issues = schema_issues(conn)
+                if issues:
+                    raise click.ClickException(" ".join(issues) + " Revise backup e migrações.")
+                invalid = invalid_license_ids(conn)
+                if invalid:
+                    raise click.ClickException(f"Licenças inválidas (IDs): {invalid}")
+                invalid_users = invalid_identity_ids(conn)
+                if invalid_users:
+                    raise click.ClickException(
+                        f"Identificadores conflitantes ou vazios (IDs): {invalid_users}"
+                    )
                 accounts = conn.execute(
                     "SELECT senha_hash FROM admin_usuarios WHERE ativo=1"
                 ).fetchall()
@@ -159,13 +175,17 @@ def register_commands(app):
                 missing = conn.execute(f"""SELECT COUNT(*) FROM licencas l
                     JOIN clientes c ON c.id=l.cliente_id
                     WHERE ({effective_status()})='ativa'
-                    AND (instancia_fingerprint IS NULL OR trim(instancia_fingerprint)='')""").fetchone()[
+                    AND NOT EXISTS (SELECT 1 FROM license_bindings b WHERE b.licenca_id=l.id AND b.fingerprint IS NOT NULL)""").fetchone()[
                     0
                 ]
-                click.echo(f"Licenças ativas sem vínculo: {missing}.")
+                click.echo(f"Licenças ativas sem vínculo autorizado: {missing}.")
         except sqlite3.DatabaseError:
             raise click.ClickException(
                 "Estrutura do banco indisponível. Verifique backup e migrações."
+            )
+        if missing:
+            warnings.append(
+                "Há licenças ativas aguardando vínculo autorizado; confira antes de exigir globalmente."
             )
         click.echo("Estrutura e integridade do banco verificadas.")
         click.echo(

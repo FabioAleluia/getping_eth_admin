@@ -11,6 +11,7 @@ from flask import (
     request,
     url_for,
 )
+from werkzeug.security import check_password_hash
 
 from getping_admin.audit import audit
 from getping_admin.auth import login_required
@@ -122,6 +123,14 @@ def nova():
                     observacoes,
                 ),
             )
+            # New licenses are secure by default; existing licenses are migrated gradually.
+            new_id = conn.execute(
+                "SELECT id FROM licencas WHERE chave_licenca=?", (chave,)
+            ).fetchone()[0]
+            conn.execute(
+                "INSERT INTO license_bindings VALUES (?,NULL,?,datetime('now'))",
+                (new_id, g.user["id"]),
+            )
             audit(
                 conn,
                 "create",
@@ -137,7 +146,10 @@ def nova():
                     "data_expiracao": data_expiracao,
                 },
             )
-            flash(f"Licença {chave} gerada com sucesso!", "success")
+            flash(
+                f"Licença {chave} gerada com sucesso! Solicite ao superadmin a autorização da instalação nos detalhes antes de usar.",
+                "success",
+            )
             return redirect(url_for("licencas.listar"))
 
     hoje = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -269,7 +281,15 @@ def detalhes(id):
             f"SELECT {effective_status()} FROM licencas l JOIN clientes c ON c.id=l.cliente_id WHERE l.id=?",
             (id,),
         ).fetchone()[0]
-        licenca = dict(licenca, status=state)
+        binding = conn.execute(
+            "SELECT fingerprint FROM license_bindings WHERE licenca_id=?", (id,)
+        ).fetchone()
+        licenca = dict(
+            licenca,
+            status=state,
+            binding_required=binding is not None or current_app.config["REQUIRE_FINGERPRINT"],
+            authorized_fingerprint=binding["fingerprint"] if binding else None,
+        )
     return render_template("licencas/detalhes.html", licenca=licenca, logs=logs)
 
 
@@ -313,7 +333,55 @@ def liberar_instancia(id):
         ).fetchone()
         if not row:
             abort(404)
+        conn.execute(
+            """INSERT INTO license_bindings VALUES (?,NULL,?,datetime('now'))
+            ON CONFLICT(licenca_id) DO UPDATE SET fingerprint=NULL,updated_by=excluded.updated_by,updated_at=excluded.updated_at""",
+            (id, g.user["id"]),
+        )
         conn.execute("UPDATE licencas SET instancia_fingerprint=NULL WHERE id=?", (id,))
         audit(conn, "release_instance", "licenca", id, before={"vinculada": bool(row[0])})
-    flash("Instalação liberada para nova ativação.", "success")
+    flash(
+        "Vínculo removido. Autorize explicitamente a nova instalação antes de validar.", "success"
+    )
+    return redirect(url_for("licencas.detalhes", id=id))
+
+
+@licencas_bp.post("/<int:id>/vincular-instancia")
+@login_required
+@validate_form
+def vincular_instancia(id):
+    if g.user["papel"] != "superadmin":
+        abort(403)
+    fingerprint = text(request.form, "fingerprint", maximum=256, required=True)
+    password = request.form.get("senha_atual", "")
+    from getping_admin.limits import enforce_limit
+
+    enforce_limit("bind-admin", str(g.user["id"]), 5)
+    with get_db() as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        user = conn.execute(
+            "SELECT senha_hash FROM admin_usuarios WHERE id=?", (g.user["id"],)
+        ).fetchone()
+        if not check_password_hash(user["senha_hash"], password):
+            abort(403, description="Senha atual incorreta.")
+        if not conn.execute("SELECT 1 FROM licencas WHERE id=?", (id,)).fetchone():
+            abort(404)
+        before = conn.execute(
+            "SELECT fingerprint FROM license_bindings WHERE licenca_id=?", (id,)
+        ).fetchone()
+        conn.execute(
+            """INSERT INTO license_bindings VALUES (?,?,?,datetime('now'))
+            ON CONFLICT(licenca_id) DO UPDATE SET fingerprint=excluded.fingerprint,
+            updated_by=excluded.updated_by,updated_at=excluded.updated_at""",
+            (id, fingerprint, g.user["id"]),
+        )
+        audit(
+            conn,
+            "authorize_instance",
+            "licenca",
+            id,
+            before={"authorized": bool(before and before[0])},
+            after={"authorized": True},
+        )
+    flash("Instalação autorizada. Esta licença agora exige o fingerprint aprovado.", "success")
     return redirect(url_for("licencas.detalhes", id=id))

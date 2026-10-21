@@ -16,6 +16,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from getping_admin.audit import audit
 from getping_admin.auth import login_required
 from getping_admin.database.db import get_db
+from getping_admin.identity import identity_conflict, normalize_identifier
+from getping_admin.limits import login_attempt_limit
 from getping_admin.security import validar_complexidade_senha
 from getping_admin.validation import validate_form
 
@@ -29,17 +31,22 @@ def login():
         return redirect(url_for("dashboard.index"))
 
     if request.method == "POST":
-        username = request.form.get("username", "").strip()
+        username = normalize_identifier(request.form.get("username", ""))
         senha = request.form.get("senha", "")
 
         if not username or not senha:
             flash("Preencha o usuário e a senha.", "danger")
             return render_template("auth/login.html")
 
+        login_attempt_limit(username)
         with get_db() as conn:
-            user = conn.execute(
-                "SELECT * FROM admin_usuarios WHERE username = ? OR email = ?", (username, username)
-            ).fetchone()
+            matches = conn.execute(
+                "SELECT * FROM admin_usuarios WHERE lower(trim(username)) = ? "
+                "OR lower(trim(email)) = ? LIMIT 2",
+                (username, username),
+            ).fetchall()
+            # Schemas anteriores à migração também devem falhar sem escolher uma conta.
+            user = matches[0] if len(matches) == 1 else None
 
             if (
                 user
@@ -94,7 +101,7 @@ def logout():
 def perfil():
     if request.method == "POST":
         nome = request.form.get("nome", "").strip()
-        email = request.form.get("email", "").strip()
+        email = normalize_identifier(request.form.get("email", ""))
         senha_atual = request.form.get("senha_atual", "")
         nova_senha = request.form.get("nova_senha", "")
         confirma_senha = request.form.get("confirma_senha", "")
@@ -105,9 +112,7 @@ def perfil():
 
         with get_db() as conn:
             # Checa se email já está em uso por outro
-            existente = conn.execute(
-                "SELECT id FROM admin_usuarios WHERE email = ? AND id != ?", (email, g.user["id"])
-            ).fetchone()
+            existente = identity_conflict(conn, email, exclude_id=g.user["id"])
             if existente:
                 flash("Este e-mail já está sendo utilizado por outro administrador.", "danger")
                 return render_template("auth/perfil.html")

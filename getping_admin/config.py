@@ -22,6 +22,8 @@ def load_config(instance_path, overrides=None):
         "PERMANENT_SESSION_LIFETIME": 86400,
         "MAX_CONTENT_LENGTH": 32 * 1024,
         "INIT_DB": False,
+        "REQUIRE_HTTPS": os.environ.get("GETPING_REQUIRE_HTTPS", "0") == "1",
+        "PUBLIC_BASE_URL": os.environ.get("GETPING_PUBLIC_BASE_URL", ""),
         "EXTENDED_LICENSE_KEYS": os.environ.get("GETPING_EXTENDED_KEYS", "0") == "1",
         "REQUIRE_FINGERPRINT": os.environ.get("GETPING_REQUIRE_FINGERPRINT", "0") == "1",
         "ALLOW_ASSISTANT_LICENSE_EDITS": False,

@@ -142,7 +142,15 @@ class SecurityRegressionTests(IsolatedDatabaseTestCase):
         html = self.client.get("/licencas/").data
         self.assertNotIn(b'href="/licencas/1/editar"', html)
 
+    def authorize_binding(self, fingerprint):
+        with get_db() as conn:
+            conn.execute(
+                "INSERT INTO license_bindings VALUES (1,?,1,datetime('now')) ON CONFLICT(licenca_id) DO UPDATE SET fingerprint=excluded.fingerprint",
+                (fingerprint,),
+            )
+
     def test_strict_fingerprint_required_and_checked(self):
+        self.authorize_binding("A")
         self.app.config["REQUIRE_FINGERPRINT"] = True
         self.assertEqual(self.validate().status_code, 400)
         self.assertEqual(self.validate(fingerprint="A").status_code, 200)
@@ -155,6 +163,7 @@ class SecurityRegressionTests(IsolatedDatabaseTestCase):
         self.assertEqual(self.validate(fingerprint="B").status_code, 200)
 
     def test_first_activation_is_atomic(self):
+        self.authorize_binding("A")
         self.app.config["REQUIRE_FINGERPRINT"] = True
 
         def activate(fp):
@@ -167,12 +176,15 @@ class SecurityRegressionTests(IsolatedDatabaseTestCase):
             self.assertEqual(sorted(pool.map(activate, ["A", "B"])), [200, 403])
 
     def test_instance_release_requires_superadmin_and_is_audited(self):
+        self.authorize_binding("A")
         self.app.config["REQUIRE_FINGERPRINT"] = True
         self.validate(fingerprint="A")
         self.authenticate(2)
         self.assertEqual(self.post("/licencas/1/liberar-instancia").status_code, 403)
         self.authenticate(1)
         self.assertEqual(self.post("/licencas/1/liberar-instancia").status_code, 302)
+        self.assertEqual(self.validate(fingerprint="B").status_code, 403)
+        self.authorize_binding("B")
         self.assertEqual(self.validate(fingerprint="B").status_code, 200)
         with get_db() as conn:
             self.assertEqual(
@@ -354,7 +366,7 @@ class SecurityRegressionTests(IsolatedDatabaseTestCase):
                 before,
             )
             self.assertEqual(
-                conn.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0], 1
+                conn.execute("SELECT COUNT(*) FROM schema_migrations").fetchone()[0], 3
             )
 
     def test_cli_backup_restore_and_no_overwrite(self):

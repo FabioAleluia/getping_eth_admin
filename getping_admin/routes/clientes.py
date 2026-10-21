@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, g, redirect, render_template, request, url_for
 
 from getping_admin.audit import audit
 from getping_admin.auth import login_required
@@ -195,6 +195,9 @@ def excluir(id):
 
     with get_db() as conn:
         # Verifica se possui licenças vinculadas
+        conn.execute("BEGIN IMMEDIATE")
+        if not conn.execute("SELECT 1 FROM clientes WHERE id=?", (id,)).fetchone():
+            abort(404, description="Cliente não encontrado.")
         licencas_count = conn.execute(
             "SELECT COUNT(*) as total FROM licencas WHERE cliente_id = ?", (id,)
         ).fetchone()["total"]

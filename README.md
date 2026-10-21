@@ -57,6 +57,13 @@ A senha antiga universal não é mais aceita, mesmo quando seu hash ainda está 
 
 ## Produção
 
+**Atualização de código de 21/10/2026:** esta versão também exige a migração
+`003_production_validation.sql`. Consulte o [roteiro e as correções](docs/CORRECOES_CODIGO_2026-10-21.md)
+antes de atualizar. A migração verifica conflitos entre identificadores, normaliza
+contas sem conflito e fortalece a validação dos limites. Não corrige valores
+comerciais inválidos automaticamente. O diagnóstico de produção agora verifica
+dados e objetos esperados; `/health` verifica a estrutura sem varrer dados comerciais.
+
 ```bash
 pip install -r requirements-production.txt
 export GETPING_ENV=production
@@ -83,10 +90,10 @@ Content-Type: application/json
 
 A resposta mantém os campos anteriores e acrescenta `expira_em_iso`, com UTC explícito. Datas existentes continuam em UTC; editar validade usa o fim do dia UTC, informado no formulário. Não houve mudança silenciosa para horário de São Paulo.
 
-- `GETPING_REQUIRE_FINGERPRINT=0` é o modo de compatibilidade padrão. Aceita clientes sem fingerprint e não bloqueia compartilhamento de chave entre instalações.
-- `GETPING_REQUIRE_FINGERPRINT=1` exige fingerprint e o compara com a instalação vinculada. A primeira ativação é serializada: duas máquinas diferentes não conseguem assumir a mesma licença simultaneamente.
+- `GETPING_REQUIRE_FINGERPRINT=0` preserva compatibilidade somente para licenças antigas ainda não autorizadas. Licenças novas e licenças autorizadas explicitamente já exigem vínculo, mesmo com essa variável em zero.
+- `GETPING_REQUIRE_FINGERPRINT=1` exige vínculo autorizado em todas as licenças. A API não autoriza a primeira instalação automaticamente. Uma licença sem autorização retorna 403 (`aguardando_vinculo`), mesmo que exista um fingerprint observado historicamente.
 - Antes de ativar o modo obrigatório, verifique o cliente GetPing e os fingerprints já gravados. Eles podem refletir o primeiro uso histórico, sem representar a instalação atualmente legítima.
-- O superadmin pode usar **Liberar instalação vinculada** nos detalhes da licença. A ação é auditada; a próxima validação ocupa o vínculo. Coordene a troca para evitar que uma instalação antiga reivindique novamente a chave.
+- Nos detalhes, o superadmin informa o fingerprint confirmado no GetPing e sua própria senha atual em **Autorizar instalação e exigir vínculo**. A ação é auditada e afeta aquela licença. **Liberar instalação vinculada** remove a autorização e mantém a exigência: nenhuma máquina consegue reivindicar o vínculo até nova autorização explícita. Para transferir diretamente, autorize o novo fingerprint; o anterior será rejeitado.
 - Um fingerprint enviado pelo cliente pode ser copiado. Ele não prova posse de hardware. Credencial por instalação, assinatura de autorização offline e enforcement de hosts/agentes exigem implementação e testes também no cliente GetPing.
 
 JSON inválido e campos fora dos limites retornam 400; licença inexistente, 404; bloqueada/expirada, 403; excesso de requisições, 429 com `Retry-After`; indisponibilidade/inconsistência, 503. Erros da API usam JSON com `valido=false` e `motivo`.
@@ -112,7 +119,7 @@ O usuário `administrator` continua protegido contra exclusão, desativação e 
 
 `admin_audit` registra operador, ação, alvo, alterações, IP e horário na transação da mudança. Senhas, hashes e chaves completas não são incluídos. A recuperação local por CLI aparece com operador nulo e ação específica. A tabela contém dados pessoais: restrinja permissões do banco e dos backups.
 
-Por padrão, login permite 10 tentativas por IP/minuto e 30 por identificador/minuto. API permite 120 requisições por IP/minuto e 600 por chave/minuto. As janelas são fixas e compartilhadas entre workers por SQLite. Clientes atrás do mesmo NAT compartilham a cota de IP: ajuste `API_RATE_LIMIT`, `LOGIN_RATE_LIMIT` e `RATE_WINDOW_SECONDS` na configuração da factory conforme a carga legítima. Os limites são defesa de aplicação; proteção contra tráfego volumétrico pertence também ao proxy/infraestrutura.
+Por padrão, login permite 10 requisições por IP/minuto. Depois de CSRF e validação dos campos, há orçamento por identificador/origem; não existe bloqueio global por conta que outra origem possa esgotar. API permite 120 requisições por IP/minuto e 600 por chave/minuto. As janelas são fixas e compartilhadas entre workers por SQLite. Clientes atrás do mesmo NAT compartilham a cota de IP: ajuste `API_RATE_LIMIT`, `LOGIN_RATE_LIMIT` e `RATE_WINDOW_SECONDS` na configuração da factory conforme a carga legítima. Os limites são defesa de aplicação; proteção contra tráfego volumétrico pertence também ao proxy/infraestrutura.
 
 Payloads têm limite de 32 KiB. Validações de chaves desconhecidas não criam eventos no banco. Check-ins bem-sucedidos são agregados em até um evento por licença/hora; falhas podem ser acompanhadas pelos códigos HTTP do servidor. O último check-in continua sendo atualizado. Não há log por chamada bloqueada, evitando crescimento causado por abuso.
 
@@ -162,8 +169,51 @@ flask --app getping_admin:create_app security-check
 flask --app getping_admin:create_app security-check --strict
 ```
 
-O diagnóstico verifica integridade/referências e estrutura esperada do banco, informa licenças ativas sem fingerprint e sinaliza configuração de desenvolvimento, cookie sem Secure, conta ativa com senha antiga proibida e modo de compatibilidade. Não mostra chaves, senhas ou hashes, não modifica registros e não ativa o bloqueio por fingerprint. Não certifica TLS, firewall ou o comportamento do cliente; esses pontos exigem teste na implantação.
+O diagnóstico verifica integridade/referências e estrutura esperada do banco, informa licenças ativas sem vínculo explicitamente autorizado e sinaliza configuração de desenvolvimento, cookie sem Secure, conta ativa com senha antiga proibida e modo de compatibilidade. Não mostra chaves, senhas ou hashes, não modifica registros e não ativa o bloqueio por fingerprint. Não certifica TLS, firewall ou o comportamento do cliente; esses pontos exigem teste na implantação.
 
 Há exemplos de serviço e timer diário em `deploy/getping-prune-logs.service.example` e `deploy/getping-prune-logs.timer.example`. Depois de ajustar caminhos/usuário/ambiente e instalar os arquivos com nomes sem `.example`, valide-os no servidor e habilite o timer com `systemctl enable --now getping-prune-logs.timer`. Os exemplos não foram instalados automaticamente. A execução preserva auditoria administrativa e remove somente logs de validação antigos/contadores expirados.
 
 Para o teste entre máquinas, `python -m getping_admin` permanece escutando em **0.0.0.0:5001**, com debug desligado, conforme configuração de rede validada. No outro GetPing, use o IP da máquina do Admin, não `localhost`. Essa execução serve aos testes da rede; a configuração de produção continua sendo Gunicorn atrás do proxy HTTPS descrito acima.
+
+
+## Atualização dos achados altos — 20/10/2026
+
+Esta atualização exige a migração **002_authorized_bindings.sql**. Ela cria a tabela de autorizações sem preencher vínculos com fingerprints históricos e sem alterar planos, limites ou vencimentos. Antes de iniciar a versão nova no banco existente:
+
+```bash
+# Use o mesmo SECRET_KEY e GETPING_DATABASE da instalação; pare o serviço para atualizar.
+flask --app getping_admin:create_app backup-db /caminho/seguro/getping-antes-20261020.db
+flask --app getping_admin:create_app init-db
+flask --app getping_admin:create_app check-data
+flask --app getping_admin:create_app security-check
+```
+
+Preserve uma cópia do código anterior e ensaie restauração/migração em uma cópia do banco. O banco operacional não foi migrado automaticamente durante o desenvolvimento. Mantenha a mesma chave secreta; o reparo da migração preserva `auth_version`, hashes e revogações anteriores. Schemas legados não reconhecidos podem exigir revisão manual em vez de descarte silencioso de colunas.
+
+**Licenças novas exigem autorização pelo superadmin antes da primeira validação.** Licenças antigas permanecem em compatibilidade até autorização individual, a menos que o modo obrigatório global seja ativado. Um gestor pode emitir licença, mas precisa solicitar ao superadmin a autorização da instalação.
+
+### Ativação HTTPS coordenada
+
+1. Defina o domínio/IP do serviço e configure certificado válido para esse endereço no proxy. Certificado de domínio não valida automaticamente acesso pelo IP.
+2. Inicie o backend Gunicorn em loopback e configure o proxy conforme `deploy/nginx.conf.example`. Impedir acesso externo direto à porta 5001 é configuração do firewall/rede, não algo que o código pode garantir.
+3. Teste do computador GetPing a URL HTTPS com verificação de certificado. Para CA privada, configure a confiança nessa CA no cliente; não desative a verificação TLS.
+4. Com o proxy funcionando e sem acesso externo direto ao backend, configure no ambiente de produção:
+
+   ```bash
+   GETPING_ENV=production
+   GETPING_PROXY_HOPS=1
+   GETPING_PUBLIC_BASE_URL=https://admin.exemplo.com
+   GETPING_REQUIRE_HTTPS=1
+   ```
+
+5. Reinicie o serviço e atualize a URL do servidor central no GetPing para a origem HTTPS. Verifique health, login e validação de licença pela outra máquina.
+
+Quando ativado, o controle HTTPS rejeita HTTP na API e POSTs do painel com **426**, em vez de redirecionar silenciosamente uma validação. GET/HEAD do painel redirecionam com 308 para a origem HTTPS fixa, sem confiar no Host recebido. Health continua disponível no backend para monitor interno. Uma requisição que já saiu do cliente por HTTP já expôs seu conteúdo: o bloqueio no servidor não substitui configurar a URL HTTPS no cliente.
+
+`GETPING_REQUIRE_HTTPS=0` permanece como transição/teste de rede; sua presença não significa que a pendência de HTTPS esteja encerrada. Configure domínio, certificado e rede antes de habilitar. O diagnóstico estrito sinaliza quando essa proteção não está ativada.
+
+### Antes de exigir vínculo global
+
+Autorize os fingerprints conferidos no cliente, teste cada instalação e confirme que nenhuma licença ativa ficou sem autorização. Somente então configure `GETPING_REQUIRE_FINGERPRINT=1`. Fingerprint histórico não é prova de propriedade. A comparação de fingerprint impede divergências informadas, mas não impede cópia da própria identidade; prova criptográfica por instalação continua exigindo alteração no cliente GetPing.
+
+A proteção de login agora evita bloqueio global dirigido por terceiros. A limitação por IP continua ativa antes da análise de CSRF. Isso não substitui mitigação de ataques distribuídos na borda nem MFA; não foi introduzida espera bloqueante nos workers.

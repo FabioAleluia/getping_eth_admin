@@ -5,7 +5,18 @@
 
 
 {% block content %}
-{% if g.user.papel == 'superadmin' and licenca.instancia_fingerprint %}
+{% if g.user.papel == 'superadmin' %}
+<div class="bg-slate-900 rounded-lg p-4 mb-4">
+<p>Vínculo: {{ 'obrigatório' if licenca.binding_required else 'compatibilidade' }}.
+{% if licenca.authorized_fingerprint %}Instalação autorizada: <code>{{ licenca.authorized_fingerprint }}</code>{% elif licenca.binding_required %}Aguardando autorização da instalação.{% endif %}</p>
+<form method="POST" action="{{ url_for('licencas.vincular_instancia', id=licenca.id) }}" class="space-y-3 mt-4">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Fingerprint confirmado no GetPing <input name="fingerprint" maxlength="256" required class="bg-slate-800 px-3 py-2 rounded-lg"></label>
+<label>Sua senha atual <input type="password" name="senha_atual" autocomplete="current-password" required class="bg-slate-800 px-3 py-2 rounded-lg"></label>
+<button class="bg-cyan-600 px-3 py-2 rounded-lg">Autorizar instalação e exigir vínculo</button>
+</form></div>
+{% endif %}
+{% if g.user.papel == 'superadmin' and (licenca.instancia_fingerprint or licenca.authorized_fingerprint) %}
 <form method="POST" action="{{ url_for('licencas.liberar_instancia', id=licenca.id) }}" data-confirm="Liberar licença para outra instalação?" class="mb-4">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <button class="px-4 py-2 bg-slate-800 rounded-lg">Liberar instalação vinculada</button>
@@ -68,7 +79,7 @@
                 <span class="text-slate-500 block">Emitida: {{ licenca.data_emissao[:10] }}</span>
             </div>
             <div>
-                <span class="text-slate-500 block mb-1">Fingerprint do Servidor</span>
+                <span class="text-slate-500 block mb-1">Fingerprint observado (histórico)</span>
                 <span class="text-slate-300 font-mono text-[11px] truncate block" title="{{ licenca.instancia_fingerprint or 'Nenhum' }}">
                     {{ licenca.instancia_fingerprint or 'Ainda não registrado' }}
                 </span>
