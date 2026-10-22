@@ -1,0 +1,15 @@
+{"ensaio": "pendente", "status": "aguardando_vinculo", "valida": false}
+{"ensaio": "autorizada", "valida": true, "limite_agentes": 0}
+{"ensaio": "zero_agentes", "http": 200, "agentes_cadastrados": 1}
+{"ensaio": "vinculo_trocado", "servidor_status": "instancia_invalida", "tratado_como_rede": true, "cliente_valida": true}
+{"ensaio": "suspensa", "cliente_status": "suspensa", "valida": false}
+{"ensaio": "cancelada", "cliente_status": "cancelada", "valida": false}
+{"ensaio": "vencimento_utc", "servidor_status": "expirada", "cache_cliente_valida": true}
+{"ensaio": "checkin_local_sem_hmac", "assinatura_valida": true, "cliente_valida": true}
+{"ensaio": "fingerprint_local_diferente", "cliente_valida": true}
+{"ensaio": "resposta_incompleta", "aceita": true, "assinatura_valida": true}
+{"ensaio": "url_fora_do_hmac", "assinatura_valida": true}
+{"ensaio": "hmac_delimitador_ambiguo", "assinatura_valida": true}
+{"ensaio": "telemetria_com_offline_expirado", "http": 200}
+{"ensaio": "resposta_antiga_sobre_chave_nova", "chave_nova_preservada": true, "status": "cancelada"}
+{"ensaio": "login_bloqueio_global", "login_correto_outro_ip_http": 429}

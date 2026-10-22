@@ -39,6 +39,9 @@ class ProductionFixTests(IsolatedDatabaseTestCase):
         return self.client.post(path, data={"csrf_token": "test-csrf", **fields})
 
     def production(self):
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+        self.app.extensions["license_signer"] = Ed25519PrivateKey.generate()
         self.app.config.update(
             ENVIRONMENT="production",
             SESSION_COOKIE_SECURE=True,

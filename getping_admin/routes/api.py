@@ -1,4 +1,5 @@
-from datetime import datetime, timezone
+import re
+from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, abort, current_app, jsonify, request
 
@@ -19,9 +20,39 @@ def validar_licenca():
     fingerprint = text(dados, "fingerprint", maximum=256)
     versao = text(dados, "versao", maximum=64)
     enforce_limit("api-key", chave, current_app.config["API_RATE_LIMIT"] * 5)
+    nonce = text(dados, "nonce", maximum=128)
+    if "protocolo" in dados and (type(dados["protocolo"]) is not int or dados["protocolo"] != 2):
+        abort(400, description="Protocolo não suportado.")
+    if dados.get("protocolo") == 2 and (
+        not re.fullmatch(r"[a-f0-9]{64}", nonce) or not fingerprint
+    ):
+        abort(400, description="Nonce e fingerprint obrigatórios no protocolo 2.")
     strict = current_app.config["REQUIRE_FINGERPRINT"]
     agora = datetime.now(timezone.utc).replace(microsecond=0)
     agora_str = agora.strftime("%Y-%m-%d %H:%M:%S")
+
+    def respond(body, code, expiration=None):
+        from getping_admin.license_protocol import sign_document
+
+        signer = current_app.extensions.get("license_signer")
+        if signer is not None:
+            until = agora
+            if body["valido"]:
+                until = min(
+                    expiration,
+                    agora + timedelta(seconds=current_app.config["LICENSE_OFFLINE_SECONDS"]),
+                )
+            body.update(
+                chave_licenca=chave,
+                fingerprint=fingerprint,
+                nonce=nonce,
+                emissor=current_app.config["PUBLIC_BASE_URL"].rstrip("/"),
+                emitido_em_iso=agora.isoformat(),
+                offline_ate_iso=until.isoformat(),
+            )
+            body = sign_document(body, signer)
+        return jsonify(body), code
+
     with get_db() as conn:
         # Serialize first activation so two different machines cannot both claim a key.
         conn.execute("BEGIN IMMEDIATE")
@@ -33,9 +64,10 @@ def validar_licenca():
         ).fetchone()
         if not licenca:
             # Unknown keys do not produce unbounded event rows.
-            return jsonify(
-                valido=False, status="invalida", motivo="Licença inválida ou inexistente."
-            ), 404
+            return respond(
+                dict(valido=False, status="invalida", motivo="Licença inválida ou inexistente."),
+                404,
+            )
 
         def log(event, details):
             conn.execute(
@@ -46,7 +78,7 @@ def validar_licenca():
             )
 
         def denied(status, reason):
-            return jsonify(valido=False, status=status, motivo=reason), 403
+            return respond(dict(valido=False, status=status, motivo=reason), 403)
 
         if not licenca["cliente_ativo"]:
             return denied("suspensa", "A conta do cliente está suspensa/inativa.")
@@ -59,7 +91,7 @@ def validar_licenca():
         except (ValueError, TypeError):
             current_app.logger.error("Data inválida na licença id=%s", licenca["id"])
             abort(503, description="Licença com cadastro inconsistente. Contate o suporte.")
-        if agora > data_exp:
+        if agora >= data_exp:
             # Effective status is calculated everywhere, not mutated only by check-in.
             return denied("expirada", "Licença expirada.")
         if not valid_license_limits(licenca["limite_hosts"], licenca["limite_agentes"]):
@@ -95,15 +127,20 @@ def validar_licenca():
         ).fetchone()
         if not recent:
             log("checkin_sucesso", f"Check-in autorizado | versão {versao}")
-        return jsonify(
-            valido=True,
-            chave_licenca=chave,
-            cliente=licenca["nome_empresa"],
-            tipo_plano=licenca["tipo_plano"],
-            limite_hosts=licenca["limite_hosts"],
-            limite_agentes=licenca["limite_agentes"],
-            expira_em=licenca["data_expiracao"],
-            expira_em_iso=data_exp.isoformat(),
-            dias_restantes=max(0, (data_exp - agora).days),
-            mensagem="Licença ativa e autorizada.",
-        ), 200
+        return respond(
+            dict(
+                valido=True,
+                status="ativa",
+                chave_licenca=chave,
+                cliente=licenca["nome_empresa"],
+                tipo_plano=licenca["tipo_plano"],
+                limite_hosts=licenca["limite_hosts"],
+                limite_agentes=licenca["limite_agentes"],
+                expira_em=licenca["data_expiracao"],
+                expira_em_iso=data_exp.isoformat(),
+                dias_restantes=max(0, (data_exp - agora).days),
+                mensagem="Licença ativa e autorizada.",
+            ),
+            200,
+            data_exp,
+        )

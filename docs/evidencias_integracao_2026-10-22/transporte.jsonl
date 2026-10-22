@@ -1,0 +1,4 @@
+{"ensaio": "http_plaintext_aceito_pelo_worker", "http": 404}
+{"ensaio": "tls_ca_nao_confiavel", "rejeitado": true}
+{"ensaio": "tls_ca_confiavel", "http": 404}
+{"ensaio": "tls_hostname_incorreto", "rejeitado": true}

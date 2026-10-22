@@ -1,3 +1,9 @@
+> **Atualização de segurança 0.2.0 / protocolo 2:** produção agora exige HTTPS,
+> vínculos autorizados e chave privada Ed25519. HTTP e respostas sem assinatura
+> são permitidos apenas no modo explícito de desenvolvimento. Leia
+> [o roteiro de atualização coordenada](docs/CORRECOES_INTEGRACAO_2026-10-22.md)
+> antes de usar os procedimentos históricos abaixo.
+
 # GetPing Admin
 
 Painel Flask/SQLite para clientes, usuários e licenças do GetPing. Python 3.12.

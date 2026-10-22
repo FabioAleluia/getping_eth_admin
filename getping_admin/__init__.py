@@ -24,6 +24,21 @@ def create_app(config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.update(load_config(app.instance_path, config))
     validate_config(app)
+    from getping_admin.license_protocol import load_private
+
+    if app.config["LICENSE_SIGNING_KEY_FILE"]:
+        if app.config["ENVIRONMENT"] == "production" and not app.testing:
+            if Path(app.config["LICENSE_SIGNING_KEY_FILE"]).stat().st_mode & 0o077:
+                raise RuntimeError("Proteja a chave privada de emissão com permissão 0600.")
+        app.extensions["license_signer"] = load_private(
+            Path(app.config["LICENSE_SIGNING_KEY_FILE"]).read_bytes()
+        )
+    if app.config["ENVIRONMENT"] == "production" and not app.testing:
+        if not app.config["REQUIRE_HTTPS"] or not app.config["REQUIRE_FINGERPRINT"]:
+            raise RuntimeError("Produção exige HTTPS e vínculo de instalação obrigatórios.")
+        if "license_signer" not in app.extensions:
+            raise RuntimeError("Produção exige GETPING_LICENSE_SIGNING_KEY_FILE (Ed25519).")
+
     if app.config["TRUSTED_PROXY_HOPS"]:
         app.wsgi_app = ProxyFix(
             app.wsgi_app,

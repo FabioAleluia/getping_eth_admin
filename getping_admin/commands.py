@@ -144,6 +144,10 @@ def register_commands(app):
             warnings.append("Cookie sem Secure: adequado apenas a testes por HTTP.")
         if not app.config["REQUIRE_HTTPS"]:
             warnings.append("HTTPS obrigatório ainda não ativado na aplicação.")
+        if "license_signer" not in app.extensions:
+            warnings.append(
+                "Emissão sem assinatura central: configure GETPING_LICENSE_SIGNING_KEY_FILE."
+            )
         if not app.config["REQUIRE_FINGERPRINT"]:
             warnings.append(
                 "Fingerprint obrigatório desativado: compatibilidade com clientes antigos."

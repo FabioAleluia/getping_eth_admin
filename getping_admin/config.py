@@ -35,6 +35,17 @@ def load_config(instance_path, overrides=None):
         "TRUSTED_PROXY_HOPS": os.environ.get("GETPING_PROXY_HOPS", "0"),
     }
     overrides = dict(overrides or {})
+    config["LICENSE_SIGNING_KEY_FILE"] = os.environ.get("GETPING_LICENSE_SIGNING_KEY_FILE", "")
+    config["LICENSE_OFFLINE_SECONDS"] = 7 * 86400
+    if "REQUIRE_HTTPS" not in overrides and "GETPING_REQUIRE_HTTPS" not in os.environ:
+        config["REQUIRE_HTTPS"] = overrides.get(
+            "ENVIRONMENT", environment
+        ) == "production" and not overrides.get("TESTING", False)
+    if "GETPING_REQUIRE_FINGERPRINT" not in os.environ:
+        config["REQUIRE_FINGERPRINT"] = overrides.get(
+            "ENVIRONMENT", environment
+        ) == "production" and not overrides.get("TESTING", False)
+
     config.update(overrides)
     if "SESSION_COOKIE_SECURE" not in overrides:
         config["SESSION_COOKIE_SECURE"] = config["ENVIRONMENT"] != "development"

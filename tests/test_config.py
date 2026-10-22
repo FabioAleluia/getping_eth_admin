@@ -20,13 +20,25 @@ class ConfigurationTests(unittest.TestCase):
         self.addCleanup(environment.stop)
 
     def make_app(self, **overrides):
-        return create_app({"SECRET_KEY": self.secret, **overrides})
+        return create_app({"SECRET_KEY": self.secret, "ENVIRONMENT": "development", **overrides})
 
     def test_each_factory_reads_current_environment(self):
         with patch.dict("os.environ", {"GETPING_ENV": "development", "SECRET_KEY": self.secret}):
             first = create_app()
         second_secret = secrets.token_hex(32)
-        with patch.dict("os.environ", {"GETPING_ENV": "production", "SECRET_KEY": second_secret}):
+        from getping_admin.license_keys import generate
+
+        private = self.root / "license-private.pem"
+        generate(private, self.root / "license-public.pem")
+        with patch.dict(
+            "os.environ",
+            {
+                "GETPING_ENV": "production",
+                "SECRET_KEY": second_secret,
+                "GETPING_PUBLIC_BASE_URL": "https://central.example.com",
+                "GETPING_LICENSE_SIGNING_KEY_FILE": str(private),
+            },
+        ):
             second = create_app()
         self.assertEqual(first.secret_key, self.secret)
         self.assertFalse(first.config["SESSION_COOKIE_SECURE"])

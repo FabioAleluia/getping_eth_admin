@@ -109,9 +109,7 @@ def editar(id):
             if g.user and g.user["papel"] == "assistente":
                 responsavel_email = request.form.get("responsavel_email", "").strip()
                 telefone = request.form.get("telefone", "").strip()
-                observacoes = request.form.get(
-                    "observacoes", cliente["observacoes"] or ""
-                ).strip()
+                observacoes = request.form.get("observacoes", cliente["observacoes"] or "").strip()
 
                 conn.execute(
                     """

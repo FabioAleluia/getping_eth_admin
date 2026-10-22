@@ -1,0 +1,25 @@
+unformatted: File would be reformatted
+  --> getping/config.py:50:36
+   |
+49 |     interfaces = tuple(dict.fromkeys(i.strip() for i in interfaces.split(",") if i.strip()))
+   -     if len(interfaces) > 16 or any(not re.fullmatch(r"[A-Za-z0-9_.-]{1,15}", i) for i in interfaces):
+50 +     if len(interfaces) > 16 or any(
+51 +         not re.fullmatch(r"[A-Za-z0-9_.-]{1,15}", i) for i in interfaces
+52 +     ):
+53 |         raise ValueError("SERVER_NETWORK_INTERFACES deve listar até 16 nomes de interface válidos.")
+   |
+
+unformatted: File would be reformatted
+   --> getping/routes/licenca.py:105:27
+    |
+104 |             # Resposta autoritativa de bloqueio
+    -             tipo_alerta = "warning" if status_lic["status"] in ("expirada", "aguardando_vinculo") else "danger"
+105 +             tipo_alerta = (
+106 +                 "warning"
+107 +                 if status_lic["status"] in ("expirada", "aguardando_vinculo")
+108 +                 else "danger"
+109 +             )
+110 |             if request.is_json:
+    |
+
+2 files would be reformatted, 78 files already formatted

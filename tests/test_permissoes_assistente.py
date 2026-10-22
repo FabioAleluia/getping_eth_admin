@@ -234,9 +234,7 @@ class TestPermissoesAssistente(IsolatedDatabaseTestCase):
         self.assertIn("Perfil <strong>Assistente</strong>".encode("utf-8"), resp_get.data)
         self.assertIn(b"disabled", resp_get.data)  # checkbox de ativo desabilitada
 
-        textarea = re.search(
-            rb'<textarea[^>]*name="observacoes"[^>]*>', resp_get.data
-        ).group()
+        textarea = re.search(rb'<textarea[^>]*name="observacoes"[^>]*>', resp_get.data).group()
         self.assertNotIn(b"readonly", textarea)
 
         # POST tentando alterar dados protegidos junto dos campos permitidos

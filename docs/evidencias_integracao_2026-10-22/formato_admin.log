@@ -1,0 +1,23 @@
+unformatted: File would be reformatted
+   --> getping_admin/routes/clientes.py:112:48
+    |
+111 |                 telefone = request.form.get("telefone", "").strip()
+    -                 observacoes = request.form.get(
+    -                     "observacoes", cliente["observacoes"] or ""
+    -                 ).strip()
+112 +                 observacoes = request.form.get("observacoes", cliente["observacoes"] or "").strip()
+113 |
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_permissoes_assistente.py:237:30
+    |
+236 |
+    -         textarea = re.search(
+    -             rb'<textarea[^>]*name="observacoes"[^>]*>', resp_get.data
+    -         ).group()
+237 +         textarea = re.search(rb'<textarea[^>]*name="observacoes"[^>]*>', resp_get.data).group()
+238 |         self.assertNotIn(b"readonly", textarea)
+    |
+
+2 files would be reformatted, 37 files already formatted
