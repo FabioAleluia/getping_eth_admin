@@ -107,7 +107,7 @@ O formato de chave antigo é preservado por padrão. `GETPING_EXTENDED_KEYS=1` p
 | Consultar clientes e licenças | Sim | Sim | Sim |
 | Criar cliente e emitir licença | Sim | Sim | Não |
 | Alterar condições de licença | Sim | Sim | Não por padrão |
-| Atualizar contatos do cliente | Sim | Sim | Sim |
+| Atualizar contatos e notas internas do cliente | Sim | Sim | Sim |
 | Alterar outros dados/excluir cliente sem licença | Sim | Sim | Não |
 | Excluir licença, usuário ou liberar instalação | Sim | Não | Não |
 | Criar usuário | Gestor/assistente | Assistente | Não |

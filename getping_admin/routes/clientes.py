@@ -105,18 +105,21 @@ def editar(id):
             return redirect(url_for("clientes.listar"))
 
         if request.method == "POST":
-            # Perfil assistente só pode alterar E-mail de Contato e Telefone
+            # Assistentes podem atualizar contatos e notas internas do cliente.
             if g.user and g.user["papel"] == "assistente":
                 responsavel_email = request.form.get("responsavel_email", "").strip()
                 telefone = request.form.get("telefone", "").strip()
+                observacoes = request.form.get(
+                    "observacoes", cliente["observacoes"] or ""
+                ).strip()
 
                 conn.execute(
                     """
                     UPDATE clientes
-                    SET responsavel_email = ?, telefone = ?
+                    SET responsavel_email = ?, telefone = ?, observacoes = ?
                     WHERE id = ?
                     """,
-                    (responsavel_email, telefone, id),
+                    (responsavel_email, telefone, observacoes, id),
                 )
                 audit(
                     conn,
@@ -126,10 +129,15 @@ def editar(id):
                     before={
                         "responsavel_email": cliente["responsavel_email"],
                         "telefone": cliente["telefone"],
+                        "observacoes": cliente["observacoes"],
                     },
-                    after={"responsavel_email": responsavel_email, "telefone": telefone},
+                    after={
+                        "responsavel_email": responsavel_email,
+                        "telefone": telefone,
+                        "observacoes": observacoes,
+                    },
                 )
-                flash("Informações de contato do cliente atualizadas com sucesso!", "success")
+                flash("Contatos e observações do cliente atualizados com sucesso!", "success")
                 return redirect(url_for("clientes.listar"))
 
             nome_empresa = request.form.get("nome_empresa", "").strip()

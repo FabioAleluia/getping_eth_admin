@@ -1,3 +1,5 @@
+import json
+import re
 import unittest
 
 from werkzeug.security import generate_password_hash
@@ -223,7 +225,7 @@ class TestPermissoesAssistente(IsolatedDatabaseTestCase):
         self.assertEqual(resp_dash.status_code, 200)
         self.assertNotIn(b'href="/licencas/nova"', resp_dash.data)
 
-    def test_assistente_edicao_cliente_apenas_contato(self):
+    def test_assistente_edicao_cliente_contatos_e_observacoes(self):
         self._login("user.assistente", "Assistente@2026#")
 
         # GET da página de edição deve carregar normalmente e indicar campos restritos
@@ -232,7 +234,12 @@ class TestPermissoesAssistente(IsolatedDatabaseTestCase):
         self.assertIn("Perfil <strong>Assistente</strong>".encode("utf-8"), resp_get.data)
         self.assertIn(b"disabled", resp_get.data)  # checkbox de ativo desabilitada
 
-        # POST tentando alterar nome, ativo e dados de contato
+        textarea = re.search(
+            rb'<textarea[^>]*name="observacoes"[^>]*>', resp_get.data
+        ).group()
+        self.assertNotIn(b"readonly", textarea)
+
+        # POST tentando alterar dados protegidos junto dos campos permitidos
         token = self._get_csrf_token()
         resp_post = self.client.post(
             f"/clientes/{self.cliente_id}/editar",
@@ -242,7 +249,7 @@ class TestPermissoesAssistente(IsolatedDatabaseTestCase):
                 "responsavel_email": "novo.email@empresa.com",
                 "telefone": "(11) 98888-7777",
                 "cnpj_cpf": "99.999.999/0001-99",
-                "observacoes": "Obs invasora",
+                "observacoes": "Nota de atendimento do assistente",
                 "ativo": "0",  # Tentativa de desativar cliente
                 "csrf_token": token,
             },
@@ -250,15 +257,23 @@ class TestPermissoesAssistente(IsolatedDatabaseTestCase):
         )
 
         self.assertIn(
-            "Informações de contato do cliente atualizadas com sucesso!".encode("utf-8"),
+            "Contatos e observações do cliente atualizados com sucesso!".encode("utf-8"),
             resp_post.data,
         )
 
-        # Verifica no banco: SOMENTE e-mail e telefone foram atualizados; nome, responsável e ativo foram preservados!
+        # Verifica os campos permitidos e a preservação dos dados protegidos.
         with get_db() as conn:
             c = conn.execute("SELECT * FROM clientes WHERE id = ?", (self.cliente_id,)).fetchone()
             self.assertEqual(c["responsavel_email"], "novo.email@empresa.com")
             self.assertEqual(c["telefone"], "(11) 98888-7777")
+            self.assertEqual(c["observacoes"], "Nota de atendimento do assistente")
+            event = conn.execute(
+                "SELECT before_json, after_json FROM admin_audit "
+                "WHERE action='update_contact' AND entity_id=? ORDER BY id DESC LIMIT 1",
+                (str(self.cliente_id),),
+            ).fetchone()
+            self.assertIn("observacoes", json.loads(event["before_json"]))
+            self.assertEqual(json.loads(event["after_json"])["observacoes"], c["observacoes"])
             self.assertEqual(c["nome_empresa"], "Empresa Teste")
             self.assertEqual(c["responsavel_nome"], "João Silva")
             self.assertEqual(c["ativo"], 1)

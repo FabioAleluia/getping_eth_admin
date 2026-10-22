@@ -7,6 +7,27 @@ body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
+/* Mantém os controles do usuário visíveis enquanto o conteúdo da página rola. */
+.app-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+.app-sidebar-menu {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+
+.app-sidebar-user {
+    flex-shrink: 0;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;

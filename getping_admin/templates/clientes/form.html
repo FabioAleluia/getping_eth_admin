@@ -14,7 +14,7 @@
     {% if is_assistente %}
     <div class="p-3.5 mb-5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs flex items-center space-x-2.5">
         <i class="fa-solid fa-circle-info text-base shrink-0"></i>
-        <span>Perfil <strong>Assistente</strong>: Você possui permissão para atualizar exclusivamente o <strong>E-mail de Contato</strong> e o <strong>Telefone</strong>. Os demais dados cadastrais e o status do cliente são protegidos.</span>
+        <span>Perfil <strong>Assistente</strong>: Você possui permissão para atualizar exclusivamente o <strong>E-mail de Contato</strong>, o <strong>Telefone</strong> e as <strong>Observações / Notas Internas</strong>. Os demais dados cadastrais e o status do cliente são protegidos.</span>
     </div>
     {% endif %}
 
@@ -74,13 +74,8 @@
 
         <div>
             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Observações / Notas Internas</label>
-            {% if is_assistente %}
-            <textarea name="observacoes" rows="3" readonly
-                class="w-full bg-slate-900/60 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-400 cursor-not-allowed focus:outline-none">{{ cliente.observacoes or '' }}</textarea>
-            {% else %}
-            <textarea name="observacoes" rows="3" placeholder="Informações contratuais ou técnicas adicionais..."
+            <textarea name="observacoes" rows="3" maxlength="4000" placeholder="Informações contratuais ou técnicas adicionais..."
                 class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-500">{{ cliente.observacoes or '' }}</textarea>
-            {% endif %}
         </div>
 
         {% if acao == 'editar' %}
