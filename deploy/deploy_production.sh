@@ -247,6 +247,16 @@ log_info "Instalando dependências de produção com pip..."
 sudo -u getping "$INSTALL_DIR/venv/bin/pip" install --upgrade pip setuptools wheel
 sudo -u getping "$INSTALL_DIR/venv/bin/pip" install -r "$INSTALL_DIR/requirements-production.txt"
 
+# Registrar getping_admin no site-packages do virtualenv via arquivo .pth
+# Isso garante que getping_admin seja sempre encontrado independentemente de onde o python é chamado
+SITE_PACKAGES="$("$INSTALL_DIR/venv/bin/python" -c 'import site; print(site.getsitepackages()[0])')"
+echo "$INSTALL_DIR" > "$SITE_PACKAGES/getping_admin.pth"
+chown getping:getping "$SITE_PACKAGES/getping_admin.pth"
+chmod 0644 "$SITE_PACKAGES/getping_admin.pth"
+
+# Mudar para o diretório de instalação para todos os comandos subsequentes
+cd "$INSTALL_DIR"
+
 log_success "Ambiente virtual e dependências instaladas."
 
 # ------------------------------------------------------------------------------
@@ -259,7 +269,7 @@ PUBLIC_KEY_PATH="${CONFIG_DIR}/license-public.pem"
 
 if [[ ! -f "$PRIVATE_KEY_PATH" ]]; then
     log_info "Gerando par de chaves assimétricas Ed25519 para emissão de licenças..."
-    sudo -u getping "$INSTALL_DIR/venv/bin/python" -m getping_admin.license_keys \
+    sudo -u getping env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/python" -m getping_admin.license_keys \
         --private "$PRIVATE_KEY_PATH" \
         --public "$PUBLIC_KEY_PATH"
 else
@@ -275,6 +285,7 @@ if [[ ! -f "$ENV_FILE" ]]; then
     SECRET_KEY_HEX="$("$INSTALL_DIR/venv/bin/python" -c 'import secrets; print(secrets.token_hex(32))')"
     cat > "$ENV_FILE" <<EOF
 # GetPing Admin - Variáveis de Produção
+PYTHONPATH=${INSTALL_DIR}
 SECRET_KEY=${SECRET_KEY_HEX}
 GETPING_ENV=production
 GETPING_DATABASE=${INSTALL_DIR}/instance/db_getping.db
@@ -287,7 +298,9 @@ EOF
     log_success "Arquivo $ENV_FILE gerado com sucesso."
 else
     log_info "Arquivo $ENV_FILE já existe. Atualizando parâmetros de domínio e chave..."
-    # Atualizar parâmetros sem perder a SECRET_KEY existente
+    if ! grep -q "^PYTHONPATH=" "$ENV_FILE"; then
+        echo "PYTHONPATH=${INSTALL_DIR}" >> "$ENV_FILE"
+    fi
     if ! grep -q "^GETPING_PUBLIC_BASE_URL=" "$ENV_FILE"; then
         echo "GETPING_PUBLIC_BASE_URL=https://${DOMINIO}" >> "$ENV_FILE"
     else
@@ -316,10 +329,10 @@ set +a
 cd "$INSTALL_DIR"
 
 log_info "Aplicando schema do banco e migrações versionadas..."
-sudo -u getping -E "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app init-db
+sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app init-db
 
 log_info "Verificando se já existe superadministrador..."
-ADMIN_EXISTS="$(sudo -u getping -E "$INSTALL_DIR/venv/bin/python" -c "
+ADMIN_EXISTS="$(sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/python" -c "
 from getping_admin.database.db import get_db
 from getping_admin import create_app
 app = create_app()
@@ -331,7 +344,7 @@ with app.app_context():
 
 if [[ "$ADMIN_EXISTS" -eq 0 ]]; then
     log_info "Criando conta inicial do Superadmin..."
-    sudo -u getping -E "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app create-admin \
+    sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app create-admin \
         --email "$ADMIN_EMAIL" \
         --password "$ADMIN_PASSWORD"
     log_success "Administrador inicial criado com sucesso."
@@ -340,7 +353,7 @@ else
 fi
 
 log_info "Executando checagem de conformidade de segurança estrita..."
-sudo -u getping -E "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app security-check --strict || {
+sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app security-check --strict || {
     log_warning "security-check apontou alertas normais pré-ativação de certificados. Continuando..."
 }
 
@@ -359,6 +372,7 @@ User=getping
 Group=getping
 WorkingDirectory=${INSTALL_DIR}
 EnvironmentFile=${ENV_FILE}
+Environment=PYTHONPATH=${INSTALL_DIR}
 ExecStart=${INSTALL_DIR}/venv/bin/gunicorn -c deploy/gunicorn.conf.py 'getping_admin:create_app()'
 Restart=on-failure
 RestartSec=5s
@@ -384,6 +398,7 @@ User=getping
 Group=getping
 WorkingDirectory=${INSTALL_DIR}
 EnvironmentFile=${ENV_FILE}
+Environment=PYTHONPATH=${INSTALL_DIR}
 ExecStart=${INSTALL_DIR}/venv/bin/flask --app getping_admin:create_app prune-logs
 UMask=0077
 NoNewPrivileges=true
