@@ -1,0 +1,399 @@
+/tmp/getping-review-20261023-tools/wheel/bdist_wheel.py:4: FutureWarning: The 'wheel' package is no longer the canonical location of the 'bdist_wheel' command, and will be removed in a future release. Please update to setuptools v70.1 or later which contains an integrated version of this command.
+  warn(
+running bdist_wheel
+running build
+running build_py
+creating build/lib/getping
+copying getping/__init__.py -> build/lib/getping
+copying getping/state_files.py -> build/lib/getping
+copying getping/cli.py -> build/lib/getping
+copying getping/auth.py -> build/lib/getping
+copying getping/license_protocol.py -> build/lib/getping
+copying getping/security.py -> build/lib/getping
+copying getping/config.py -> build/lib/getping
+copying getping/license_worker.py -> build/lib/getping
+copying getping/license_validation.py -> build/lib/getping
+copying getping/web.py -> build/lib/getping
+copying getping/passwords.py -> build/lib/getping
+copying getping/helpers.py -> build/lib/getping
+copying getping/runtime.py -> build/lib/getping
+copying getping/__main__.py -> build/lib/getping
+copying getping/licensing.py -> build/lib/getping
+creating build/lib/getping/routes
+copying getping/routes/configuracoes.py -> build/lib/getping/routes
+copying getping/routes/__init__.py -> build/lib/getping/routes
+copying getping/routes/auth.py -> build/lib/getping/routes
+copying getping/routes/mapa.py -> build/lib/getping/routes
+copying getping/routes/dashboard.py -> build/lib/getping/routes
+copying getping/routes/hosts.py -> build/lib/getping/routes
+copying getping/routes/licenca.py -> build/lib/getping/routes
+copying getping/routes/usuarios.py -> build/lib/getping/routes
+copying getping/routes/agente.py -> build/lib/getping/routes
+creating build/lib/getping/db
+copying getping/db/schema.py -> build/lib/getping/db
+copying getping/db/users.py -> build/lib/getping/db
+copying getping/db/__init__.py -> build/lib/getping/db
+copying getping/db/companies.py -> build/lib/getping/db
+copying getping/db/maps.py -> build/lib/getping/db
+copying getping/db/hosts.py -> build/lib/getping/db
+copying getping/db/telemetry.py -> build/lib/getping/db
+copying getping/db/incidents.py -> build/lib/getping/db
+copying getping/db/agents.py -> build/lib/getping/db
+copying getping/db/licenses.py -> build/lib/getping/db
+creating build/lib/getping/monitoring
+copying getping/monitoring/__init__.py -> build/lib/getping/monitoring
+copying getping/monitoring/process_lock.py -> build/lib/getping/monitoring
+copying getping/monitoring/worker.py -> build/lib/getping/monitoring
+copying getping/monitoring/probes.py -> build/lib/getping/monitoring
+copying getping/monitoring/policy.py -> build/lib/getping/monitoring
+copying getping/monitoring/server_metrics.py -> build/lib/getping/monitoring
+copying getping/monitoring/persistence.py -> build/lib/getping/monitoring
+copying getping/monitoring/processes.py -> build/lib/getping/monitoring
+copying getping/monitoring/collector.py -> build/lib/getping/monitoring
+running egg_info
+creating getping.egg-info
+writing getping.egg-info/PKG-INFO
+writing dependency_links to getping.egg-info/dependency_links.txt
+writing entry points to getping.egg-info/entry_points.txt
+writing requirements to getping.egg-info/requires.txt
+writing top-level names to getping.egg-info/top_level.txt
+writing manifest file 'getping.egg-info/SOURCES.txt'
+reading manifest file 'getping.egg-info/SOURCES.txt'
+writing manifest file 'getping.egg-info/SOURCES.txt'
+creating build/lib/getping/templates
+copying getping/templates/login.html -> build/lib/getping/templates
+copying getping/templates/_probe_fields.html -> build/lib/getping/templates
+copying getping/templates/usuarios.html -> build/lib/getping/templates
+copying getping/templates/hosts.html -> build/lib/getping/templates
+copying getping/templates/token_criado.html -> build/lib/getping/templates
+copying getping/templates/primeiro_acesso.html -> build/lib/getping/templates
+copying getping/templates/mapa.html -> build/lib/getping/templates
+copying getping/templates/overview.html -> build/lib/getping/templates
+copying getping/templates/configuracoes.html -> build/lib/getping/templates
+copying getping/templates/base.html -> build/lib/getping/templates
+copying getping/templates/dashboard.html -> build/lib/getping/templates
+creating build/lib/getping/static/css
+copying getping/static/css/configuracoes.css -> build/lib/getping/static/css
+copying getping/static/css/mapa.css -> build/lib/getping/static/css
+copying getping/static/css/dashboard.css -> build/lib/getping/static/css
+copying getping/static/css/host.css -> build/lib/getping/static/css
+copying getping/static/css/overview.css -> build/lib/getping/static/css
+copying getping/static/css/style.css -> build/lib/getping/static/css
+copying getping/static/css/usuarios.css -> build/lib/getping/static/css
+copying getping/static/css/login.css -> build/lib/getping/static/css
+creating build/lib/getping/static/js
+copying getping/static/js/configuracoes.js -> build/lib/getping/static/js
+copying getping/static/js/usuarios.js -> build/lib/getping/static/js
+copying getping/static/js/overview.js -> build/lib/getping/static/js
+copying getping/static/js/monitoring.js -> build/lib/getping/static/js
+copying getping/static/js/mapa.js -> build/lib/getping/static/js
+copying getping/static/js/dashboard.js -> build/lib/getping/static/js
+copying getping/static/js/host.js -> build/lib/getping/static/js
+copying getping/static/js/script.js -> build/lib/getping/static/js
+creating build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_28.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_24.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_06.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_16.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_20.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_23.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_14.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_10.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_08.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_05.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_13.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_01.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_11.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_19.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_04.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_18.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_21.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_03.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_17.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_30.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_15.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_02.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_25.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_26.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_12.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_29.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_07.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_22.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_27.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/icon_09.png -> build/lib/getping/static/img/icons_mapa
+copying getping/static/img/icons_mapa/.default.png -> build/lib/getping/static/img/icons_mapa
+creating build/lib/getping/static/vendor/chart
+copying getping/static/vendor/chart/LICENSE.md -> build/lib/getping/static/vendor/chart
+copying getping/static/vendor/chart/chart.umd.min.js -> build/lib/getping/static/vendor/chart
+creating build/lib/getping/static/vendor/vis-network
+copying getping/static/vendor/vis-network/LICENSE-MIT -> build/lib/getping/static/vendor/vis-network
+copying getping/static/vendor/vis-network/vis-network.min.js -> build/lib/getping/static/vendor/vis-network
+creating build/lib/getping/static/vendor/bootstrap-icons
+copying getping/static/vendor/bootstrap-icons/bootstrap-icons.css -> build/lib/getping/static/vendor/bootstrap-icons
+copying getping/static/vendor/bootstrap-icons/LICENSE -> build/lib/getping/static/vendor/bootstrap-icons
+creating build/lib/getping/static/vendor/bootstrap
+copying getping/static/vendor/bootstrap/bootstrap.min.css -> build/lib/getping/static/vendor/bootstrap
+copying getping/static/vendor/bootstrap/LICENSE -> build/lib/getping/static/vendor/bootstrap
+copying getping/static/vendor/bootstrap/bootstrap.bundle.min.js -> build/lib/getping/static/vendor/bootstrap
+creating build/lib/getping/static/vendor/bootstrap-icons/fonts
+copying getping/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff -> build/lib/getping/static/vendor/bootstrap-icons/fonts
+copying getping/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2 -> build/lib/getping/static/vendor/bootstrap-icons/fonts
+copying getping/static/vendor/manifest.json -> build/lib/getping/static/vendor
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/getping
+creating build/bdist.linux-x86_64/wheel/getping/routes
+copying build/lib/getping/routes/configuracoes.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/__init__.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/auth.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/mapa.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/dashboard.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/hosts.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/licenca.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/usuarios.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/routes/agente.py -> build/bdist.linux-x86_64/wheel/./getping/routes
+copying build/lib/getping/__init__.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/state_files.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/cli.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/auth.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/license_protocol.py -> build/bdist.linux-x86_64/wheel/./getping
+creating build/bdist.linux-x86_64/wheel/getping/db
+copying build/lib/getping/db/schema.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/users.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/__init__.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/companies.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/maps.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/hosts.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/telemetry.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/incidents.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/agents.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/db/licenses.py -> build/bdist.linux-x86_64/wheel/./getping/db
+copying build/lib/getping/security.py -> build/bdist.linux-x86_64/wheel/./getping
+creating build/bdist.linux-x86_64/wheel/getping/monitoring
+copying build/lib/getping/monitoring/__init__.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/process_lock.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/worker.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/probes.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/policy.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/server_metrics.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/persistence.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/processes.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+copying build/lib/getping/monitoring/collector.py -> build/bdist.linux-x86_64/wheel/./getping/monitoring
+creating build/bdist.linux-x86_64/wheel/getping/templates
+copying build/lib/getping/templates/login.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/_probe_fields.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/usuarios.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/hosts.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/token_criado.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/primeiro_acesso.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/mapa.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/overview.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/configuracoes.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/base.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/templates/dashboard.html -> build/bdist.linux-x86_64/wheel/./getping/templates
+copying build/lib/getping/config.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/license_worker.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/license_validation.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/web.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/passwords.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/helpers.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/runtime.py -> build/bdist.linux-x86_64/wheel/./getping
+copying build/lib/getping/__main__.py -> build/bdist.linux-x86_64/wheel/./getping
+creating build/bdist.linux-x86_64/wheel/getping/static
+creating build/bdist.linux-x86_64/wheel/getping/static/img
+creating build/bdist.linux-x86_64/wheel/getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_28.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_24.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_06.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_16.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_20.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_23.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/.default.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_14.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_10.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_08.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_05.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_13.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_01.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_11.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_19.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_04.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_18.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_21.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_03.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_17.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_30.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_15.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_02.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_25.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_26.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_12.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_29.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_07.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_22.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_27.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+copying build/lib/getping/static/img/icons_mapa/icon_09.png -> build/bdist.linux-x86_64/wheel/./getping/static/img/icons_mapa
+creating build/bdist.linux-x86_64/wheel/getping/static/css
+copying build/lib/getping/static/css/configuracoes.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/mapa.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/dashboard.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/host.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/overview.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/style.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/usuarios.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+copying build/lib/getping/static/css/login.css -> build/bdist.linux-x86_64/wheel/./getping/static/css
+creating build/bdist.linux-x86_64/wheel/getping/static/js
+copying build/lib/getping/static/js/configuracoes.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/usuarios.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/overview.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/monitoring.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/mapa.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/dashboard.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/host.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+copying build/lib/getping/static/js/script.js -> build/bdist.linux-x86_64/wheel/./getping/static/js
+creating build/bdist.linux-x86_64/wheel/getping/static/vendor
+creating build/bdist.linux-x86_64/wheel/getping/static/vendor/chart
+copying build/lib/getping/static/vendor/chart/LICENSE.md -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/chart
+copying build/lib/getping/static/vendor/chart/chart.umd.min.js -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/chart
+creating build/bdist.linux-x86_64/wheel/getping/static/vendor/vis-network
+copying build/lib/getping/static/vendor/vis-network/LICENSE-MIT -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/vis-network
+copying build/lib/getping/static/vendor/vis-network/vis-network.min.js -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/vis-network
+creating build/bdist.linux-x86_64/wheel/getping/static/vendor/bootstrap-icons
+copying build/lib/getping/static/vendor/bootstrap-icons/bootstrap-icons.css -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap-icons
+creating build/bdist.linux-x86_64/wheel/getping/static/vendor/bootstrap-icons/fonts
+copying build/lib/getping/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap-icons/fonts
+copying build/lib/getping/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2 -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap-icons/fonts
+copying build/lib/getping/static/vendor/bootstrap-icons/LICENSE -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap-icons
+creating build/bdist.linux-x86_64/wheel/getping/static/vendor/bootstrap
+copying build/lib/getping/static/vendor/bootstrap/bootstrap.min.css -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap
+copying build/lib/getping/static/vendor/bootstrap/LICENSE -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap
+copying build/lib/getping/static/vendor/bootstrap/bootstrap.bundle.min.js -> build/bdist.linux-x86_64/wheel/./getping/static/vendor/bootstrap
+copying build/lib/getping/static/vendor/manifest.json -> build/bdist.linux-x86_64/wheel/./getping/static/vendor
+copying build/lib/getping/licensing.py -> build/bdist.linux-x86_64/wheel/./getping
+running install_egg_info
+Copying getping.egg-info to build/bdist.linux-x86_64/wheel/./getping-1.1.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/getping-1.1.0.dist-info/WHEEL
+creating '/tmp/getping-pending-wheels/.tmp-auy6a5db/getping-1.1.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'getping/__init__.py'
+adding 'getping/__main__.py'
+adding 'getping/auth.py'
+adding 'getping/cli.py'
+adding 'getping/config.py'
+adding 'getping/helpers.py'
+adding 'getping/license_protocol.py'
+adding 'getping/license_validation.py'
+adding 'getping/license_worker.py'
+adding 'getping/licensing.py'
+adding 'getping/passwords.py'
+adding 'getping/runtime.py'
+adding 'getping/security.py'
+adding 'getping/state_files.py'
+adding 'getping/web.py'
+adding 'getping/db/__init__.py'
+adding 'getping/db/agents.py'
+adding 'getping/db/companies.py'
+adding 'getping/db/hosts.py'
+adding 'getping/db/incidents.py'
+adding 'getping/db/licenses.py'
+adding 'getping/db/maps.py'
+adding 'getping/db/schema.py'
+adding 'getping/db/telemetry.py'
+adding 'getping/db/users.py'
+adding 'getping/monitoring/__init__.py'
+adding 'getping/monitoring/collector.py'
+adding 'getping/monitoring/persistence.py'
+adding 'getping/monitoring/policy.py'
+adding 'getping/monitoring/probes.py'
+adding 'getping/monitoring/process_lock.py'
+adding 'getping/monitoring/processes.py'
+adding 'getping/monitoring/server_metrics.py'
+adding 'getping/monitoring/worker.py'
+adding 'getping/routes/__init__.py'
+adding 'getping/routes/agente.py'
+adding 'getping/routes/auth.py'
+adding 'getping/routes/configuracoes.py'
+adding 'getping/routes/dashboard.py'
+adding 'getping/routes/hosts.py'
+adding 'getping/routes/licenca.py'
+adding 'getping/routes/mapa.py'
+adding 'getping/routes/usuarios.py'
+adding 'getping/static/css/configuracoes.css'
+adding 'getping/static/css/dashboard.css'
+adding 'getping/static/css/host.css'
+adding 'getping/static/css/login.css'
+adding 'getping/static/css/mapa.css'
+adding 'getping/static/css/overview.css'
+adding 'getping/static/css/style.css'
+adding 'getping/static/css/usuarios.css'
+adding 'getping/static/img/icons_mapa/.default.png'
+adding 'getping/static/img/icons_mapa/icon_01.png'
+adding 'getping/static/img/icons_mapa/icon_02.png'
+adding 'getping/static/img/icons_mapa/icon_03.png'
+adding 'getping/static/img/icons_mapa/icon_04.png'
+adding 'getping/static/img/icons_mapa/icon_05.png'
+adding 'getping/static/img/icons_mapa/icon_06.png'
+adding 'getping/static/img/icons_mapa/icon_07.png'
+adding 'getping/static/img/icons_mapa/icon_08.png'
+adding 'getping/static/img/icons_mapa/icon_09.png'
+adding 'getping/static/img/icons_mapa/icon_10.png'
+adding 'getping/static/img/icons_mapa/icon_11.png'
+adding 'getping/static/img/icons_mapa/icon_12.png'
+adding 'getping/static/img/icons_mapa/icon_13.png'
+adding 'getping/static/img/icons_mapa/icon_14.png'
+adding 'getping/static/img/icons_mapa/icon_15.png'
+adding 'getping/static/img/icons_mapa/icon_16.png'
+adding 'getping/static/img/icons_mapa/icon_17.png'
+adding 'getping/static/img/icons_mapa/icon_18.png'
+adding 'getping/static/img/icons_mapa/icon_19.png'
+adding 'getping/static/img/icons_mapa/icon_20.png'
+adding 'getping/static/img/icons_mapa/icon_21.png'
+adding 'getping/static/img/icons_mapa/icon_22.png'
+adding 'getping/static/img/icons_mapa/icon_23.png'
+adding 'getping/static/img/icons_mapa/icon_24.png'
+adding 'getping/static/img/icons_mapa/icon_25.png'
+adding 'getping/static/img/icons_mapa/icon_26.png'
+adding 'getping/static/img/icons_mapa/icon_27.png'
+adding 'getping/static/img/icons_mapa/icon_28.png'
+adding 'getping/static/img/icons_mapa/icon_29.png'
+adding 'getping/static/img/icons_mapa/icon_30.png'
+adding 'getping/static/js/configuracoes.js'
+adding 'getping/static/js/dashboard.js'
+adding 'getping/static/js/host.js'
+adding 'getping/static/js/mapa.js'
+adding 'getping/static/js/monitoring.js'
+adding 'getping/static/js/overview.js'
+adding 'getping/static/js/script.js'
+adding 'getping/static/js/usuarios.js'
+adding 'getping/static/vendor/manifest.json'
+adding 'getping/static/vendor/bootstrap/LICENSE'
+adding 'getping/static/vendor/bootstrap/bootstrap.bundle.min.js'
+adding 'getping/static/vendor/bootstrap/bootstrap.min.css'
+adding 'getping/static/vendor/bootstrap-icons/LICENSE'
+adding 'getping/static/vendor/bootstrap-icons/bootstrap-icons.css'
+adding 'getping/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff'
+adding 'getping/static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2'
+adding 'getping/static/vendor/chart/LICENSE.md'
+adding 'getping/static/vendor/chart/chart.umd.min.js'
+adding 'getping/static/vendor/vis-network/LICENSE-MIT'
+adding 'getping/static/vendor/vis-network/vis-network.min.js'
+adding 'getping/templates/_probe_fields.html'
+adding 'getping/templates/base.html'
+adding 'getping/templates/configuracoes.html'
+adding 'getping/templates/dashboard.html'
+adding 'getping/templates/hosts.html'
+adding 'getping/templates/login.html'
+adding 'getping/templates/mapa.html'
+adding 'getping/templates/overview.html'
+adding 'getping/templates/primeiro_acesso.html'
+adding 'getping/templates/token_criado.html'
+adding 'getping/templates/usuarios.html'
+adding 'getping-1.1.0.dist-info/METADATA'
+adding 'getping-1.1.0.dist-info/WHEEL'
+adding 'getping-1.1.0.dist-info/entry_points.txt'
+adding 'getping-1.1.0.dist-info/top_level.txt'
+adding 'getping-1.1.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+getping-1.1.0-py3-none-any.whl

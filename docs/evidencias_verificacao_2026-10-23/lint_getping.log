@@ -1,0 +1,58 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> getping/cli.py:43:9
+   |
+41 |       args = parser.parse_args()
+42 |       if args.command == "check-config":
+43 | /         import sys
+44 | |         from getping.config import validar_configuracao_producao
+   | |________________________________________________________________^
+45 |
+46 |           erros = validar_configuracao_producao()
+   |
+help: Organize imports
+   |
+43 |         import sys
+44 +
+45 |         from getping.config import validar_configuracao_producao
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> getping/db/licenses.py:3:1
+  |
+1 |   """Persistência e integridade do licenciamento."""
+2 |
+3 | / import hashlib
+4 | | import hmac
+5 | |
+6 | | from getping.db import conectar
+  | |_______________________________^
+help: Organize imports
+  |
+7 |
+  -
+8 | DOMAIN_CACHE = b"GetPing/local_cache/v2\x00"
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/test_producao.py:244:9
+    |
+242 |       def test_cache_adulterado_detectado_mesmo_com_hmac_recalculado(self):
+243 |           """L4: Se colunas locais divergirem do documento assinado central, o cache é marcado como adulterado."""
+244 | /         import json
+245 | |         from getping.db.licenses import gerar_assinatura_licenca
+246 | |         from getping.licensing import verificar_status_licenca
+    | |______________________________________________________________^
+247 |
+248 |           lic = obter_licenca_local()
+    |
+help: Organize imports
+    |
+244 |         import json
+245 +
+246 |         from getping.db.licenses import gerar_assinatura_licenca
+    |
+
+Found 3 errors.
+[*] 3 fixable with `--fix`.
+
+exit_code=1

@@ -1,0 +1,9 @@
+test_bad_signature_with_fresh_nonce_raises_controlled_value_error (tests.test_license_validation.LicenseValidationTests.test_bad_signature_with_fresh_nonce_raises_controlled_value_error) ... ok
+test_inconsistent_expiration_and_offline_window_rejected (tests.test_license_validation.LicenseValidationTests.test_inconsistent_expiration_and_offline_window_rejected) ... ok
+test_missing_binding_is_rejected_even_without_request_nonce (tests.test_license_validation.LicenseValidationTests.test_missing_binding_is_rejected_even_without_request_nonce) ... ok
+test_signed_success_and_denial_validate_without_mutating_document (tests.test_license_validation.LicenseValidationTests.test_signed_success_and_denial_validate_without_mutating_document) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.014s
+
+OK

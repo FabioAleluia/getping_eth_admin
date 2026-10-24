@@ -1,0 +1,146 @@
+unformatted: File would be reformatted
+  --> getping/__init__.py:14:60
+   |
+13 |     config = carregar_opcoes(test_config)
+   -     if config.get("GETPING_ENV") != "development" and not (test_config and test_config.get("TESTING")):
+14 +     if config.get("GETPING_ENV") != "development" and not (
+15 +         test_config and test_config.get("TESTING")
+16 +     ):
+17 |         erros = validar_configuracao_producao(config)
+   |
+
+unformatted: File would be reformatted
+  --> getping/config.py:50:36
+   |
+49 |     interfaces = tuple(dict.fromkeys(i.strip() for i in interfaces.split(",") if i.strip()))
+   -     if len(interfaces) > 16 or any(not re.fullmatch(r"[A-Za-z0-9_.-]{1,15}", i) for i in interfaces):
+50 +     if len(interfaces) > 16 or any(
+51 +         not re.fullmatch(r"[A-Za-z0-9_.-]{1,15}", i) for i in interfaces
+52 +     ):
+53 |         raise ValueError("SERVER_NETWORK_INTERFACES deve listar até 16 nomes de interface válidos.")
+   |
+
+unformatted: File would be reformatted
+   --> getping/licensing.py:380:20
+    |
+379 |                     raise ValueError("Nonce da resposta não confere com a requisição.")
+    -                 if dados.get("chave_licenca") and dados["chave_licenca"].strip() != chave_licenca.strip():
+380 +                 if (
+381 +                     dados.get("chave_licenca")
+382 +                     and dados["chave_licenca"].strip() != chave_licenca.strip()
+383 +                 ):
+384 |                     raise ValueError("Chave de licença da resposta não confere com a requisição.")
+--------------------------------------------------------------------------------
+390 |                         if emissor_orig != configured_origin:
+    -                             raise ValueError("Emissor da licença não confere com o servidor configurado.")
+391 +                             raise ValueError(
+392 +                                 "Emissor da licença não confere com o servidor configurado."
+393 +                             )
+394 |                     except Exception as err:
+--------------------------------------------------------------------------------
+524 |         # L8: Cache legado (gravado antes do protocolo v2 / sem autorizacao_json)
+    -         if not lic.get("autorizacao_json") or lic.get("revision") is None or lic.get("revision") == 0:
+525 +         if (
+526 +             not lic.get("autorizacao_json")
+527 +             or lic.get("revision") is None
+528 +             or lic.get("revision") == 0
+529 +         ):
+530 |             return {
+--------------------------------------------------------------------------------
+628 |                     "chave_licenca": lic.get("chave_licenca", ""),
+    -                     "servidor_admin_url": lic.get("servidor_admin_url", config["LICENCA_SERVER_URL"]),
+629 +                     "servidor_admin_url": lic.get(
+630 +                         "servidor_admin_url", config["LICENCA_SERVER_URL"]
+631 +                     ),
+632 |                     "ultimo_checkin": lic.get("ultimo_checkin"),
+--------------------------------------------------------------------------------
+651 |         inconsistente = False
+    -         if aut.get("chave_licenca") and aut["chave_licenca"].strip() != (lic.get("chave_licenca") or "").strip():
+652 +         if (
+653 +             aut.get("chave_licenca")
+654 +             and aut["chave_licenca"].strip() != (lic.get("chave_licenca") or "").strip()
+655 +         ):
+656 |             inconsistente = True
+657 |         if aut.get("cliente") and aut["cliente"].strip() != (lic.get("cliente_nome") or "").strip():
+658 |             inconsistente = True
+    -         if aut.get("tipo_plano") and aut["tipo_plano"].strip() != (lic.get("tipo_plano") or "").strip():
+659 +         if (
+660 +             aut.get("tipo_plano")
+661 +             and aut["tipo_plano"].strip() != (lic.get("tipo_plano") or "").strip()
+662 +         ):
+663 |             inconsistente = True
+664 |         if aut.get("limite_hosts") is not None and aut["limite_hosts"] != lic.get("limite_hosts"):
+665 |             inconsistente = True
+    -         if aut.get("limite_agentes") is not None and aut["limite_agentes"] != lic.get("limite_agentes"):
+666 +         if aut.get("limite_agentes") is not None and aut["limite_agentes"] != lic.get(
+667 +             "limite_agentes"
+668 +         ):
+669 |             inconsistente = True
+    -         if aut.get("expira_em") and aut["expira_em"].strip() != (lic.get("expira_em") or "").strip():
+670 +         if (
+671 +             aut.get("expira_em")
+672 +             and aut["expira_em"].strip() != (lic.get("expira_em") or "").strip()
+673 +         ):
+674 |             inconsistente = True
+    -         if aut.get("fingerprint") and aut["fingerprint"].strip() != (lic.get("instancia_fingerprint") or "").strip():
+675 +         if (
+676 +             aut.get("fingerprint")
+677 +             and aut["fingerprint"].strip() != (lic.get("instancia_fingerprint") or "").strip()
+678 +         ):
+679 |             inconsistente = True
+--------------------------------------------------------------------------------
+779 |                 ).replace(tzinfo=timezone.utc)
+    -                 if (
+    -                     agora - ultimo_checkin_dt
+    -                 ).total_seconds() > configuracao_atual()["MAX_DIAS_OFFLINE"] * 86400:
+780 +                 if (agora - ultimo_checkin_dt).total_seconds() > configuracao_atual()[
+781 +                     "MAX_DIAS_OFFLINE"
+782 +                 ] * 86400:
+783 |                     status = "offline_expirado"
+    |
+
+unformatted: File would be reformatted
+   --> getping/routes/licenca.py:107:27
+    |
+106 |             # Resposta autoritativa de bloqueio
+    -             tipo_alerta = "warning" if status_lic["status"] in ("expirada", "aguardando_vinculo") else "danger"
+107 +             tipo_alerta = (
+108 +                 "warning"
+109 +                 if status_lic["status"] in ("expirada", "aguardando_vinculo")
+110 +                 else "danger"
+111 +             )
+112 |             if request.is_json:
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_n2_n3_n4_n5.py:223:28
+    |
+222 |             with conectar() as conn:
+    -                 lic = dict(conn.execute("SELECT * FROM licenca_local ORDER BY id DESC LIMIT 1").fetchone())
+223 +                 lic = dict(
+224 +                     conn.execute("SELECT * FROM licenca_local ORDER BY id DESC LIMIT 1").fetchone()
+225 +                 )
+226 |                 sig = gerar_assinatura_licenca(
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_producao.py:299:1
+    |
+298 |         self.assertIn("revalidação online necessária", st["mensagem"].lower())
+    -
+    |
+
+unformatted: File would be reformatted
+  --> tests/test_revisao_producao.py:83:24
+   |
+82 |         with conectar() as conn:
+   -             lic = dict(conn.execute("SELECT * FROM licenca_local ORDER BY id DESC LIMIT 1").fetchone())
+83 +             lic = dict(
+84 +                 conn.execute("SELECT * FROM licenca_local ORDER BY id DESC LIMIT 1").fetchone()
+85 +             )
+86 |             sig = gerar_assinatura_licenca(
+   |
+
+7 files would be reformatted, 74 files already formatted
+
+exit_code=1

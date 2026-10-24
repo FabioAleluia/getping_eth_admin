@@ -1,0 +1,213 @@
+running bdist_wheel
+running build
+running build_py
+creating build/lib/getping_admin
+copying getping_admin/__init__.py -> build/lib/getping_admin
+copying getping_admin/auth.py -> build/lib/getping_admin
+copying getping_admin/license_protocol.py -> build/lib/getping_admin
+copying getping_admin/limits.py -> build/lib/getping_admin
+copying getping_admin/security.py -> build/lib/getping_admin
+copying getping_admin/validation.py -> build/lib/getping_admin
+copying getping_admin/config.py -> build/lib/getping_admin
+copying getping_admin/commands.py -> build/lib/getping_admin
+copying getping_admin/license_keys.py -> build/lib/getping_admin
+copying getping_admin/identity.py -> build/lib/getping_admin
+copying getping_admin/pagination.py -> build/lib/getping_admin
+copying getping_admin/__main__.py -> build/lib/getping_admin
+copying getping_admin/audit.py -> build/lib/getping_admin
+copying getping_admin/licensing.py -> build/lib/getping_admin
+creating build/lib/getping_admin/routes
+copying getping_admin/routes/__init__.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/auth.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/api.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/licencas.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/dashboard.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/clientes.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/usuarios.py -> build/lib/getping_admin/routes
+copying getping_admin/routes/audit.py -> build/lib/getping_admin/routes
+creating build/lib/getping_admin/database
+copying getping_admin/database/__init__.py -> build/lib/getping_admin/database
+copying getping_admin/database/db.py -> build/lib/getping_admin/database
+copying getping_admin/database/diagnostics.py -> build/lib/getping_admin/database
+copying getping_admin/database/migrate.py -> build/lib/getping_admin/database
+running egg_info
+creating getping_admin.egg-info
+writing getping_admin.egg-info/PKG-INFO
+writing dependency_links to getping_admin.egg-info/dependency_links.txt
+writing requirements to getping_admin.egg-info/requires.txt
+writing top-level names to getping_admin.egg-info/top_level.txt
+writing manifest file 'getping_admin.egg-info/SOURCES.txt'
+reading manifest file 'getping_admin.egg-info/SOURCES.txt'
+writing manifest file 'getping_admin.egg-info/SOURCES.txt'
+creating build/lib/getping_admin/templates
+copying getping_admin/templates/error.html -> build/lib/getping_admin/templates
+copying getping_admin/templates/base.html -> build/lib/getping_admin/templates
+creating build/lib/getping_admin/templates/clientes
+copying getping_admin/templates/clientes/listar.html -> build/lib/getping_admin/templates/clientes
+copying getping_admin/templates/clientes/form.html -> build/lib/getping_admin/templates/clientes
+creating build/lib/getping_admin/templates/auth
+copying getping_admin/templates/auth/perfil.html -> build/lib/getping_admin/templates/auth
+copying getping_admin/templates/auth/login.html -> build/lib/getping_admin/templates/auth
+copying getping_admin/templates/auth/trocar_senha_obrigatoria.html -> build/lib/getping_admin/templates/auth
+creating build/lib/getping_admin/templates/licencas
+copying getping_admin/templates/licencas/listar.html -> build/lib/getping_admin/templates/licencas
+copying getping_admin/templates/licencas/detalhes.html -> build/lib/getping_admin/templates/licencas
+copying getping_admin/templates/licencas/form.html -> build/lib/getping_admin/templates/licencas
+creating build/lib/getping_admin/templates/dashboard
+copying getping_admin/templates/dashboard/index.html -> build/lib/getping_admin/templates/dashboard
+creating build/lib/getping_admin/templates/usuarios
+copying getping_admin/templates/usuarios/listar.html -> build/lib/getping_admin/templates/usuarios
+copying getping_admin/templates/usuarios/form.html -> build/lib/getping_admin/templates/usuarios
+creating build/lib/getping_admin/templates/audit
+copying getping_admin/templates/audit/listar.html -> build/lib/getping_admin/templates/audit
+creating build/lib/getping_admin/static/css
+copying getping_admin/static/css/clientes.css -> build/lib/getping_admin/static/css
+copying getping_admin/static/css/base.css -> build/lib/getping_admin/static/css
+copying getping_admin/static/css/licencas.css -> build/lib/getping_admin/static/css
+copying getping_admin/static/css/tailwind.css -> build/lib/getping_admin/static/css
+copying getping_admin/static/css/login.css -> build/lib/getping_admin/static/css
+creating build/lib/getping_admin/static/js
+copying getping_admin/static/js/login.js -> build/lib/getping_admin/static/js
+copying getping_admin/static/js/base.js -> build/lib/getping_admin/static/js
+copying getping_admin/static/js/primeiro_acesso.js -> build/lib/getping_admin/static/js
+copying getping_admin/static/js/licencas.js -> build/lib/getping_admin/static/js
+copying getping_admin/database/schema.sql -> build/lib/getping_admin/database
+creating build/lib/getping_admin/database/migrations
+copying getping_admin/database/migrations/003_production_validation.sql -> build/lib/getping_admin/database/migrations
+copying getping_admin/database/migrations/001_security.sql -> build/lib/getping_admin/database/migrations
+copying getping_admin/database/migrations/002_authorized_bindings.sql -> build/lib/getping_admin/database/migrations
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/getping_admin
+creating build/bdist.linux-x86_64/wheel/getping_admin/routes
+copying build/lib/getping_admin/routes/__init__.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/auth.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/api.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/licencas.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/dashboard.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/clientes.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/usuarios.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/routes/audit.py -> build/bdist.linux-x86_64/wheel/./getping_admin/routes
+copying build/lib/getping_admin/__init__.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/auth.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/license_protocol.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/limits.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/security.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates/clientes
+copying build/lib/getping_admin/templates/clientes/listar.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/clientes
+copying build/lib/getping_admin/templates/clientes/form.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/clientes
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates/auth
+copying build/lib/getping_admin/templates/auth/perfil.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/auth
+copying build/lib/getping_admin/templates/auth/login.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/auth
+copying build/lib/getping_admin/templates/auth/trocar_senha_obrigatoria.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/auth
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates/licencas
+copying build/lib/getping_admin/templates/licencas/listar.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/licencas
+copying build/lib/getping_admin/templates/licencas/detalhes.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/licencas
+copying build/lib/getping_admin/templates/licencas/form.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/licencas
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates/dashboard
+copying build/lib/getping_admin/templates/dashboard/index.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/dashboard
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates/usuarios
+copying build/lib/getping_admin/templates/usuarios/listar.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/usuarios
+copying build/lib/getping_admin/templates/usuarios/form.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/usuarios
+copying build/lib/getping_admin/templates/error.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates
+creating build/bdist.linux-x86_64/wheel/getping_admin/templates/audit
+copying build/lib/getping_admin/templates/audit/listar.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates/audit
+copying build/lib/getping_admin/templates/base.html -> build/bdist.linux-x86_64/wheel/./getping_admin/templates
+copying build/lib/getping_admin/validation.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/config.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+creating build/bdist.linux-x86_64/wheel/getping_admin/database
+copying build/lib/getping_admin/database/__init__.py -> build/bdist.linux-x86_64/wheel/./getping_admin/database
+copying build/lib/getping_admin/database/db.py -> build/bdist.linux-x86_64/wheel/./getping_admin/database
+creating build/bdist.linux-x86_64/wheel/getping_admin/database/migrations
+copying build/lib/getping_admin/database/migrations/003_production_validation.sql -> build/bdist.linux-x86_64/wheel/./getping_admin/database/migrations
+copying build/lib/getping_admin/database/migrations/001_security.sql -> build/bdist.linux-x86_64/wheel/./getping_admin/database/migrations
+copying build/lib/getping_admin/database/migrations/002_authorized_bindings.sql -> build/bdist.linux-x86_64/wheel/./getping_admin/database/migrations
+copying build/lib/getping_admin/database/diagnostics.py -> build/bdist.linux-x86_64/wheel/./getping_admin/database
+copying build/lib/getping_admin/database/schema.sql -> build/bdist.linux-x86_64/wheel/./getping_admin/database
+copying build/lib/getping_admin/database/migrate.py -> build/bdist.linux-x86_64/wheel/./getping_admin/database
+copying build/lib/getping_admin/commands.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/license_keys.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/identity.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/pagination.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/__main__.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+creating build/bdist.linux-x86_64/wheel/getping_admin/static
+creating build/bdist.linux-x86_64/wheel/getping_admin/static/css
+copying build/lib/getping_admin/static/css/clientes.css -> build/bdist.linux-x86_64/wheel/./getping_admin/static/css
+copying build/lib/getping_admin/static/css/base.css -> build/bdist.linux-x86_64/wheel/./getping_admin/static/css
+copying build/lib/getping_admin/static/css/licencas.css -> build/bdist.linux-x86_64/wheel/./getping_admin/static/css
+copying build/lib/getping_admin/static/css/tailwind.css -> build/bdist.linux-x86_64/wheel/./getping_admin/static/css
+copying build/lib/getping_admin/static/css/login.css -> build/bdist.linux-x86_64/wheel/./getping_admin/static/css
+creating build/bdist.linux-x86_64/wheel/getping_admin/static/js
+copying build/lib/getping_admin/static/js/login.js -> build/bdist.linux-x86_64/wheel/./getping_admin/static/js
+copying build/lib/getping_admin/static/js/base.js -> build/bdist.linux-x86_64/wheel/./getping_admin/static/js
+copying build/lib/getping_admin/static/js/primeiro_acesso.js -> build/bdist.linux-x86_64/wheel/./getping_admin/static/js
+copying build/lib/getping_admin/static/js/licencas.js -> build/bdist.linux-x86_64/wheel/./getping_admin/static/js
+copying build/lib/getping_admin/audit.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+copying build/lib/getping_admin/licensing.py -> build/bdist.linux-x86_64/wheel/./getping_admin
+running install_egg_info
+Copying getping_admin.egg-info to build/bdist.linux-x86_64/wheel/./getping_admin-0.2.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/getping_admin-0.2.0.dist-info/WHEEL
+creating '/tmp/getping-pending-wheels/.tmp-7xteg58d/getping_admin-0.2.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'getping_admin/__init__.py'
+adding 'getping_admin/__main__.py'
+adding 'getping_admin/audit.py'
+adding 'getping_admin/auth.py'
+adding 'getping_admin/commands.py'
+adding 'getping_admin/config.py'
+adding 'getping_admin/identity.py'
+adding 'getping_admin/license_keys.py'
+adding 'getping_admin/license_protocol.py'
+adding 'getping_admin/licensing.py'
+adding 'getping_admin/limits.py'
+adding 'getping_admin/pagination.py'
+adding 'getping_admin/security.py'
+adding 'getping_admin/validation.py'
+adding 'getping_admin/database/__init__.py'
+adding 'getping_admin/database/db.py'
+adding 'getping_admin/database/diagnostics.py'
+adding 'getping_admin/database/migrate.py'
+adding 'getping_admin/database/schema.sql'
+adding 'getping_admin/database/migrations/001_security.sql'
+adding 'getping_admin/database/migrations/002_authorized_bindings.sql'
+adding 'getping_admin/database/migrations/003_production_validation.sql'
+adding 'getping_admin/routes/__init__.py'
+adding 'getping_admin/routes/api.py'
+adding 'getping_admin/routes/audit.py'
+adding 'getping_admin/routes/auth.py'
+adding 'getping_admin/routes/clientes.py'
+adding 'getping_admin/routes/dashboard.py'
+adding 'getping_admin/routes/licencas.py'
+adding 'getping_admin/routes/usuarios.py'
+adding 'getping_admin/static/css/base.css'
+adding 'getping_admin/static/css/clientes.css'
+adding 'getping_admin/static/css/licencas.css'
+adding 'getping_admin/static/css/login.css'
+adding 'getping_admin/static/css/tailwind.css'
+adding 'getping_admin/static/js/base.js'
+adding 'getping_admin/static/js/licencas.js'
+adding 'getping_admin/static/js/login.js'
+adding 'getping_admin/static/js/primeiro_acesso.js'
+adding 'getping_admin/templates/base.html'
+adding 'getping_admin/templates/error.html'
+adding 'getping_admin/templates/audit/listar.html'
+adding 'getping_admin/templates/auth/login.html'
+adding 'getping_admin/templates/auth/perfil.html'
+adding 'getping_admin/templates/auth/trocar_senha_obrigatoria.html'
+adding 'getping_admin/templates/clientes/form.html'
+adding 'getping_admin/templates/clientes/listar.html'
+adding 'getping_admin/templates/dashboard/index.html'
+adding 'getping_admin/templates/licencas/detalhes.html'
+adding 'getping_admin/templates/licencas/form.html'
+adding 'getping_admin/templates/licencas/listar.html'
+adding 'getping_admin/templates/usuarios/form.html'
+adding 'getping_admin/templates/usuarios/listar.html'
+adding 'getping_admin-0.2.0.dist-info/METADATA'
+adding 'getping_admin-0.2.0.dist-info/WHEEL'
+adding 'getping_admin-0.2.0.dist-info/top_level.txt'
+adding 'getping_admin-0.2.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+getping_admin-0.2.0-py3-none-any.whl

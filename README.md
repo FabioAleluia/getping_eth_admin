@@ -1,3 +1,5 @@
+> **Correções pendentes de 23/10/2026:** contrato assinado, prontidão, concorrência e distribuição revisados. Consulte o [resultado e as evidências](docs/CORRECOES_PENDENTES_2026-10-23.md).
+
 > **Atualização de segurança 0.2.0 / protocolo 2:** produção agora exige HTTPS,
 > vínculos autorizados e chave privada Ed25519. HTTP e respostas sem assinatura
 > são permitidos apenas no modo explícito de desenvolvimento. Leia
@@ -69,6 +71,26 @@ antes de atualizar. A migração verifica conflitos entre identificadores, norma
 contas sem conflito e fortalece a validação dos limites. Não corrige valores
 comerciais inválidos automaticamente. O diagnóstico de produção agora verifica
 dados e objetos esperados; `/health` verifica a estrutura sem varrer dados comerciais.
+
+### Deploy Automatizado na VPS (Ubuntu / Debian)
+
+Para implantar a central completa em produção com um único comando:
+
+```bash
+# Clone ou copie o repositório na VPS e execute como root:
+sudo ./deploy_vps.sh
+```
+
+O assistente solicitará interativamente o domínio (ex: `admin.seudominio.com`), e-mail e senha do administrador inicial, e cuidará automaticamente de:
+- Instalação de dependências do sistema (`nginx`, `certbot`, `python3-venv`, `ufw`).
+- Criação do usuário de sistema `getping` e diretórios com permissões estritas (`/opt/getping-admin`).
+- Geração da `SECRET_KEY` e do par criptográfico assimétrico **Ed25519** (`0600`).
+- Aplicação das migrações do banco de dados e provisionamento do Superadmin.
+- Configuração e ativação dos serviços **Systemd** (`getping-admin.service` e timer de limpeza de logs).
+- Configuração do **Nginx** como proxy reverso seguro e emissão de certificado SSL Let's Encrypt.
+- Configuração opcional do firewall **UFW** (liberando SSH, 80 e 443).
+
+### Deploy Manual / Configuração Personalizada
 
 ```bash
 pip install -r requirements-production.txt

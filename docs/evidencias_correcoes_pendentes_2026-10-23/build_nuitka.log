@@ -1,0 +1,20 @@
+Nuitka-Options: Used command line options:
+Nuitka-Options:   --mode=standalone --output-filename=getping --output-dir=/tmp/getping-fixes-20261023-3jjnwmet/build/nuitka/1.1.0-20261023T232118Z --jobs=2 --lto=no --disable-cache=ccache --python-flag=isolated --python-flag=no_docstrings --python-flag=unbuffered --include-package=getping --include-package=waitress --include-package=cryptography --include-package=_cffi_backend --include-package-data=certifi --include-package-data=tzdata --include-data-dir=getping/templates=templates --include-data-dir=getping/static=static --report=/tmp/getping-fixes-20261023-3jjnwmet/build/nuitka/1.1.0-20261023T232118Z/compilation-report.xml /tmp/getping-fixes-20261023-3jjnwmet/launcher.py
+Nuitka: Starting Python compilation with:
+Nuitka:   Version '4.3.1' on Python 3.12 (flavor 'Debian Python') commercial grade 'not installed'.
+Nuitka-Plugins:anti-bloat: Not including '_json' automatically in order to avoid bloat, but this may cause: may slow down by using fallback implementation.
+Nuitka-Inclusion:WARNING: Duplicate data file 'certifi/cacert.pem' from 'package data for 'certifi'' is already provided via 'package 'certifi' package data' -- ignored.
+Nuitka: Completed Python level compilation and optimization.
+Nuitka: Generating source code for C backend compiler.
+Nuitka: Running data composer tool for optimal constant value handling.
+Nuitka: Running C compilation via Scons.
+Nuitka-Scons: Backend C compiler: gcc (gcc 13).
+Nuitka-Scons: Backend C linking with 333 files (no progress information available for this stage).
+Nuitka-Options: Included 11 data files due to specified data dir 'getping/templates' on command line.
+Nuitka-Options: Included 59 data files due to specified data dir 'getping/static' on command line.
+Nuitka-Options: Included data file 'certifi/cacert.pem' due to package 'certifi' package data.
+Nuitka-Options: Included 605 data files due to package 'tzdata' package data.
+Nuitka: Keeping build directory '/tmp/getping-fixes-20261023-3jjnwmet/build/nuitka/1.1.0-20261023T232118Z/launcher.build'.
+Nuitka: Successfully created '/tmp/getping-fixes-20261023-3jjnwmet/build/nuitka/1.1.0-20261023T232118Z/launcher.dist/getping'.
+Nuitka-Reports: Compilation report written to file '/tmp/getping-fixes-20261023-3jjnwmet/build/nuitka/1.1.0-20261023T232118Z/compilation-report.xml'.
+/tmp/getping-pending-releases/getping-1.1.0-linux-amd64.tar.gz

@@ -1,0 +1,335 @@
+test_autenticacao_admin_correta_e_incorreta (tests.test_banco.TestBanco.test_autenticacao_admin_correta_e_incorreta)
+Testa o hash e a validação de credenciais de login do usuário admin. ... ok
+test_concorrencia_de_threads_sem_lock_error (tests.test_banco.TestBanco.test_concorrencia_de_threads_sem_lock_error)
+Executa múltiplas threads simultâneas fazendo leituras e escritas sem erros de 'database is locked'. ... ok
+test_conexao_e_fechamento_automatico (tests.test_banco.TestBanco.test_conexao_e_fechamento_automatico)
+Verifica se o context manager conectar() executa queries e encerra sem erros. ... ok
+test_empresas_carregadas (tests.test_banco.TestBanco.test_empresas_carregadas)
+Verifica se a listagem de empresas padrão funciona. ... ok
+test_backup_restaura_licenca_e_identidade (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_backup_restaura_licenca_e_identidade) ... ok
+test_cookie_revogado_nao_redefine_senha (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_cookie_revogado_nao_redefine_senha) ... ok
+test_identidade_persistida_entre_processos (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_identidade_persistida_entre_processos) ... ok
+test_import_web_nao_inicia_monitoramento_nem_migracao (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_import_web_nao_inicia_monitoramento_nem_migracao) ... ok
+test_incidentes_unicos_entre_processos (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_incidentes_unicos_entre_processos) ... ok
+test_init_db_nao_cria_contas_padrao (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_init_db_nao_cria_contas_padrao) ... ok
+test_lock_exclui_outro_processo (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_lock_exclui_outro_processo) ... ok
+test_migracao_bloqueia_credenciais_publicas_e_preserva_senha_forte (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_migracao_bloqueia_credenciais_publicas_e_preserva_senha_forte) ... ok
+test_ping_timeout_e_alvos_invalidos (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_ping_timeout_e_alvos_invalidos) ... ok
+test_sessao_sem_credenciais_nao_acessa_primeiro_acesso (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_sessao_sem_credenciais_nao_acessa_primeiro_acesso) ... ok
+test_token_novo_nao_reivindica_host_legado (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_token_novo_nao_reivindica_host_legado) ... ok
+test_tokens_nao_sobrescrevem_outro_dispositivo (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_tokens_nao_sobrescrevem_outro_dispositivo) ... ok
+test_troca_inicial_consumida_uma_vez (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_troca_inicial_consumida_uma_vez) ... ok
+test_trocas_concorrentes_tem_um_vencedor (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_trocas_concorrentes_tem_um_vencedor) ... ok
+test_usuario_desativado_nao_conclui_primeiro_acesso (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_usuario_desativado_nao_conclui_primeiro_acesso) ... ok
+test_watchdog_independe_de_rodada_ping_bloqueada (tests.test_correcoes_criticas_altas.TestCorrecoesCriticasAltas.test_watchdog_independe_de_rodada_ping_bloqueada) ... ok
+test_api_overview_dados_autenticado (tests.test_dashboard_api.TestDashboardAPI.test_api_overview_dados_autenticado)
+Com sessão ativa e licença válida, a API de dados deve retornar JSON com hosts. ... WARNING:root:Métricas do servidor indisponíveis: rede (verifique SERVER_NETWORK_INTERFACES)
+ok
+test_dashboard_redireciona_se_deslogado (tests.test_dashboard_api.TestDashboardAPI.test_dashboard_redireciona_se_deslogado)
+Acesso ao dashboard sem autenticação deve redirecionar para login. ... ok
+test_buscar_host_por_ip_dns_case_insensitive_e_escopo (tests.test_duplicidade_hosts.TestDuplicidadeHosts.test_buscar_host_por_ip_dns_case_insensitive_e_escopo)
+buscar_host_por_ip_dns deve encontrar host com mesmo IP (case-insensitive). ... ok
+test_duplicidade_escopo_usuario_comum (tests.test_duplicidade_hosts.TestDuplicidadeHosts.test_duplicidade_escopo_usuario_comum)
+Usuário comum só tem duplicidade contra seus próprios hosts ou agents. ... ok
+test_impedir_cadastro_ip_duplicado_mesma_empresa (tests.test_duplicidade_hosts.TestDuplicidadeHosts.test_impedir_cadastro_ip_duplicado_mesma_empresa)
+cadastrar_host_manual deve rejeitar segundo cadastro com mesmo IP/DNS. ... ok
+test_rota_cadastrar_manual_com_duplicado_flash_danger (tests.test_duplicidade_hosts.TestDuplicidadeHosts.test_rota_cadastrar_manual_com_duplicado_flash_danger)
+Ao enviar POST para /hosts/cadastrar com IP existente, deve exibir alerta. ... ok
+test_aplicacoes_isolam_banco_chave_fingerprint_e_politica (tests.test_factory.TestFactory.test_aplicacoes_isolam_banco_chave_fingerprint_e_politica) ... ok
+test_caminho_legado_preserva_banco_e_segredo (tests.test_factory.TestFactory.test_caminho_legado_preserva_banco_e_segredo) ... ok
+test_configuracao_rejeita_porta_e_parametros_invalidos (tests.test_factory.TestFactory.test_configuracao_rejeita_porta_e_parametros_invalidos) ... ok
+test_configuracao_servico_sem_flask_e_sem_mutacao_do_ambiente (tests.test_factory.TestFactory.test_configuracao_servico_sem_flask_e_sem_mutacao_do_ambiente) ... ok
+test_imports_e_factory_nao_criam_schema_ou_threads (tests.test_factory.TestFactory.test_imports_e_factory_nao_criam_schema_ou_threads) ... ok
+test_versao_dos_fontes_e_override (tests.test_factory.TestFactory.test_versao_dos_fontes_e_override) ... ok
+test_worker_despachado_fora_do_diretorio_do_projeto (tests.test_factory.TestFactory.test_worker_despachado_fora_do_diretorio_do_projeto) ... ok
+test_atributos_de_dados_nas_linhas_de_hosts (tests.test_filtro_hosts.TestFiltroHosts.test_atributos_de_dados_nas_linhas_de_hosts)
+Verifica se as linhas da tabela contêm os data-attributes necessários para a filtragem. ... ok
+test_elementos_filtro_presentes_na_pagina (tests.test_filtro_hosts.TestFiltroHosts.test_elementos_filtro_presentes_na_pagina)
+Verifica se a barra de pesquisa e filtros é renderizada no cabeçalho de /hosts. ... ok
+test_script_host_js_contem_logica_de_filtro (tests.test_filtro_hosts.TestFiltroHosts.test_script_host_js_contem_logica_de_filtro)
+Verifica se o arquivo estático host.js contém a lógica de busca e filtro dinâmico. ... ok
+test_atributos_de_dados_nas_linhas_do_overview (tests.test_filtro_overview.TestFiltroOverview.test_atributos_de_dados_nas_linhas_do_overview)
+Verifica se as linhas da tabela contêm os data-attributes necessários para a filtragem no Overview. ... ok
+test_elementos_filtro_presentes_no_overview (tests.test_filtro_overview.TestFiltroOverview.test_elementos_filtro_presentes_no_overview)
+Verifica se a barra de pesquisa e filtros é renderizada no cabeçalho de /overview. ... ok
+test_script_overview_js_contem_logica_de_filtro (tests.test_filtro_overview.TestFiltroOverview.test_script_overview_js_contem_logica_de_filtro)
+Verifica se o arquivo estático overview.js contém a lógica de busca e filtro dinâmico. ... ok
+test_configuracao_externa_sem_execucao_shell (tests.test_instalador.TestInstalador.test_configuracao_externa_sem_execucao_shell) ... ok
+test_empacotador_rejeita_fontes_e_segredos (tests.test_instalador.TestInstalador.test_empacotador_rejeita_fontes_e_segredos) ... ok
+test_nuitka_e_pyinstaller_reexecutam_worker_sem_python_m (tests.test_instalador.TestInstalador.test_nuitka_e_pyinstaller_reexecutam_worker_sem_python_m) ... ok
+test_pacote_staging_reinstalacao_e_checksum (tests.test_instalador.TestInstalador.test_pacote_staging_reinstalacao_e_checksum) ... ok
+test_provisionamento_idempotente_preserva_hash (tests.test_instalador.TestInstalador.test_provisionamento_idempotente_preserva_hash) ... ok
+test_versao_do_release_prevalece_sobre_configuracao_antiga (tests.test_instalador.TestInstalador.test_versao_do_release_prevalece_sobre_configuracao_antiga) ... ok
+test_web_producao_nao_inicia_coleta_nem_migracao (tests.test_instalador.TestInstalador.test_web_producao_nao_inicia_coleta_nem_migracao) ... Conta existente preservada.
+GetPing web: 0.0.0.0:5000 (Waitress, 6 threads)
+ok
+test_classificacao_ips_e_dns_publicos (tests.test_lan_wan.TestClassificacaoLanWan.test_classificacao_ips_e_dns_publicos)
+IPs públicos e domínios da internet devem ser classificados como WAN (is_wan=True). ... ok
+test_classificacao_ips_privados (tests.test_lan_wan.TestClassificacaoLanWan.test_classificacao_ips_privados)
+IPs privados (RFC 1918 e loopback) devem ser classificados como LAN (is_wan=False). ... ok
+test_gravar_historico_ping_status_lan_nulo (tests.test_lan_wan.TestClassificacaoLanWan.test_gravar_historico_ping_status_lan_nulo)
+Garante que gravar_historico_ping com status_lan=None grave NULL e não 0. ... ok
+test_persistencia_telemetria_wan_vs_lan (tests.test_lan_wan.TestClassificacaoLanWan.test_persistencia_telemetria_wan_vs_lan)
+Verifica se gravação e consulta de telemetria distinguem LAN e WAN. ... ok
+test_bloqueio_agentes_ao_atingir_limite (tests.test_licenca.TestLicenciamento.test_bloqueio_agentes_ao_atingir_limite)
+Garante que novos agentes são bloqueados quando o limite_agentes é atingido. ... ok
+test_bloqueio_cadastro_hosts_ao_atingir_limite (tests.test_licenca.TestLicenciamento.test_bloqueio_cadastro_hosts_ao_atingir_limite)
+Garante que pode_cadastrar_mais_hosts bloqueia novos cadastros ao atingir o limite. ... ok
+test_licenca_expirada (tests.test_licenca.TestLicenciamento.test_licenca_expirada)
+Licença cuja data expira_em já passou deve ser classificada como expirada. ... ok
+test_obter_fingerprint_servidor (tests.test_licenca.TestLicenciamento.test_obter_fingerprint_servidor)
+Verifica se o fingerprint do servidor é gerado no formato estável GP-NODE-. ... ok
+test_rota_get_ativar_redireciona_configuracoes (tests.test_licenca.TestLicenciamento.test_rota_get_ativar_redireciona_configuracoes)
+GET /licenca/ativar: anônimo redireciona para login; autenticado redireciona para /configuracoes. ... ok
+test_rota_post_ativar_sucesso_redireciona_configuracoes (tests.test_licenca.TestLicenciamento.test_rota_post_ativar_sucesso_redireciona_configuracoes)
+POST /licenca/ativar autenticado como admin deve salvar licença e redirecionar para /configuracoes. ... ok
+test_salvar_e_obter_licenca_local (tests.test_licenca.TestLicenciamento.test_salvar_e_obter_licenca_local)
+Garante persistência e leitura da licença no banco SQLite. ... ok
+test_status_sem_licenca (tests.test_licenca.TestLicenciamento.test_status_sem_licenca)
+Sem nenhuma licença cadastrada, o status deve ser inexistente e invalida. ... ok
+test_validar_licenca_remota_mock_invalida (tests.test_licenca.TestLicenciamento.test_validar_licenca_remota_mock_invalida)
+Simula resposta de licença revogada ou inválida pelo GetPing_eth_admin. ... ok
+test_validar_licenca_remota_mock_sucesso (tests.test_licenca.TestLicenciamento.test_validar_licenca_remota_mock_sucesso)
+Simula resposta positiva da API do GetPing_eth_admin. ... ok
+test_bloqueio_rotas_ao_suspender (tests.test_license_sync.TestLicenseSync.test_bloqueio_rotas_ao_suspender)
+Verifica se após suspensão da licença, /hosts e / bloqueiam e redirecionam para /configuracoes. ... ok
+test_reativacao_apos_suspensao (tests.test_license_sync.TestLicenseSync.test_reativacao_apos_suspensao)
+Simula reativação da licença suspensa quando o admin a reativa. ... ok
+test_revalidacao_automatica_ao_acessar_configuracoes (tests.test_license_sync.TestLicenseSync.test_revalidacao_automatica_ao_acessar_configuracoes)
+Ao acessar /configuracoes com licença suspensa, o sistema revalida automaticamente com o servidor central. ... ok
+test_sincronizacao_remota_cancelada (tests.test_license_sync.TestLicenseSync.test_sincronizacao_remota_cancelada)
+Simula resposta 403 'Licença cancelada.' e verifica atualização local. ... ok
+test_sincronizacao_remota_suspensa (tests.test_license_sync.TestLicenseSync.test_sincronizacao_remota_suspensa)
+Simula resposta 403 'Licença suspensa.' e verifica se a base local é atualizada. ... ok
+test_sincronizacao_tolerancia_servidor_offline (tests.test_license_sync.TestLicenseSync.test_sincronizacao_tolerancia_servidor_offline)
+Quando o servidor central está inacessível, NÃO deve suspender o cliente imediatamente. ... ok
+test_verificacao_automatica_licenca_no_login_suspensa (tests.test_license_sync.TestLicenseSync.test_verificacao_automatica_licenca_no_login_suspensa)
+Ao fazer login, o sistema deve verificar a licença remotamente e atualizar para suspensa. ... ok
+test_cache_compartilha_amostra_por_tres_segundos (tests.test_metricas_resiliencia.MetricasResiliencia.test_cache_compartilha_amostra_por_tres_segundos) ... ok
+test_configuracao_valida_interfaces_sem_caminhos (tests.test_metricas_resiliencia.MetricasResiliencia.test_configuracao_valida_interfaces_sem_caminhos) ... ok
+test_cpu_guest_nao_duplica_total (tests.test_metricas_resiliencia.MetricasResiliencia.test_cpu_guest_nao_duplica_total) ... ok
+test_falha_preserva_baseline_e_recupera_sem_pico (tests.test_metricas_resiliencia.MetricasResiliencia.test_falha_preserva_baseline_e_recupera_sem_pico) ... WARNING:root:Métricas do servidor indisponíveis: CPU
+WARNING:root:Métricas do servidor indisponíveis: memória
+WARNING:root:Métricas do servidor indisponíveis: rede (verifique SERVER_NETWORK_INTERFACES)
+ok
+test_interface_configurada_ausente_nao_cai_em_outra (tests.test_metricas_resiliencia.MetricasResiliencia.test_interface_configurada_ausente_nao_cai_em_outra) ... WARNING:root:Métricas do servidor indisponíveis: rede (verifique SERVER_NETWORK_INTERFACES)
+ok
+test_memoria_incompleta_nao_vira_zero (tests.test_metricas_resiliencia.MetricasResiliencia.test_memoria_incompleta_nao_vira_zero) ... ok
+test_primeira_amostra_nao_inventa_taxa (tests.test_metricas_resiliencia.MetricasResiliencia.test_primeira_amostra_nao_inventa_taxa) ... ok
+test_relogio_civil_nao_congela_nem_altera_taxa (tests.test_metricas_resiliencia.MetricasResiliencia.test_relogio_civil_nao_congela_nem_altera_taxa) ... ok
+test_reset_interface_reinicializa_referencia (tests.test_metricas_resiliencia.MetricasResiliencia.test_reset_interface_reinicializa_referencia) ... ok
+test_selecao_automatica_prefere_rota_e_nao_soma_bridge (tests.test_metricas_resiliencia.MetricasResiliencia.test_selecao_automatica_prefere_rota_e_nao_soma_bridge) ... ok
+test_taxa_e_cpu_com_delta (tests.test_metricas_resiliencia.MetricasResiliencia.test_taxa_e_cpu_com_delta) ... ok
+test_agente_ordem_e_timeout_nao_inventam_falha_lan (tests.test_monitoramento.TestMonitoramento.test_agente_ordem_e_timeout_nao_inventam_falha_lan) ... ok
+test_agente_pausado_mantem_heartbeat_sem_incidentes (tests.test_monitoramento.TestMonitoramento.test_agente_pausado_mantem_heartbeat_sem_incidentes) ... ok
+test_agregacao_preserva_perda_e_latencia_ausente (tests.test_monitoramento.TestMonitoramento.test_agregacao_preserva_perda_e_latencia_ausente) ... ok
+test_amostras_do_grafico_preservam_variacoes_na_mesma_janela (tests.test_monitoramento.TestMonitoramento.test_amostras_do_grafico_preservam_variacoes_na_mesma_janela) ... ok
+test_antigo_futuro_e_duplicado_nao_regredem_estado (tests.test_monitoramento.TestMonitoramento.test_antigo_futuro_e_duplicado_nao_regredem_estado) ... ok
+test_banco_ocupado_nao_converte_erro_em_queda (tests.test_monitoramento.TestMonitoramento.test_banco_ocupado_nao_converte_erro_em_queda) ... ok
+test_boot_anterior_nao_regride_estado (tests.test_monitoramento.TestMonitoramento.test_boot_anterior_nao_regride_estado) ... ok
+test_capacidade_fila_simulada_10_100_500_alvos (tests.test_monitoramento.TestMonitoramento.test_capacidade_fila_simulada_10_100_500_alvos) ... ok
+test_coletor_limita_fila_e_persiste_rapidos_primeiro (tests.test_monitoramento.TestMonitoramento.test_coletor_limita_fila_e_persiste_rapidos_primeiro) ... ok
+test_coletor_reinicia_sem_iniciar_threads_no_import (tests.test_monitoramento.TestMonitoramento.test_coletor_reinicia_sem_iniciar_threads_no_import) ... ok
+test_configuracao_tcp_http_e_validacao (tests.test_monitoramento.TestMonitoramento.test_configuracao_tcp_http_e_validacao) ... ok
+test_contadores_nao_somam_falhas_separadas_por_dados_vencidos (tests.test_monitoramento.TestMonitoramento.test_contadores_nao_somam_falhas_separadas_por_dados_vencidos) ... ok
+test_endpoint_de_readiness_distingue_web_de_coleta (tests.test_monitoramento.TestMonitoramento.test_endpoint_de_readiness_distingue_web_de_coleta) ... ok
+test_endpoint_rejeita_tipos_e_datas_invalidas (tests.test_monitoramento.TestMonitoramento.test_endpoint_rejeita_tipos_e_datas_invalidas) ... ok
+test_erro_tecnico_nao_abre_nem_fecha_incidente (tests.test_monitoramento.TestMonitoramento.test_erro_tecnico_nao_abre_nem_fecha_incidente) ... ok
+test_histerese_e_incidente_unico (tests.test_monitoramento.TestMonitoramento.test_histerese_e_incidente_unico) ... ok
+test_migracao_utc_e_idempotencia (tests.test_monitoramento.TestMonitoramento.test_migracao_utc_e_idempotencia) ... ok
+test_orcamento_global_dns (tests.test_monitoramento.TestMonitoramento.test_orcamento_global_dns) ... ok
+test_pausa_edicao_exclusao_descartam_resultado (tests.test_monitoramento.TestMonitoramento.test_pausa_edicao_exclusao_descartam_resultado) ... ok
+test_reativacao_nao_herda_cache_de_outra_origem (tests.test_monitoramento.TestMonitoramento.test_reativacao_nao_herda_cache_de_outra_origem) ... ok
+test_resumo_incidentes_independe_da_paginacao (tests.test_monitoramento.TestMonitoramento.test_resumo_incidentes_independe_da_paginacao) ... ok
+test_saude_monitor_expira (tests.test_monitoramento.TestMonitoramento.test_saude_monitor_expira) ... ok
+test_sonda_distingue_erro_local_e_preserva_decimais (tests.test_monitoramento.TestMonitoramento.test_sonda_distingue_erro_local_e_preserva_decimais) ... ok
+test_tcp_http_e_redirect_nao_seguido (tests.test_monitoramento.TestMonitoramento.test_tcp_http_e_redirect_nao_seguido) ... ok
+test_transacao_desfaz_estado_quando_historico_falha (tests.test_monitoramento.TestMonitoramento.test_transacao_desfaz_estado_quando_historico_falha) ... ok
+test_up_expira_sem_virar_down (tests.test_monitoramento.TestMonitoramento.test_up_expira_sem_virar_down) ... ok
+test_worker_empacotavel_nao_importa_app (tests.test_monitoramento.TestMonitoramento.test_worker_empacotavel_nao_importa_app) ... ok
+test_n2_admin_comum_tem_servidor_forcado_para_padrao (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n2_admin_comum_tem_servidor_forcado_para_padrao)
+N2: Usuário admin comum não pode especificar servidor_admin_url arbitrário (mitigação SSRF). ... ok
+test_n2_root_pode_configurar_url_valida_mas_rejeita_invalida (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n2_root_pode_configurar_url_valida_mas_rejeita_invalida)
+N2: Root pode configurar URL com http/https, mas esquemas perigosos são rejeitados. ... ok
+test_n2_rota_ativar_exige_login_para_anonimo (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n2_rota_ativar_exige_login_para_anonimo)
+N2: Requisições anônimas para GET e POST /licenca/ativar devem ser redirecionadas para login. ... ok
+test_n2_usuario_comum_bloqueado_de_ativar_licenca (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n2_usuario_comum_bloqueado_de_ativar_licenca)
+N2: Usuário comum autenticado não pode acessar /licenca/ativar. ... ok
+test_n3_adulteracao_expira_em_nulo_bloqueia_licenca (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n3_adulteracao_expira_em_nulo_bloqueia_licenca)
+N3: Licença sem expira_em (ou NULL) deve ser rejeitada imediatamente. ... ok
+test_n3_adulteracao_manual_no_sqlite_bloqueia_licenca (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n3_adulteracao_manual_no_sqlite_bloqueia_licenca)
+N3: Adulteração direta de limite_hosts ou status no SQLite invalida a assinatura HMAC. ... ok
+test_n3_tolerancia_offline_limite_7_dias (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n3_tolerancia_offline_limite_7_dias)
+N3: Tolerância offline expira após MAX_DIAS_OFFLINE (padrão 7 dias) sem check-in. ... ok
+test_n4_admin_e_root_recebem_chave_mascarada_na_api (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n4_admin_e_root_recebem_chave_mascarada_na_api)
+N4: Usuários admin e root recebem chave mascarada em GET /api/v1/licenca/status. ... ok
+test_n4_funcao_mascarar_chave_licenca (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n4_funcao_mascarar_chave_licenca)
+N4: Função mascarar_chave_licenca oculta partes internas preservando prefixo e sufixo. ... ok
+test_n4_usuario_comum_nao_recebe_chave_na_api (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n4_usuario_comum_nao_recebe_chave_na_api)
+N4: Usuário comum autenticado em GET /api/v1/licenca/status NÃO recebe a chave de licença. ... ok
+test_n5_producao_usa_waitress_sem_iniciar_coleta (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n5_producao_usa_waitress_sem_iniciar_coleta)
+O servidor centralizado entrega a aplicação ao Waitress. ... GetPing web: 0.0.0.0:5000 (Waitress, 6 threads)
+ok
+test_n5_waitress_instalado_e_importavel (tests.test_n2_n3_n4_n5.TestN2N3N4N5.test_n5_waitress_instalado_e_importavel)
+N5: Pacote waitress deve estar instalado no ambiente e ser importável. ... ok
+test_cache_nao_rele_hosts_em_resultados_e_invalida_ao_pausar (tests.test_otimizacao_ping.TestCacheELote.test_cache_nao_rele_hosts_em_resultados_e_invalida_ao_pausar) ... ok
+test_lote_falha_atomico_e_retry_sem_duplicar (tests.test_otimizacao_ping.TestCacheELote.test_lote_falha_atomico_e_retry_sem_duplicar) ... ok
+test_lote_rejeita_snapshot_antigo_e_nao_abre_incidente (tests.test_otimizacao_ping.TestCacheELote.test_lote_rejeita_snapshot_antigo_e_nao_abre_incidente) ... ok
+test_comando_modulo_fora_checkout (tests.test_otimizacao_ping.TestServidorSonda.test_comando_modulo_fora_checkout) ... ok
+test_deadline_encerra_tambem_descendente (tests.test_otimizacao_ping.TestServidorSonda.test_deadline_encerra_tambem_descendente) ... ok
+test_executar_sonda_com_contexto_nao_importa_flask (tests.test_otimizacao_ping.TestServidorSonda.test_executar_sonda_com_contexto_nao_importa_flask) ... ok
+test_import_worker_nao_carrega_web_ou_administracao (tests.test_otimizacao_ping.TestServidorSonda.test_import_worker_nao_carrega_web_ou_administracao) ... ok
+test_resposta_parcial_e_invalida_nao_travam_nem_contaminam_proxima_sonda (tests.test_otimizacao_ping.TestServidorSonda.test_resposta_parcial_e_invalida_nao_travam_nem_contaminam_proxima_sonda) ... ok
+test_reutiliza_e_recicla_por_contagem_e_idade (tests.test_otimizacao_ping.TestServidorSonda.test_reutiliza_e_recicla_por_contagem_e_idade) ... ok
+test_worker_morto_e_requisicao_excessiva (tests.test_otimizacao_ping.TestServidorSonda.test_worker_morto_e_requisicao_excessiva) ... ok
+test_worker_ocioso_libera_processo_e_reinicia_quando_necessario (tests.test_otimizacao_ping.TestServidorSonda.test_worker_ocioso_libera_processo_e_reinicia_quando_necessario) ... ok
+test_datas_anteriores_e_offset (tests.test_periodos_overview.TestPeriodosOverview.test_datas_anteriores_e_offset) ... ok
+test_datas_invalidas_e_intervalos_excessivos (tests.test_periodos_overview.TestPeriodosOverview.test_datas_invalidas_e_intervalos_excessivos) ... ok
+test_historico_exige_sessao (tests.test_periodos_overview.TestPeriodosOverview.test_historico_exige_sessao) ... ok
+test_incidente_que_cruza_inicio_nao_inventa_downtime (tests.test_periodos_overview.TestPeriodosOverview.test_incidente_que_cruza_inicio_nao_inventa_downtime) ... ok
+test_periodos_filtram_limites (tests.test_periodos_overview.TestPeriodosOverview.test_periodos_filtram_limites) ... ok
+test_retencao_preserva_dias_anteriores (tests.test_periodos_overview.TestPeriodosOverview.test_retencao_preserva_dias_anteriores) ... ok
+test_serie_extensa_cobre_periodo_inteiro (tests.test_periodos_overview.TestPeriodosOverview.test_serie_extensa_cobre_periodo_inteiro) ... ok
+test_login_root_senha_padrao_redireciona_primeiro_acesso (tests.test_primeiro_acesso.TestPrimeiroAcesso.test_login_root_senha_padrao_redireciona_primeiro_acesso)
+Ao fazer login com senha padrão, o root deve ser redirecionado para /primeiro_acesso. ... ok
+test_primeiro_acesso_bloqueia_navegacao_para_outras_rotas (tests.test_primeiro_acesso.TestPrimeiroAcesso.test_primeiro_acesso_bloqueia_navegacao_para_outras_rotas)
+Com alerta_senha_padrao ativo, navegação para páginas internas redireciona para /primeiro_acesso. ... ok
+test_primeiro_acesso_rejeita_senhas_invalidas (tests.test_primeiro_acesso.TestPrimeiroAcesso.test_primeiro_acesso_rejeita_senhas_invalidas)
+Rejeita senhas curtas, sem caracteres especiais ou iguais à padrão. ... ok
+test_primeiro_acesso_sucesso_libera_acesso (tests.test_primeiro_acesso.TestPrimeiroAcesso.test_primeiro_acesso_sucesso_libera_acesso)
+Ao definir uma nova senha válida, o usuário é liberado e redirecionado para o dashboard. ... ok
+test_cache_adulterado_detectado_mesmo_com_hmac_recalculado (tests.test_producao.TestProducao.test_cache_adulterado_detectado_mesmo_com_hmac_recalculado)
+L4: Se colunas locais divergirem do documento assinado central, o cache é marcado como adulterado. ... ok
+test_cache_legado_retorna_revalidacao_necessaria (tests.test_producao.TestProducao.test_cache_legado_retorna_revalidacao_necessaria)
+L8: Cache legado (sem autorizacao_json) deve indicar revalidacao_necessaria em vez de adulterada. ... ok
+test_cotas_concorrentes_e_duplicidade (tests.test_producao.TestProducao.test_cotas_concorrentes_e_duplicidade) ... ok
+test_json_e_csrf_malformados_nao_causam_500 (tests.test_producao.TestProducao.test_json_e_csrf_malformados_nao_causam_500) ... ok
+test_licenciamento_tem_deadline_global (tests.test_producao.TestProducao.test_licenciamento_tem_deadline_global) ... ok
+test_logout_antigo_nao_revoga_sessao_nova (tests.test_producao.TestProducao.test_logout_antigo_nao_revoga_sessao_nova) ... ok
+test_posicoes_validacao_integral_e_permissoes (tests.test_producao.TestProducao.test_posicoes_validacao_integral_e_permissoes) ... ok
+test_producao_fail_fast_sem_chave_publica (tests.test_producao.TestProducao.test_producao_fail_fast_sem_chave_publica)
+L1: Em produção, create_app deve falhar imediatamente se a chave pública não estiver configurada. ... ERROR
+test_rate_limit_compartilhado_entre_aplicacoes (tests.test_producao.TestProducao.test_rate_limit_compartilhado_entre_aplicacoes) ... ok
+test_segredo_externo_fraco_rejeitado (tests.test_producao.TestProducao.test_segredo_externo_fraco_rejeitado) ... ok
+test_sem_dados_nao_aumenta_tempo_offline (tests.test_producao.TestProducao.test_sem_dados_nao_aumenta_tempo_offline) ... ok
+test_status_server_informa_coleta_autorizada_e_status_licenca (tests.test_producao.TestProducao.test_status_server_informa_coleta_autorizada_e_status_licenca)
+L3: /status_server deve relatar coleta_autorizada (bool) e status_licenca (str). ... ok
+test_token_novo_so_na_resposta_de_criacao (tests.test_producao.TestProducao.test_token_novo_so_na_resposta_de_criacao) ... ok
+test_tokens_hash_migracao_sem_rotacao_e_nao_aceita_hash_como_token (tests.test_producao.TestProducao.test_tokens_hash_migracao_sem_rotacao_e_nao_aceita_hash_como_token) ... ok
+test_valores_nao_sao_interpolados_em_handlers (tests.test_producao.TestProducao.test_valores_nao_sao_interpolados_em_handlers) ... ok
+test_zero_e_negativo_licenca (tests.test_producao.TestProducao.test_zero_e_negativo_licenca) ... ok
+test_agente_rejeita_sequencia_e_json_sem_gravar_parcialmente (tests.test_revisao_producao.TestRevisaoProducao.test_agente_rejeita_sequencia_e_json_sem_gravar_parcialmente) ... ok
+test_comando_licenca_em_wheel_e_nuitka (tests.test_revisao_producao.TestRevisaoProducao.test_comando_licenca_em_wheel_e_nuitka) ... ok
+test_edicao_normalizada_e_concorrente_nao_duplica (tests.test_revisao_producao.TestRevisaoProducao.test_edicao_normalizada_e_concorrente_nao_duplica) ... ok
+test_edicao_pela_rota_bloqueia_alias_ipv6 (tests.test_revisao_producao.TestRevisaoProducao.test_edicao_pela_rota_bloqueia_alias_ipv6) ... ok
+test_escopo_comum_preserva_destinos_de_outros_proprietarios (tests.test_revisao_producao.TestRevisaoProducao.test_escopo_comum_preserva_destinos_de_outros_proprietarios) ... ok
+test_falha_temporaria_nao_renova_tolerancia_offline (tests.test_revisao_producao.TestRevisaoProducao.test_falha_temporaria_nao_renova_tolerancia_offline) ... ok
+test_falhas_temporarias_e_contratos_invalidos_preservam_licenca (tests.test_revisao_producao.TestRevisaoProducao.test_falhas_temporarias_e_contratos_invalidos_preservam_licenca) ... ok
+test_limites_compartilhados_de_usuario_e_senha (tests.test_revisao_producao.TestRevisaoProducao.test_limites_compartilhados_de_usuario_e_senha) ... ok
+test_limpeza_processa_varios_lotes_e_libera_escritor (tests.test_revisao_producao.TestRevisaoProducao.test_limpeza_processa_varios_lotes_e_libera_escritor) ... ok
+test_limpeza_respeita_orcamento_e_retoma_no_proximo_ciclo (tests.test_revisao_producao.TestRevisaoProducao.test_limpeza_respeita_orcamento_e_retoma_no_proximo_ciclo) ... WARNING:root:Retenção atingiu orçamento do ciclo; removidos=5000, nova tentativa no próximo ciclo
+ok
+test_status_autoritativos_negativos_continuam_aplicados (tests.test_revisao_producao.TestRevisaoProducao.test_status_autoritativos_negativos_continuam_aplicados) ... ok
+test_admin_nao_pode_editar_dados_do_root (tests.test_root_user.TestRootUser.test_admin_nao_pode_editar_dados_do_root)
+Garante que outro usuário (mesmo admin) não pode editar os dados do usuário root. ... ok
+test_brute_force_global_root (tests.test_root_user.TestRootUser.test_brute_force_global_root)
+Garante que ataques de força bruta bloqueiam a origem sem causar negação de serviço global. ... ok
+test_criar_db_nao_reativa_root_desativado (tests.test_root_user.TestRootUser.test_criar_db_nao_reativa_root_desativado)
+R2: Garante que criar_db() não reativa o root caso um admin o tenha desativado. ... ok
+test_hierarquia_admin_e_comum_bloqueios (tests.test_root_user.TestRootUser.test_hierarquia_admin_e_comum_bloqueios)
+Verifica a hierarquia: admin acessa /configuracoes e /usuarios; comum é bloqueado. ... ok
+test_impedir_desativacao_e_exclusao_root_no_banco (tests.test_root_user.TestRootUser.test_impedir_desativacao_e_exclusao_root_no_banco)
+Garante que funções de banco toggle_usuario e excluir_usuario rejeitam alterar o usuário root. ... ok
+test_login_root_senha_alterada_sem_alerta (tests.test_root_user.TestRootUser.test_login_root_senha_alterada_sem_alerta)
+Garante que se a senha do root for alterada (não getping), alerta_senha_padrao não é ativado. ... ok
+test_login_root_senha_padrao_getping (tests.test_root_user.TestRootUser.test_login_root_senha_padrao_getping)
+Valida que root autentica com senha padrão 'getping' e ativa o alerta_senha_padrao na sessão. ... ok
+test_root_perfil_nunca_pode_ser_rebaixado (tests.test_root_user.TestRootUser.test_root_perfil_nunca_pode_ser_rebaixado)
+Garante que mesmo em atualização no banco ou pelo próprio root, o perfil 'root' permanece inalterável. ... ok
+test_root_tem_full_acesso_as_rotas (tests.test_root_user.TestRootUser.test_root_tem_full_acesso_as_rotas)
+Valida que root autenticado com senha própria pode acessar todas as telas operacionais e administrativas. ... ok
+test_root_usuario_criado_por_padrao (tests.test_root_user.TestRootUser.test_root_usuario_criado_por_padrao)
+Verifica se o usuário root existe com perfil 'root', ativo=1 e coexiste com 'admin'. ... ok
+test_rotas_impedem_toggle_e_exclusao_root (tests.test_root_user.TestRootUser.test_rotas_impedem_toggle_e_exclusao_root)
+Garante que as rotas HTTP /usuarios/toggle/<id> e /usuarios/excluir/<id> protegem o root. ... ok
+test_acesso_bloqueado_quando_licenca_ausente_ou_expirada (tests.test_seguranca.TestSeguranca.test_acesso_bloqueado_quando_licenca_ausente_ou_expirada)
+Garante que requisições autenticadas são redirecionadas para ativação se a licença estiver ausente. ... ok
+test_alerta_senha_padrao_admin (tests.test_seguranca.TestSeguranca.test_alerta_senha_padrao_admin)
+Garante que ao logar com admin e senha padrão 'admin123', a flag de alerta é ativada. ... ok
+test_bloqueio_navegacao_com_senha_padrao (tests.test_seguranca.TestSeguranca.test_bloqueio_navegacao_com_senha_padrao)
+S4: Garante que o usuário com alerta_senha_padrao não consegue acessar APIs ou outras páginas. ... ok
+test_cabecalhos_seguranca_http (tests.test_seguranca.TestSeguranca.test_cabecalhos_seguranca_http)
+Verifica se as respostas HTTP incluem cabeçalhos de segurança básicos. ... ok
+test_cookie_flags_seguras (tests.test_seguranca.TestSeguranca.test_cookie_flags_seguras)
+Verifica se os cookies de sessão estão configurados com HTTPOnly e SameSite. ... ok
+test_csrf_bloqueia_requisicao_sem_token (tests.test_seguranca.TestSeguranca.test_csrf_bloqueia_requisicao_sem_token)
+Garante que requisição POST autenticada sem CSRF token é rejeitada quando CSRF está ativo. ... ok
+test_informacoes_agent_exige_autenticacao (tests.test_seguranca.TestSeguranca.test_informacoes_agent_exige_autenticacao)
+Garante que o endpoint do agente rejeita requisições sem Bearer token com 401. ... ok
+test_informacoes_agent_valida_tamanho_payload (tests.test_seguranca.TestSeguranca.test_informacoes_agent_valida_tamanho_payload)
+Garante que o endpoint do agente rejeita hostname excessivamente longo com 400. ... ok
+test_limite_licenca_bloqueia_excesso_agentes (tests.test_seguranca.TestSeguranca.test_limite_licenca_bloqueia_excesso_agentes)
+Garante que o limite de agentes da licença bloqueia novos cadastros via upsert_host_auto. ... ok
+test_login_simultaneo_invalida_sessao_anterior (tests.test_seguranca.TestSeguranca.test_login_simultaneo_invalida_sessao_anterior)
+Single Active Session: Garante que um segundo login invalida imediatamente a sessão anterior. ... ok
+test_logout_invalida_token_no_banco (tests.test_seguranca.TestSeguranca.test_logout_invalida_token_no_banco)
+Garante que o logout limpa o token_sessao no banco de dados. ... ok
+test_prevencao_open_redirect_login (tests.test_seguranca.TestSeguranca.test_prevencao_open_redirect_login)
+S5: Garante que URLs externas maliciosas em next são rejeitadas. ... ok
+test_rate_limit_login_bloqueia_apos_5_falhas (tests.test_seguranca.TestSeguranca.test_rate_limit_login_bloqueia_apos_5_falhas)
+Garante que tentativas consecutivas de senha incorreta ativam o bloqueio por rate limit. ... ok
+test_secret_key_configurada (tests.test_seguranca.TestSeguranca.test_secret_key_configurada)
+Garante que a SECRET_KEY existe e possui tamanho seguro (>= 32 caracteres). ... ok
+test_sessao_atualizada_quando_perfil_rebaixado (tests.test_seguranca.TestSeguranca.test_sessao_atualizada_quando_perfil_rebaixado)
+S6: Garante que o perfil do usuário é sincronizado em tempo real quando rebaixado. ... ok
+test_sessao_expiracao_e_seguranca (tests.test_seguranca.TestSeguranca.test_sessao_expiracao_e_seguranca)
+R4: Garante configuração de expiração de sessão por inatividade e session.permanent no login. ... ok
+test_sessao_revogada_quando_usuario_desativado (tests.test_seguranca.TestSeguranca.test_sessao_revogada_quando_usuario_desativado)
+S6: Garante que uma sessão ativa é imediatamente revogada quando o usuário é desativado. ... ok
+test_sessao_revogada_quando_usuario_excluido (tests.test_seguranca.TestSeguranca.test_sessao_revogada_quando_usuario_excluido)
+S6: Garante que uma sessão ativa é limpa quando o usuário é excluído do banco. ... ok
+test_validar_complexidade_senha (tests.test_seguranca.TestSeguranca.test_validar_complexidade_senha)
+Garante que senhas com menos de 8 caracteres ou sem os requisitos de complexidade são rejeitadas. ... ok
+test_api_overview_dados_inclui_servidor (tests.test_server_metrics.TestServerMetrics.test_api_overview_dados_inclui_servidor) ... ok
+test_api_servidor_metricas_autenticado (tests.test_server_metrics.TestServerMetrics.test_api_servidor_metricas_autenticado) ... ok
+test_api_servidor_metricas_deslogado (tests.test_server_metrics.TestServerMetrics.test_api_servidor_metricas_deslogado) ... ok
+test_coletor_instancia_cache (tests.test_server_metrics.TestServerMetrics.test_coletor_instancia_cache) ... WARNING:root:Métricas do servidor indisponíveis: rede (verifique SERVER_NETWORK_INTERFACES)
+ok
+test_dashboard_html_contem_elementos_servidor (tests.test_server_metrics.TestServerMetrics.test_dashboard_html_contem_elementos_servidor) ... ok
+test_formatar_bytes_por_segundo (tests.test_server_metrics.TestServerMetrics.test_formatar_bytes_por_segundo) ... ok
+test_formatar_bytes_total (tests.test_server_metrics.TestServerMetrics.test_formatar_bytes_total) ... ok
+test_obter_metricas_servidor_estrutura (tests.test_server_metrics.TestServerMetrics.test_obter_metricas_servidor_estrutura) ... WARNING:root:Métricas do servidor indisponíveis: rede (verifique SERVER_NETWORK_INTERFACES)
+ok
+test_variavel_version_system_definida (tests.test_version.TestVersionSystem.test_variavel_version_system_definida)
+Verifica se a constante VERSION_SYSTEM existe no app e não está vazia. ... ok
+test_version_system_renderizado_na_sidebar (tests.test_version.TestVersionSystem.test_version_system_renderizado_na_sidebar)
+Garante que a versão do sistema é exibida no cabeçalho da sidebar em base.html. ... ok
+test_version_system_renderizado_no_login (tests.test_version.TestVersionSystem.test_version_system_renderizado_no_login)
+Garante que a versão do sistema é exibida na marca da tela de login. ... ok
+test_estado_pendente_e_negativa_real_sem_erro_de_conexao (tests.test_vinculo_licenca.VinculoLicenca.test_estado_pendente_e_negativa_real_sem_erro_de_conexao) ... ok
+test_fingerprint_visivel_com_licenca_ativa_e_bloqueada (tests.test_vinculo_licenca.VinculoLicenca.test_fingerprint_visivel_com_licenca_ativa_e_bloqueada) ... ok
+test_outra_chave_pendente_nao_substitui_a_licenca_ativa (tests.test_vinculo_licenca.VinculoLicenca.test_outra_chave_pendente_nao_substitui_a_licenca_ativa) ... ok
+test_primeira_ativacao_pendente_persiste_sem_liberar_recursos (tests.test_vinculo_licenca.VinculoLicenca.test_primeira_ativacao_pendente_persiste_sem_liberar_recursos) ... ok
+test_resposta_contraditoria_nao_ativa_nem_bloqueia_licenca (tests.test_vinculo_licenca.VinculoLicenca.test_resposta_contraditoria_nao_ativa_nem_bloqueia_licenca) ... ok
+test_revalidacao_apos_autorizacao_ativa_sem_trocar_fingerprint (tests.test_vinculo_licenca.VinculoLicenca.test_revalidacao_apos_autorizacao_ativa_sem_trocar_fingerprint) ... ok
+test_sincronizacao_pendente_bloqueia_licenca_antes_ativa (tests.test_vinculo_licenca.VinculoLicenca.test_sincronizacao_pendente_bloqueia_licenca_antes_ativa) ... ok
+test_agente_oculto_por_padrao (tests.test_visibilidade_agentes.TestVisibilidadeAgentes.test_agente_oculto_por_padrao)
+Novo agente adicionado ao sistema deve ficar oculto por padrão para os usuários. ... ok
+test_rota_salvar_visibilidade_agentes (tests.test_visibilidade_agentes.TestVisibilidadeAgentes.test_rota_salvar_visibilidade_agentes)
+Rota POST /hosts/agentes-visibilidade salva preferências com sucesso. ... ok
+test_selecao_e_deselecao_agente_por_usuario (tests.test_visibilidade_agentes.TestVisibilidadeAgentes.test_selecao_e_deselecao_agente_por_usuario)
+Usuário deve conseguir selecionar o agente para exibir e desmarcar para ocultar. ... ok
+
+======================================================================
+ERROR: test_producao_fail_fast_sem_chave_publica (tests.test_producao.TestProducao.test_producao_fail_fast_sem_chave_publica)
+L1: Em produção, create_app deve falhar imediatamente se a chave pública não estiver configurada.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/fabioaleluia/Dev/Projetos_Python/GetPing_eth/getping_v0.0.4/tests/test_producao.py", line 229, in test_producao_fail_fast_sem_chave_publica
+    create_app(overrides={"GETPING_ENV": "production", "LICENCA_PUBLIC_KEY_FILE": None})
+TypeError: create_app() got an unexpected keyword argument 'overrides'
+
+----------------------------------------------------------------------
+Ran 217 tests in 63.464s
+
+FAILED (errors=1)

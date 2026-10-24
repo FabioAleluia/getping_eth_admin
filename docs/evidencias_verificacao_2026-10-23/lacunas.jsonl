@@ -1,0 +1,12 @@
+{"ensaio": "L1_inicio_sem_chave", "bloqueado": true}
+{"ensaio": "L4_cota_divergente_assinatura_central", "valida": false}
+{"ensaio": "negativa_nao_assinada", "falha_transporte": false, "estado_local": "cancelada"}
+{"ensaio": "L5_campos_ausentes", "resultados": [{"campo_omitido": "chave_licenca", "aceita": true}, {"campo_omitido": "fingerprint", "aceita": true}, {"campo_omitido": "emissor", "aceita": true}]}
+{"ensaio": "assinatura_invalida_tratamento", "excecao": "InvalidSignature"}
+{"ensaio": "L3_heartbeat_e_prontidao", "ativo": true, "saudavel": false, "http": 503}
+{"ensaio": "coleta_em_voo_apos_bloqueio", "future_cancelado": false, "future_em_execucao": true, "acompanhado": false}
+{"ensaio": "M2_formulario_resposta_antiga", "http": 302, "chave_nova_preservada": false}
+{"ensaio": "L6_checkin_utc", "checkin_igual_minuto_utc": true}
+{"ensaio": "zero_agentes_interface", "http": 200, "mostra_ilimitado": true}
+{"ensaio": "L8_legado", "status": "revalidacao_necessaria"}
+{"ensaio": "L1_positivo_sem_chave", "aceita": false, "falha_contrato": true}

@@ -1,0 +1,17 @@
+exit_code 1
+
+Traceback (most recent call last):
+  File "/home/fabioaleluia/Dev/Projetos_Python/GetPing_eth/getping_v0.0.4/scripts/smoke_wheel.py", line 111, in <module>
+    main()
+  File "/home/fabioaleluia/Dev/Projetos_Python/GetPing_eth/getping_v0.0.4/scripts/smoke_wheel.py", line 107, in main
+    testar(args.wheel.resolve())
+  File "/home/fabioaleluia/Dev/Projetos_Python/GetPing_eth/getping_v0.0.4/scripts/smoke_wheel.py", line 95, in testar
+    raise RuntimeError(resultado.stdout + "\n" + resultado.stderr)
+RuntimeError: 
+Traceback (most recent call last):
+  File "<string>", line 12, in <module>
+  File "/tmp/getping-wheel-smoke-i2xk6s6o/site/getping/licensing.py", line 196, in salvar_licenca_local
+    raise ValueError("LICENCA_PUBLIC_KEY_FILE é obrigatório em produção.")
+ValueError: LICENCA_PUBLIC_KEY_FILE é obrigatório em produção.
+
+

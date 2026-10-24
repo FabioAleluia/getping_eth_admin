@@ -1,0 +1,78 @@
+[
+  {
+    "arquivo": "README.md",
+    "sha256": "e35595f40cfac13bab48990f9d2d48bd9dbca885689a7165ac6824dac7caa121"
+  },
+  {
+    "arquivo": "docs/CORRECOES_PENDENTES_2026-10-23.md",
+    "sha256": "1ce4df0571b74bc4b7b2aaeed78e9ed3869328eb280b86ed4109781a9f567bae"
+  },
+  {
+    "arquivo": "getping/__init__.py",
+    "sha256": "a42b58d03b3465ac05c4e3d26df5750d2319b5fbcb2fa47044bb9942e3f70c51"
+  },
+  {
+    "arquivo": "getping/cli.py",
+    "sha256": "82451debb8464cc422cfc237a9d855f17cf7ad29efa0f16c180fd0311a8e34f0"
+  },
+  {
+    "arquivo": "getping/config.py",
+    "sha256": "a931bf23808d1d708726756c5c26cebcfcc6bcae94841458041fff7b3fe1c8a0"
+  },
+  {
+    "arquivo": "getping/db/licenses.py",
+    "sha256": "fe0711446ad7f907a31b10ccf397c707cfb3a6142580cf63455e672330b5962a"
+  },
+  {
+    "arquivo": "getping/license_validation.py",
+    "sha256": "92618f603507bcb432024319bd8fc200703779355622b87bdab3d3fe2c3063e9"
+  },
+  {
+    "arquivo": "getping/licensing.py",
+    "sha256": "58ef4219c2f2902d78bbc85954cc16c3c0d3d2ed40430cc4ff7f48874f4b545d"
+  },
+  {
+    "arquivo": "getping/monitoring/collector.py",
+    "sha256": "968b023329f9000866b309edc2af1a9c4f1f2cf15ab4253dac00e1f33918a323"
+  },
+  {
+    "arquivo": "getping/routes/licenca.py",
+    "sha256": "a4d2133a28aa0b36e79409d647ac462ddf1135e9cd6f1f4e488bfc2cd2fe6f6d"
+  },
+  {
+    "arquivo": "getping/templates/configuracoes.html",
+    "sha256": "08f55d686f7a08bb82d3f0c73d0938804ebd01f1a1c411a20618edb06a0af80c"
+  },
+  {
+    "arquivo": "pyproject.toml",
+    "sha256": "3f59d5b25e514c29c0b98bf06e737c9fa4908dd38a2024f59e8e0d1c2101afcf"
+  },
+  {
+    "arquivo": "requirements.txt",
+    "sha256": "2b2b42b1a02fa053b574258feac314c71f7be99be3cbf5971e96b34365e9bb79"
+  },
+  {
+    "arquivo": "scripts/smoke_wheel.py",
+    "sha256": "d65b7de484596ab9c3e0e7b56736cd154a900b489ed7e004643c943c961035d8"
+  },
+  {
+    "arquivo": "tests/test_licenca.py",
+    "sha256": "b8c5c795bb6fb269d8843f594686d43b3efa61d652145185942523a081dd74f0"
+  },
+  {
+    "arquivo": "tests/test_license_validation.py",
+    "sha256": "870c94daab482f28067e4040d4aa70531f87b24fa260c06e5fc951913cd54c74"
+  },
+  {
+    "arquivo": "tests/test_n2_n3_n4_n5.py",
+    "sha256": "9a2537be9f2a20039feaab714ab01cf8b3c29c58df26ed3379f02ed38f25b468"
+  },
+  {
+    "arquivo": "tests/test_producao.py",
+    "sha256": "06080f934d47481a385ed330cb20e50b8c7b01feb15c0c0fb2e969520d5ce786"
+  },
+  {
+    "arquivo": "tests/test_revisao_producao.py",
+    "sha256": "f17ba2c81d21b6d1eae6ff088708500153952346582ebd0e5aa9eced265f9cab"
+  }
+]
