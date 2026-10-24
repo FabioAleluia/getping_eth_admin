@@ -216,7 +216,7 @@ chmod 0700 "$INSTALL_DIR/instance"
 chmod 0700 "$INSTALL_DIR/backups"
 chmod 0700 "$CONFIG_DIR"
 chown -R getping:getping "$INSTALL_DIR"
-chown -R root:getping "$CONFIG_DIR"
+chown -R getping:getping "$CONFIG_DIR"
 
 # ------------------------------------------------------------------------------
 # 5. Sincronização do Código e Ambiente Virtual Python
@@ -267,9 +267,12 @@ log_header "Passo 4/9: Configurando segredos e par assimétrico Ed25519"
 PRIVATE_KEY_PATH="${CONFIG_DIR}/license-private.pem"
 PUBLIC_KEY_PATH="${CONFIG_DIR}/license-public.pem"
 
+chown -R getping:getping "$CONFIG_DIR"
+chmod 0700 "$CONFIG_DIR"
+
 if [[ ! -f "$PRIVATE_KEY_PATH" ]]; then
     log_info "Gerando par de chaves assimétricas Ed25519 para emissão de licenças..."
-    sudo -u getping env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/python" -m getping_admin.license_keys \
+    "$INSTALL_DIR/venv/bin/python" -m getping_admin.license_keys \
         --private "$PRIVATE_KEY_PATH" \
         --public "$PUBLIC_KEY_PATH"
 else
@@ -279,6 +282,8 @@ fi
 chmod 0600 "$PRIVATE_KEY_PATH"
 chmod 0644 "$PUBLIC_KEY_PATH"
 chown getping:getping "$PRIVATE_KEY_PATH" "$PUBLIC_KEY_PATH"
+chown -R getping:getping "$CONFIG_DIR"
+chmod 0700 "$CONFIG_DIR"
 
 ENV_FILE="/etc/getping-admin.env"
 if [[ ! -f "$ENV_FILE" ]]; then
