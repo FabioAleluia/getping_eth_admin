@@ -325,19 +325,42 @@ chown root:getping "$ENV_FILE"
 # ------------------------------------------------------------------------------
 log_header "Passo 5/9: Inicializando banco de dados e provisionando superadmin"
 
-# Exportar variáveis para a execução dos comandos CLI
-set -a
-# shellcheck disable=SC1090
-source "$ENV_FILE"
-set +a
+# Helper para executar comandos como o usuário getping com todas as variáveis de ambiente carregadas
+run_as_app() {
+    sudo -u getping bash -c '
+        set -a
+        source "'"$ENV_FILE"'"
+        set +a
+        exec "$@"
+    ' _ "$@"
+}
+
+# Criar wrapper conveniente getping-admin para o operador do sistema
+cat > "${INSTALL_DIR}/cli.sh" << EOF
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ ! -f "${ENV_FILE}" ]]; then
+    echo "Erro: ${ENV_FILE} não encontrado." >&2
+    exit 1
+fi
+exec sudo -u getping bash -c '
+    set -a
+    source "${ENV_FILE}"
+    set +a
+    cd "${INSTALL_DIR}"
+    exec "${INSTALL_DIR}/venv/bin/flask" --app getping_admin:create_app "\$@"
+' _ "\$@"
+EOF
+chmod 0755 "${INSTALL_DIR}/cli.sh"
+ln -sf "${INSTALL_DIR}/cli.sh" /usr/local/bin/getping-admin
 
 cd "$INSTALL_DIR"
 
 log_info "Aplicando schema do banco e migrações versionadas..."
-sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app init-db
+run_as_app "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app init-db
 
 log_info "Verificando se já existe superadministrador..."
-ADMIN_EXISTS="$(sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/python" -c "
+ADMIN_EXISTS="$(run_as_app "$INSTALL_DIR/venv/bin/python" -c "
 from getping_admin.database.db import get_db
 from getping_admin import create_app
 app = create_app()
@@ -349,7 +372,7 @@ with app.app_context():
 
 if [[ "$ADMIN_EXISTS" -eq 0 ]]; then
     log_info "Criando conta inicial do Superadmin..."
-    sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app create-admin \
+    run_as_app "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app create-admin \
         --email "$ADMIN_EMAIL" \
         --password "$ADMIN_PASSWORD"
     log_success "Administrador inicial criado com sucesso."
@@ -358,7 +381,7 @@ else
 fi
 
 log_info "Executando checagem de conformidade de segurança estrita..."
-sudo -u getping -E env PYTHONPATH="$INSTALL_DIR" "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app security-check --strict || {
+run_as_app "$INSTALL_DIR/venv/bin/flask" --app getping_admin:create_app security-check --strict || {
     log_warning "security-check apontou alertas normais pré-ativação de certificados. Continuando..."
 }
 
@@ -615,7 +638,8 @@ echo ""
 echo -e "${CYAN}${BOLD}Comandos úteis para o Administrador:${NC}"
 echo -e "  - Status do serviço:   ${BOLD}sudo systemctl status getping-admin${NC}"
 echo -e "  - Logs em tempo real:  ${BOLD}sudo journalctl -u getping-admin -f${NC}"
-echo -e "  - Backup do banco:     ${BOLD}sudo -u getping -E ${INSTALL_DIR}/venv/bin/flask --app getping_admin:create_app backup-db ${INSTALL_DIR}/backups/backup-\$(date +%F).db${NC}"
-echo -e "  - Redefinir senha:     ${BOLD}sudo -u getping -E ${INSTALL_DIR}/venv/bin/flask --app getping_admin:create_app reset-password administrator${NC}"
+echo -e "  - Backup do banco:     ${BOLD}getping-admin backup-db ${INSTALL_DIR}/backups/backup-\$(date +%F).db${NC}"
+echo -e "  - Redefinir senha:     ${BOLD}getping-admin reset-password administrator${NC}"
+echo -e "  - Checagem segurança:  ${BOLD}getping-admin security-check${NC}"
 echo ""
 echo -e "${GREEN}${BOLD}==============================================================================${NC}"
